@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gün Sonu — Kesimhane</title>
+
+  <!-- Tailwind CSS (pinned — matches the renderer/screenshot surfaces) -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          background: 'rgb(244 247 248 / <alpha-value>)',
+          foreground: 'rgb(23 36 45 / <alpha-value>)',
+          primary: { DEFAULT: 'rgb(18 48 71 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          secondary: { DEFAULT: 'rgb(221 235 233 / <alpha-value>)', foreground: 'rgb(18 63 61 / <alpha-value>)' },
+          accent: { DEFAULT: 'rgb(184 106 0 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          muted: { DEFAULT: 'rgb(232 238 240 / <alpha-value>)', foreground: 'rgb(83 99 109 / <alpha-value>)' },
+          card: { DEFAULT: 'rgb(255 255 255 / <alpha-value>)', foreground: 'rgb(23 36 45 / <alpha-value>)' },
+          border: 'rgb(201 213 217 / <alpha-value>)',
+          input: 'rgb(255 255 255 / <alpha-value>)',
+          destructive: { DEFAULT: 'rgb(180 35 24 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          success: { DEFAULT: 'rgb(44 110 73 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          chart1: 'rgb(18 48 71 / <alpha-value>)',
+          chart2: 'rgb(0 127 120 / <alpha-value>)',
+          chart3: 'rgb(184 106 0 / <alpha-value>)',
+          chart4: 'rgb(44 110 73 / <alpha-value>)',
+          chart5: 'rgb(106 91 158 / <alpha-value>)',
+          ring: 'rgb(18 48 71 / <alpha-value>)',
+        },
+        fontFamily: {
+          heading: ['var(--font-heading, Inter)', 'system-ui'],
+          body: ['var(--font-body, Inter)', 'system-ui'],
+        },
+        borderRadius: { DEFAULT: 'var(--radius, 12px)', theme: 'var(--radius, 12px)' },
+      }}
+    };
+</script>
+
+  <!-- Iconify Web Component -->
+  <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
+
+  <!-- Design Tokens + Custom Classes -->
+  <style>
+  :root {
+    --color-background: #F4F7F8;
+    --color-foreground: #17242D;
+    --color-primary: #123047;
+    --color-primary-foreground: #FFFFFF;
+    --color-secondary: #DDEBE9;
+    --color-secondary-foreground: #123F3D;
+    --color-accent: #B86A00;
+    --color-accent-foreground: #FFFFFF;
+    --color-muted: #E8EEF0;
+    --color-muted-foreground: #53636D;
+    --color-card: #FFFFFF;
+    --color-card-foreground: #17242D;
+    --color-border: #C9D5D9;
+    --color-input: #FFFFFF;
+    --color-destructive: #B42318;
+    --color-destructive-foreground: #FFFFFF;
+    --color-success: #2C6E49;
+    --color-success-foreground: #FFFFFF;
+    --color-chart1: #123047;
+    --color-chart2: #007F78;
+    --color-chart3: #B86A00;
+    --color-chart4: #2C6E49;
+    --color-chart5: #6A5B9E;
+    --font-heading: 'IBM Plex Sans', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --radius: 14px;
+  }
+
+  body {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+  }
+  </style>
+</head>
+<body class="bg-background text-foreground m-0 p-0">
+  <div class="h-screen w-screen overflow-hidden">
+    <div class="min-h-screen w-full bg-background text-foreground font-body pb-32">
+      <header class="px-5 pb-5 pt-12">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <a href="#" aria-label="Geri" class="flex h-12 w-12 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm">
+              <iconify-icon icon="lucide:arrow-left" class="text-xl"></iconify-icon>
+            </a>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Finans ve kontrol</p>
+              <h1 class="mt-1 font-heading text-[26px] font-bold tracking-tight text-foreground">Gün Sonu</h1>
+            </div>
+          </div>
+          <button aria-label="Raporu paylaş" class="flex h-12 w-12 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm">
+            <iconify-icon icon="lucide:share-2" class="text-xl"></iconify-icon>
+          </button>
+        </div>
+      </header>
+
+      <main class="space-y-4 px-5">
+        <section class="rounded-theme bg-primary text-primary-foreground shadow-sm">
+          <div class="border-b border-white/15 px-5 pb-5 pt-5">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-semibold text-white/70">Seçili gün</p>
+                <p class="mt-1 font-heading text-lg font-bold">9 Ağustos 2026</p>
+              </div>
+              <div class="flex h-11 w-11 items-center justify-center rounded-theme bg-white/15">
+                <iconify-icon icon="lucide:calendar-days" class="text-xl"></iconify-icon>
+              </div>
+            </div>
+            <div class="mt-6 flex items-end justify-between gap-3">
+              <div>
+                <p class="text-xs font-semibold text-white/70">Günlük toplam</p>
+                <p class="mt-1 font-heading text-[34px] font-bold leading-none tracking-tight tabular-nums">0 <span class="text-xl">TL</span></p>
+              </div>
+              <span class="rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white">Veri yok</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 px-5 py-3.5 text-sm font-medium text-white/80">
+            <iconify-icon icon="lucide:info" class="text-lg"></iconify-icon>
+            Bu gün için henüz kayıt oluşturulmadı
+          </div>
+        </section>
+
+        <section class="grid grid-cols-2 gap-3" aria-label="Günlük özet">
+          <article class="rounded-theme border border-border bg-card p-4 shadow-sm">
+            <div class="flex items-center justify-between">
+              <p class="text-xs font-semibold text-muted-foreground">Toplam kesim</p>
+              <iconify-icon icon="lucide:scissors" class="text-lg text-primary"></iconify-icon>
+            </div>
+            <p class="mt-4 font-heading text-2xl font-bold tabular-nums text-foreground">0</p>
+            <p class="mt-1 text-xs font-medium text-muted-foreground">kayıt</p>
+          </article>
+          <article class="rounded-theme border border-border bg-card p-4 shadow-sm">
+            <div class="flex items-center justify-between">
+              <p class="text-xs font-semibold text-muted-foreground">Hayvan / ürün</p>
+              <iconify-icon icon="lucide:boxes" class="text-lg text-primary"></iconify-icon>
+            </div>
+            <p class="mt-4 font-heading text-2xl font-bold tabular-nums text-foreground">0</p>
+            <p class="mt-1 text-xs font-medium text-muted-foreground">adet</p>
+          </article>
+          <article class="rounded-theme border border-border bg-card p-4 shadow-sm">
+            <div class="flex items-center justify-between">
+              <p class="text-xs font-semibold text-muted-foreground">Toplam kilo</p>
+              <iconify-icon icon="lucide:weight" class="text-lg text-secondary-foreground"></iconify-icon>
+            </div>
+            <p class="mt-4 font-heading text-2xl font-bold tabular-nums text-foreground">0 <span class="text-sm">kg</span></p>
+            <p class="mt-1 text-xs font-medium text-muted-foreground">net kesim</p>
+          </article>
+          <article class="rounded-theme border border-border bg-card p-4 shadow-sm">
+            <div class="flex items-center justify-between">
+              <p class="text-xs font-semibold text-muted-foreground">Net ödeme</p>
+              <iconify-icon icon="lucide:badge-turkish-lira" class="text-lg text-success"></iconify-icon>
+            </div>
+            <p class="mt-4 font-heading text-2xl font-bold tabular-nums text-foreground">0 <span class="text-sm">TL</span></p>
+            <p class="mt-1 text-xs font-medium text-muted-foreground">ödenecek</p>
+          </article>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="border-b-2 border-border px-4 py-3.5">
+            <div class="flex items-center gap-2">
+              <iconify-icon icon="lucide:receipt-text" class="text-lg text-primary"></iconify-icon>
+              <h2 class="font-heading text-base font-bold">Ödeme özeti</h2>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 divide-x-2 divide-border px-1 py-4">
+            <div class="px-3">
+              <p class="text-xs font-semibold leading-4 text-muted-foreground">Standart ödeme</p>
+              <p class="mt-2 font-heading text-lg font-bold tabular-nums">0 <span class="text-sm">TL</span></p>
+            </div>
+            <div class="px-3">
+              <p class="text-xs font-semibold leading-4 text-muted-foreground">Faturalı ödeme</p>
+              <p class="mt-2 font-heading text-lg font-bold tabular-nums text-accent">0 <span class="text-sm">TL</span></p>
+            </div>
+          </div>
+          <details class="border-t border-border">
+            <summary class="flex min-h-14 cursor-pointer list-none items-center gap-3 px-4 text-sm font-bold text-primary">
+              <span class="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+                <iconify-icon icon="lucide:wallet-cards" class="text-base"></iconify-icon>
+              </span>
+              Ödeme dökümünü aç
+              <iconify-icon icon="lucide:chevron-down" class="ml-auto text-lg"></iconify-icon>
+            </summary>
+            <div class="space-y-3 border-t border-border bg-muted/40 px-4 py-4">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-muted-foreground">Ödeme kaydı</span>
+                <span class="font-bold tabular-nums">0 TL</span>
+              </div>
+              <a href="#" class="flex h-12 w-full items-center justify-center gap-2 rounded-theme bg-primary text-sm font-bold text-primary-foreground">
+                Ödeme Detayları'na git
+                <iconify-icon icon="lucide:arrow-up-right" class="text-lg"></iconify-icon>
+              </a>
+            </div>
+          </details>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="border-b-2 border-border px-4 py-3.5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <iconify-icon icon="lucide:calculator" class="text-lg text-primary"></iconify-icon>
+                <h2 class="font-heading text-base font-bold">Kesinti ve vergi</h2>
+              </div>
+              <span class="rounded-full bg-muted px-2.5 py-1 text-[11px] font-bold text-muted-foreground">Otomatik</span>
+            </div>
+          </div>
+          <div class="divide-y divide-border">
+            <div class="flex items-center justify-between px-4 py-3.5">
+              <span class="text-sm font-medium text-muted-foreground">Toplam brüt tutar</span>
+              <span class="font-heading font-bold tabular-nums">0 TL</span>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3.5">
+              <span class="text-sm font-medium text-muted-foreground">Stopaj</span>
+              <span class="font-heading font-bold tabular-nums">0 TL</span>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3.5">
+              <span class="text-sm font-medium text-muted-foreground">KDV</span>
+              <span class="font-heading font-bold tabular-nums">0 TL</span>
+            </div>
+            <div class="flex items-center justify-between bg-secondary/50 px-4 py-3.5">
+              <span class="text-sm font-bold text-secondary-foreground">Net toplam</span>
+              <span class="font-heading text-lg font-bold tabular-nums text-secondary-foreground">0 TL</span>
+            </div>
+          </div>
+        </section>
+
+        <details class="rounded-theme border border-border bg-card shadow-sm">
+          <summary class="flex min-h-16 cursor-pointer list-none items-center gap-3 px-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-theme bg-muted text-primary">
+              <iconify-icon icon="lucide:calendar-range" class="text-xl"></iconify-icon>
+            </span>
+            <div>
+              <p class="text-sm font-bold">Tarih aralığı raporu</p>
+              <p class="mt-0.5 text-xs font-medium text-muted-foreground">Başlangıç ve bitiş tarihi seç</p>
+            </div>
+            <iconify-icon icon="lucide:chevron-down" class="ml-auto text-xl text-muted-foreground"></iconify-icon>
+          </summary>
+          <div class="space-y-4 border-t border-border px-4 py-4">
+            <div class="grid grid-cols-2 gap-3">
+              <label class="space-y-1.5">
+                <span class="text-xs font-bold text-muted-foreground">Başlangıç</span>
+                <div class="flex h-12 items-center rounded-theme border border-border bg-input px-3 text-sm font-semibold">01.08.2026</div>
+              </label>
+              <label class="space-y-1.5">
+                <span class="text-xs font-bold text-muted-foreground">Bitiş</span>
+                <div class="flex h-12 items-center rounded-theme border border-border bg-input px-3 text-sm font-semibold">09.08.2026</div>
+              </label>
+            </div>
+            <div class="rounded-theme bg-muted px-4 py-3 text-center text-sm font-medium text-muted-foreground">Seçilen aralıkta veri bulunmuyor</div>
+            <button class="h-12 w-full rounded-theme bg-primary text-sm font-bold text-primary-foreground">Raporu göster</button>
+          </div>
+        </details>
+
+        <details class="rounded-theme border border-border bg-card shadow-sm">
+          <summary class="flex min-h-16 cursor-pointer list-none items-center gap-3 px-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-theme bg-muted text-primary">
+              <iconify-icon icon="lucide:chart-no-axes-combined" class="text-xl"></iconify-icon>
+            </span>
+            <div>
+              <p class="text-sm font-bold">Yıllık kesim raporu</p>
+              <p class="mt-0.5 text-xs font-medium text-muted-foreground">Yıl seçerek toplamları görüntüle</p>
+            </div>
+            <iconify-icon icon="lucide:chevron-down" class="ml-auto text-xl text-muted-foreground"></iconify-icon>
+          </summary>
+          <div class="space-y-4 border-t border-border px-4 py-4">
+            <div class="flex h-12 items-center justify-between rounded-theme border border-border bg-input px-3">
+              <span class="text-sm font-semibold">2026</span>
+              <iconify-icon icon="lucide:chevron-down" class="text-lg text-muted-foreground"></iconify-icon>
+            </div>
+            <div class="rounded-theme bg-muted px-4 py-3 text-center text-sm font-medium text-muted-foreground">Seçilen yılda veri bulunmuyor</div>
+            <button class="h-12 w-full rounded-theme bg-primary text-sm font-bold text-primary-foreground">Yıllık raporu göster</button>
+          </div>
+        </details>
+
+        <section class="rounded-theme border border-accent/30 bg-accent/10 px-4 py-4">
+          <div class="flex items-start gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+              <iconify-icon icon="lucide:clipboard-check" class="text-lg"></iconify-icon>
+            </div>
+            <div>
+              <p class="text-sm font-bold text-accent">Gün kapatma kullanılamıyor</p>
+              <p class="mt-1 text-xs font-medium leading-5 text-accent">Günü kapatmak için en az bir kesim kaydı ve kontrol edilmiş bir ödeme bulunmalıdır.</p>
+            </div>
+          </div>
+          <button disabled class="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-theme bg-muted text-sm font-bold text-muted-foreground">
+            <iconify-icon icon="lucide:lock-keyhole" class="text-lg"></iconify-icon>
+            Günü kapat
+          </button>
+        </section>
+      </main>
+
+      <nav data-fv-tabbar class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-[0_-4px_16px_rgba(18,48,71,0.06)]" aria-label="Ana menü">
+        <div class="mx-auto flex max-w-md items-center justify-between">
+          <a data-fv-tab="Ana Sayfa" href="ana-sayfa.html" class="flex min-w-[68px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
+            <iconify-icon icon="lucide:house" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Ana Sayfa</span>
+          </a>
+          <a data-fv-tab="Kesim Listesi" href="kesim-listesi.html" class="flex min-w-[68px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
+            <iconify-icon icon="lucide:clipboard-list" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Kesim Listesi</span>
+          </a>
+          <a data-fv-tab="Stok" href="stok.html" class="flex min-w-[52px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
+            <iconify-icon icon="lucide:package" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Stok</span>
+          </a>
+          <a data-fv-tab="Sevkiyat" href="sevkiyat.html" class="flex min-w-[60px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
+            <iconify-icon icon="lucide:truck" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Sevkiyat</span>
+          </a>
+          <a data-fv-tab="Gün Sonu" data-fv-tab-active="true" href="g-n-sonu.html" class="flex min-w-[58px] flex-col items-center gap-1 rounded-theme bg-primary px-2 py-1.5 text-primary-foreground">
+            <iconify-icon icon="lucide:circle-check-big" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Gün Sonu</span>
+          </a><a data-fv-tab="Kasap Kesimleri" href="#" class="flex min-w-[68px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
+            <iconify-icon icon="lucide:beef" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Kasap Kesimleri</span>
+          </a>
+        </div>
+      </nav>
+    </div>
+  </div>
+  <script>
+    // Icon self-healing: a missing icon name renders as INVISIBLE empty space
+    // (iconify-icon fails silently). Its `status` property ('rendered' |
+    // 'loading' | 'failed') lets us swap failures to a neutral glyph.
+    (function() {
+      var els = document.querySelectorAll('iconify-icon');
+      for (var i = 0; i < els.length; i++) (function(el) {
+        var tries = 0;
+        (function check() {
+          var s = el.status;
+          if (s === 'failed') el.setAttribute('icon', 'lucide:circle');
+          else if (s !== 'rendered' && tries++ < 40) setTimeout(check, 250);
+        })();
+      })(els[i]);
+    })();
+  </script>
+<script src="app.js"></script></body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sevkiyat — Kesimhane</title>
+
+  <!-- Tailwind CSS (pinned — matches the renderer/screenshot surfaces) -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          background: 'rgb(244 247 248 / <alpha-value>)',
+          foreground: 'rgb(23 36 45 / <alpha-value>)',
+          primary: { DEFAULT: 'rgb(18 48 71 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          secondary: { DEFAULT: 'rgb(221 235 233 / <alpha-value>)', foreground: 'rgb(18 63 61 / <alpha-value>)' },
+          accent: { DEFAULT: 'rgb(184 106 0 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          muted: { DEFAULT: 'rgb(232 238 240 / <alpha-value>)', foreground: 'rgb(83 99 109 / <alpha-value>)' },
+          card: { DEFAULT: 'rgb(255 255 255 / <alpha-value>)', foreground: 'rgb(23 36 45 / <alpha-value>)' },
+          border: 'rgb(201 213 217 / <alpha-value>)',
+          input: 'rgb(255 255 255 / <alpha-value>)',
+          destructive: { DEFAULT: 'rgb(180 35 24 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          success: { DEFAULT: 'rgb(44 110 73 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          chart1: 'rgb(18 48 71 / <alpha-value>)',
+          chart2: 'rgb(0 127 120 / <alpha-value>)',
+          chart3: 'rgb(184 106 0 / <alpha-value>)',
+          chart4: 'rgb(44 110 73 / <alpha-value>)',
+          chart5: 'rgb(106 91 158 / <alpha-value>)',
+          ring: 'rgb(18 48 71 / <alpha-value>)',
+        },
+        fontFamily: {
+          heading: ['var(--font-heading, Inter)', 'system-ui'],
+          body: ['var(--font-body, Inter)', 'system-ui'],
+        },
+        borderRadius: { DEFAULT: 'var(--radius, 12px)', theme: 'var(--radius, 12px)' },
+      }}
+    };
+</script>
+
+  <!-- Iconify Web Component -->
+  <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
+
+  <!-- Design Tokens + Custom Classes -->
+  <style>
+  :root {
+    --color-background: #F4F7F8;
+    --color-foreground: #17242D;
+    --color-primary: #123047;
+    --color-primary-foreground: #FFFFFF;
+    --color-secondary: #DDEBE9;
+    --color-secondary-foreground: #123F3D;
+    --color-accent: #B86A00;
+    --color-accent-foreground: #FFFFFF;
+    --color-muted: #E8EEF0;
+    --color-muted-foreground: #53636D;
+    --color-card: #FFFFFF;
+    --color-card-foreground: #17242D;
+    --color-border: #C9D5D9;
+    --color-input: #FFFFFF;
+    --color-destructive: #B42318;
+    --color-destructive-foreground: #FFFFFF;
+    --color-success: #2C6E49;
+    --color-success-foreground: #FFFFFF;
+    --color-chart1: #123047;
+    --color-chart2: #007F78;
+    --color-chart3: #B86A00;
+    --color-chart4: #2C6E49;
+    --color-chart5: #6A5B9E;
+    --font-heading: 'IBM Plex Sans', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --radius: 14px;
+  }
+
+  body {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+  }
+  </style>
+</head>
+<body class="bg-background text-foreground m-0 p-0">
+  <div class="h-screen w-screen overflow-hidden">
+    <div class="min-h-screen w-full bg-background text-foreground font-body pb-32">
+      <header class="px-5 pt-12 pb-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Lojistik kontrolü</p>
+            <h1 class="font-heading text-[27px] font-bold tracking-tight text-foreground">Sevkiyat</h1>
+          </div>
+          <button class="flex h-12 w-12 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm" aria-label="Sevkiyat geçmişi">
+            <iconify-icon icon="lucide:history" class="text-xl"></iconify-icon>
+          </button>
+        </div>
+        <div class="mt-4 flex items-center justify-between rounded-theme bg-secondary px-4 py-3 text-secondary-foreground">
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="lucide:truck" class="text-lg"></iconify-icon>
+            <span class="text-sm font-semibold">Yeni sevkiyat</span>
+          </div>
+          <span class="text-xs font-bold">Stoktan seç</span>
+        </div>
+      </header>
+
+      <main class="space-y-4 px-5">
+        <section class="overflow-hidden rounded-theme bg-primary text-primary-foreground shadow-sm">
+          <div class="grid grid-cols-3 divide-x divide-white/20 px-2 py-5">
+            <div class="px-2 text-center">
+              <p class="font-heading text-[27px] font-bold leading-none tabular-nums">0</p>
+              <p class="mt-2 text-[11px] font-semibold text-white/70">hayvan</p>
+            </div>
+            <div class="px-2 text-center">
+              <p class="font-heading text-[27px] font-bold leading-none tabular-nums">0 <span class="text-sm">kg</span></p>
+              <p class="mt-2 text-[11px] font-semibold text-white/70">toplam ağırlık</p>
+            </div>
+            <div class="px-2 text-center">
+              <p class="font-heading text-[27px] font-bold leading-none tabular-nums">0 <span class="text-sm">TL</span></p>
+              <p class="mt-2 text-[11px] font-semibold text-white/70">toplam maliyet</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 border-t border-white/15 px-4 py-3 text-xs font-medium text-white/75">
+            <iconify-icon icon="lucide:circle-info" class="text-base"></iconify-icon>
+            Sevkiyata eklenecek hayvanları aşağıdan seçin
+          </div>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="flex items-center justify-between border-b-2 border-border px-4 py-4">
+            <div>
+              <h2 class="font-heading text-base font-bold">Stoktaki hayvanlar</h2>
+              <p class="mt-1 text-xs font-medium text-muted-foreground">Seçmek için satıra dokunun</p>
+            </div>
+            <span class="rounded-full bg-muted px-3 py-1.5 text-xs font-bold text-muted-foreground">3 kayıt</span>
+          </div>
+
+          <div class="divide-y divide-border">
+            <article class="px-4 py-3">
+              <div class="flex min-h-[56px] items-center gap-3">
+                <button class="flex h-12 w-12 shrink-0 items-center justify-center rounded-theme border-2 border-border bg-background text-muted-foreground" aria-label="Kayıt seç">
+                  <iconify-icon icon="lucide:check" class="text-xl opacity-0"></iconify-icon>
+                </button>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <p class="font-heading text-sm font-bold">Sığır #TK-24081</p>
+                    <span class="rounded-full bg-success/10 px-2 py-1 text-[10px] font-bold text-success">Stokta</span>
+                  </div>
+                  <p class="mt-1 text-xs font-medium text-muted-foreground">612 kg · Standart kesim</p>
+                </div>
+                <p class="font-heading text-sm font-bold tabular-nums">78.540 TL</p>
+                <button class="flex h-10 w-10 items-center justify-center rounded-theme text-muted-foreground" aria-label="Sığır detayını aç">
+                  <iconify-icon icon="lucide:chevron-down" class="text-lg"></iconify-icon>
+                </button>
+              </div>
+            </article>
+
+            <article class="px-4 py-3">
+              <div class="flex min-h-[56px] items-center gap-3">
+                <button class="flex h-12 w-12 shrink-0 items-center justify-center rounded-theme border-2 border-border bg-background text-muted-foreground" aria-label="Kayıt seç">
+                  <iconify-icon icon="lucide:check" class="text-xl opacity-0"></iconify-icon>
+                </button>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <p class="font-heading text-sm font-bold">Sığır #TK-24079</p>
+                    <span class="rounded-full bg-success/10 px-2 py-1 text-[10px] font-bold text-success">Stokta</span>
+                  </div>
+                  <p class="mt-1 text-xs font-medium text-muted-foreground">548 kg · Faturalı kesim</p>
+                </div>
+                <p class="font-heading text-sm font-bold tabular-nums">91.120 TL</p>
+                <button class="flex h-10 w-10 items-center justify-center rounded-theme text-muted-foreground" aria-label="Sığır detayını aç">
+                  <iconify-icon icon="lucide:chevron-down" class="text-lg"></iconify-icon>
+                </button>
+              </div>
+            </article>
+
+            <article class="px-4 py-3">
+              <div class="flex min-h-[56px] items-center gap-3">
+                <button class="flex h-12 w-12 shrink-0 items-center justify-center rounded-theme border-2 border-border bg-background text-muted-foreground" aria-label="Kayıt seç">
+                  <iconify-icon icon="lucide:check" class="text-xl opacity-0"></iconify-icon>
+                </button>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <p class="font-heading text-sm font-bold">Sığır #TK-24076</p>
+                    <span class="rounded-full bg-success/10 px-2 py-1 text-[10px] font-bold text-success">Stokta</span>
+                  </div>
+                  <p class="mt-1 text-xs font-medium text-muted-foreground">450 kg · Standart kesim</p>
+                </div>
+                <p class="font-heading text-sm font-bold tabular-nums">57.190 TL</p>
+                <button class="flex h-10 w-10 items-center justify-center rounded-theme text-muted-foreground" aria-label="Sığır detayını aç">
+                  <iconify-icon icon="lucide:chevron-down" class="text-lg"></iconify-icon>
+                </button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card p-4 shadow-sm">
+          <div class="mb-4 flex items-center gap-2">
+            <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
+              <iconify-icon icon="lucide:clipboard-pen-line" class="text-lg"></iconify-icon>
+            </div>
+            <div>
+              <h2 class="font-heading text-base font-bold">Sevkiyat bilgileri</h2>
+              <p class="mt-1 text-xs font-medium text-muted-foreground">Zorunlu alanları doldurun</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <label class="block">
+              <span class="mb-2 block text-xs font-bold text-foreground">Sevk yeri / müşteri <span class="text-destructive">*</span></span>
+              <div class="relative">
+                <iconify-icon icon="lucide:map-pin" class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-muted-foreground"></iconify-icon>
+                <input type="text" class="h-14 w-full rounded-theme border border-border bg-input pl-12 pr-4 text-sm font-medium text-foreground outline-none" placeholder="Müşteri veya teslimat yeri" />
+              </div>
+            </label>
+
+            <div class="grid grid-cols-2 gap-3">
+              <label class="block">
+                <span class="mb-2 block text-xs font-bold text-foreground">Sevkiyat tarihi <span class="text-destructive">*</span></span>
+                <div class="relative">
+                  <iconify-icon icon="lucide:calendar-days" class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-muted-foreground"></iconify-icon>
+                  <input type="text" class="h-14 w-full rounded-theme border border-border bg-input pl-11 pr-3 text-sm font-medium text-foreground outline-none" placeholder="GG.AA.YYYY" />
+                </div>
+              </label>
+              <label class="block">
+                <span class="mb-2 block text-xs font-bold text-foreground">Araç / plaka</span>
+                <div class="relative">
+                  <iconify-icon icon="lucide:truck" class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-muted-foreground"></iconify-icon>
+                  <input type="text" class="h-14 w-full rounded-theme border border-border bg-input pl-11 pr-3 text-sm font-medium text-foreground outline-none" placeholder="34 ABC 123" />
+                </div>
+              </label>
+            </div>
+
+            <label class="block">
+              <span class="mb-2 block text-xs font-bold text-foreground">Not</span>
+              <textarea class="min-h-[88px] w-full resize-none rounded-theme border border-border bg-input p-4 text-sm font-medium text-foreground outline-none" placeholder="Teslimat veya sevkiyat notu"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section class="rounded-theme border border-border bg-muted/60 px-4 py-3.5">
+          <div class="flex items-start gap-3">
+            <iconify-icon icon="lucide:shield-check" class="mt-0.5 text-xl text-muted-foreground"></iconify-icon>
+            <p class="text-xs font-medium leading-5 text-muted-foreground">Onaydan sonra seçilen kayıtlar stoktan düşer ve sevkiyat geçmişine eklenir.</p>
+          </div>
+        </section>
+
+        <button disabled class="flex h-14 w-full items-center justify-center gap-2 rounded-theme bg-muted text-base font-bold text-muted-foreground">
+          <iconify-icon icon="lucide:truck" class="text-xl"></iconify-icon>
+          Sevkiyatı Onayla
+        </button>
+        <p class="pb-2 text-center text-xs font-semibold text-muted-foreground">Devam etmek için en az bir hayvan ve zorunlu alanları seçin</p>
+      </main>
+
+      <nav data-fv-tabbar class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-[0_-4px_16px_rgba(18,48,71,0.06)]" aria-label="Ana menü">
+        <div class="mx-auto flex max-w-md items-center justify-between">
+          <a data-fv-tab="Ana Sayfa" href="ana-sayfa.html" class="flex min-w-[68px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
+            <iconify-icon icon="lucide:house" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Ana Sayfa</span>
+          </a>
+          <a data-fv-tab="Kesim Listesi" href="kesim-listesi.html" class="flex min-w-[68px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
+            <iconify-icon icon="lucide:clipboard-list" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Kesim Listesi</span>
+          </a>
+          <a data-fv-tab="Stok" href="stok.html" class="flex min-w-[52px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
+            <iconify-icon icon="lucide:package" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Stok</span>
+          </a>
+          <a data-fv-tab="Sevkiyat" data-fv-tab-active="true" href="sevkiyat.html" class="flex min-w-[60px] flex-col items-center gap-1 rounded-theme bg-primary px-2 py-1.5 text-primary-foreground">
+            <iconify-icon icon="lucide:truck" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Sevkiyat</span>
+          </a>
+          <a data-fv-tab="Gün Sonu" href="g-n-sonu.html" class="flex min-w-[58px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
+            <iconify-icon icon="lucide:circle-check-big" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Gün Sonu</span>
+          </a><a data-fv-tab="Kasap Kesimleri" href="#" class="flex min-w-[68px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
+            <iconify-icon icon="lucide:beef" class="text-xl"></iconify-icon>
+            <span class="text-[10px] font-bold leading-none">Kasap Kesimleri</span>
+          </a>
+        </div>
+      </nav>
+    </div>
+  </div>
+  <script>
+    // Icon self-healing: a missing icon name renders as INVISIBLE empty space
+    // (iconify-icon fails silently). Its `status` property ('rendered' |
+    // 'loading' | 'failed') lets us swap failures to a neutral glyph.
+    (function() {
+      var els = document.querySelectorAll('iconify-icon');
+      for (var i = 0; i < els.length; i++) (function(el) {
+        var tries = 0;
+        (function check() {
+          var s = el.status;
+          if (s === 'failed') el.setAttribute('icon', 'lucide:circle');
+          else if (s !== 'rendered' && tries++ < 40) setTimeout(check, 250);
+        })();
+      })(els[i]);
+    })();
+  </script>
+<script src="app.js"></script></body>
+</html>

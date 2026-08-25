@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kasap Kesimi Oluştur — Kesimhane</title>
+
+  <!-- Tailwind CSS (pinned — matches the renderer/screenshot surfaces) -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          background: 'rgb(244 247 248 / <alpha-value>)',
+          foreground: 'rgb(23 36 45 / <alpha-value>)',
+          primary: { DEFAULT: 'rgb(18 48 71 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          secondary: { DEFAULT: 'rgb(221 235 233 / <alpha-value>)', foreground: 'rgb(18 63 61 / <alpha-value>)' },
+          accent: { DEFAULT: 'rgb(184 106 0 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          muted: { DEFAULT: 'rgb(232 238 240 / <alpha-value>)', foreground: 'rgb(83 99 109 / <alpha-value>)' },
+          card: { DEFAULT: 'rgb(255 255 255 / <alpha-value>)', foreground: 'rgb(23 36 45 / <alpha-value>)' },
+          border: 'rgb(201 213 217 / <alpha-value>)',
+          input: 'rgb(255 255 255 / <alpha-value>)',
+          destructive: { DEFAULT: 'rgb(180 35 24 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          success: { DEFAULT: 'rgb(44 110 73 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          chart1: 'rgb(18 48 71 / <alpha-value>)',
+          chart2: 'rgb(0 127 120 / <alpha-value>)',
+          chart3: 'rgb(184 106 0 / <alpha-value>)',
+          chart4: 'rgb(44 110 73 / <alpha-value>)',
+          chart5: 'rgb(106 91 158 / <alpha-value>)',
+          ring: 'rgb(18 48 71 / <alpha-value>)',
+        },
+        fontFamily: {
+          heading: ['var(--font-heading, Inter)', 'system-ui'],
+          body: ['var(--font-body, Inter)', 'system-ui'],
+        },
+        borderRadius: { DEFAULT: 'var(--radius, 12px)', theme: 'var(--radius, 12px)' },
+      }}
+    };
+</script>
+
+  <!-- Iconify Web Component -->
+  <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
+
+  <!-- Design Tokens + Custom Classes -->
+  <style>
+  :root {
+    --color-background: #F4F7F8;
+    --color-foreground: #17242D;
+    --color-primary: #123047;
+    --color-primary-foreground: #FFFFFF;
+    --color-secondary: #DDEBE9;
+    --color-secondary-foreground: #123F3D;
+    --color-accent: #B86A00;
+    --color-accent-foreground: #FFFFFF;
+    --color-muted: #E8EEF0;
+    --color-muted-foreground: #53636D;
+    --color-card: #FFFFFF;
+    --color-card-foreground: #17242D;
+    --color-border: #C9D5D9;
+    --color-input: #FFFFFF;
+    --color-destructive: #B42318;
+    --color-destructive-foreground: #FFFFFF;
+    --color-success: #2C6E49;
+    --color-success-foreground: #FFFFFF;
+    --color-chart1: #123047;
+    --color-chart2: #007F78;
+    --color-chart3: #B86A00;
+    --color-chart4: #2C6E49;
+    --color-chart5: #6A5B9E;
+    --font-heading: 'IBM Plex Sans', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --radius: 14px;
+  }
+
+  body {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+  }
+  </style>
+</head>
+<body class="bg-background text-foreground m-0 p-0">
+  <div class="h-screen w-screen overflow-hidden">
+    <div class="min-h-screen w-full bg-background text-foreground font-body pb-32">
+      <header class="border-b border-border bg-background px-5 pb-5 pt-12">
+        <div class="flex items-start gap-3">
+          <button aria-label="Geri dön" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm">
+            <iconify-icon icon="lucide:arrow-left" class="text-xl"></iconify-icon>
+          </button>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Yeni kayıt</p>
+              <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+              <span class="text-xs font-semibold text-accent">Taslak</span>
+            </div>
+            <h1 class="mt-1 font-heading text-[25px] font-bold tracking-tight text-foreground">Kasap Kesimi Oluştur</h1>
+            <p class="mt-1 text-sm text-muted-foreground">Kasap kesimlerini tek kayıtta gruplayın.</p>
+          </div>
+        </div>
+      </header>
+
+      <main class="space-y-5 px-5 pt-5">
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="border-b-2 border-border px-4 py-4">
+            <div class="flex items-center gap-2">
+              <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
+                <iconify-icon icon="lucide:user-round-search" class="text-lg"></iconify-icon>
+              </div>
+              <div>
+                <h2 class="font-heading text-base font-bold text-card-foreground">Kasap bilgileri</h2>
+                <p class="text-xs font-medium text-muted-foreground">Kaydı bir kasapla eşleştirin.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-4 p-4">
+            <div>
+              <label for="kasap-ara" class="mb-2 block text-sm font-bold text-card-foreground">Kasap seçimi <span class="text-destructive">*</span></label>
+              <div class="relative">
+                <iconify-icon icon="lucide:search" class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-muted-foreground"></iconify-icon>
+                <input id="kasap-ara" type="search" placeholder="Kasap adı ara" class="h-14 w-full rounded-theme border border-border bg-input pl-11 pr-4 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-primary" />
+              </div>
+              <div class="mt-2 overflow-hidden rounded-theme border border-border">
+                <button class="flex min-h-[52px] w-full items-center gap-3 border-b border-border bg-background px-3 text-left">
+                  <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted font-heading text-sm font-bold text-muted-foreground">AY</div>
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate text-sm font-bold text-foreground">Ahmet Yılmaz</p>
+                    <p class="text-xs text-muted-foreground">12 aktif kayıt</p>
+                  </div>
+                  <iconify-icon icon="lucide:chevron-right" class="text-lg text-muted-foreground"></iconify-icon>
+                </button>
+                <button class="flex min-h-[52px] w-full items-center gap-3 bg-background px-3 text-left">
+                  <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted font-heading text-sm font-bold text-muted-foreground">MK</div>
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate text-sm font-bold text-foreground">Mehmet Kaya</p>
+                    <p class="text-xs text-muted-foreground">8 aktif kayıt</p>
+                  </div>
+                  <iconify-icon icon="lucide:chevron-right" class="text-lg text-muted-foreground"></iconify-icon>
+                </button>
+              </div>
+              <p class="mt-2 flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                <iconify-icon icon="lucide:info" class="text-sm"></iconify-icon>
+                Devam etmek için bir kasap seçin.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 border-t border-border pt-4">
+              <div>
+                <p class="text-xs font-semibold text-muted-foreground">Kayıt tarihi</p>
+                <p class="mt-1 text-sm font-bold text-card-foreground">9 Ağustos 2026</p>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-muted-foreground">Kayıt yapan</p>
+                <p class="mt-1 text-sm font-bold text-card-foreground">Ahmet Demir</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="border-b-2 border-border px-4 py-4">
+            <div class="flex items-center gap-2">
+              <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
+                <iconify-icon icon="lucide:badge-check" class="text-lg"></iconify-icon>
+              </div>
+              <div>
+                <h2 class="font-heading text-base font-bold text-card-foreground">Kesimi yapan kişi</h2>
+                <p class="text-xs font-medium text-muted-foreground">İşlemi gerçekleştiren personeli belirtin.</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-4">
+            <label for="personel" class="mb-2 block text-sm font-bold text-card-foreground">Ad soyad veya personel seçimi <span class="text-destructive">*</span></label>
+            <div class="relative">
+              <select id="personel" class="h-14 w-full appearance-none rounded-theme border border-border bg-input px-4 pr-11 text-base text-muted-foreground outline-none focus:border-primary">
+                <option selected>Personel seçin</option>
+                <option>Ali Çetin</option>
+                <option>Burak Şen</option>
+                <option>Hasan Uslu</option>
+              </select>
+              <iconify-icon icon="lucide:chevron-down" class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-lg text-muted-foreground"></iconify-icon>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="flex items-center justify-between border-b-2 border-border px-4 py-4">
+            <div>
+              <h2 class="font-heading text-base font-bold text-card-foreground">Hayvan grupları</h2>
+              <p class="mt-1 text-xs font-medium text-muted-foreground">Her cinsi ayrı satırda ekleyin.</p>
+            </div>
+            <span class="rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground">0 satır</span>
+          </div>
+
+          <div class="space-y-4 p-4">
+            <div class="rounded-theme border border-border bg-background p-3">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">1</span>
+                  <span class="text-sm font-bold text-foreground">Hayvan grubu</span>
+                </div>
+                <button aria-label="Satırı kaldır" class="flex h-10 w-10 items-center justify-center rounded-theme text-muted-foreground">
+                  <iconify-icon icon="lucide:trash-2" class="text-lg"></iconify-icon>
+                </button>
+              </div>
+
+              <label for="cins" class="mb-2 block text-xs font-bold text-muted-foreground">Hayvan cinsi <span class="text-destructive">*</span></label>
+              <div class="relative">
+                <select id="cins" class="h-13 w-full appearance-none rounded-theme border border-border bg-input px-4 pr-11 text-base text-muted-foreground outline-none focus:border-primary">
+                  <option selected>Cins seçin</option>
+                  <optgroup label="Büyükbaş">
+                    <option>Tosun</option>
+                    <option>İnek</option>
+                    <option>Düve</option>
+                  </optgroup>
+                  <optgroup label="Küçükbaş">
+                    <option>Kuzu</option>
+                    <option>Diğer küçükbaş</option>
+                  </optgroup>
+                </select>
+                <iconify-icon icon="lucide:chevron-down" class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-lg text-muted-foreground"></iconify-icon>
+              </div>
+
+              <div class="mt-3 grid grid-cols-2 gap-3">
+                <div>
+                  <label for="hayvan-sayisi" class="mb-2 block text-xs font-bold text-muted-foreground">Hayvan sayısı <span class="text-destructive">*</span></label>
+                  <input id="hayvan-sayisi" type="number" inputmode="numeric" placeholder="0" class="h-13 w-full rounded-theme border border-border bg-input px-4 text-base font-semibold tabular-nums text-foreground outline-none placeholder:text-muted-foreground focus:border-primary" />
+                </div>
+                <div>
+                  <label for="toplam-kilo" class="mb-2 block text-xs font-bold text-muted-foreground">Toplam kilo</label>
+                  <div class="relative">
+                    <input id="toplam-kilo" type="number" inputmode="decimal" placeholder="0" class="h-13 w-full rounded-theme border border-border bg-input px-4 pr-12 text-base font-semibold tabular-nums text-foreground outline-none placeholder:text-muted-foreground focus:border-primary" />
+                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">kg</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 grid grid-cols-2 divide-x divide-border rounded-theme border border-border bg-card">
+                <div class="p-3">
+                  <p class="text-[11px] font-semibold text-muted-foreground">Tanımlı kesim ücreti</p>
+                  <p class="mt-1 font-heading text-base font-bold tabular-nums text-secondary-foreground">— TL / hayvan</p>
+                </div>
+                <div class="p-3 pl-4">
+                  <p class="text-[11px] font-semibold text-muted-foreground">Satır ödemesi</p>
+                  <p class="mt-1 font-heading text-base font-bold tabular-nums text-primary">— TL</p>
+                </div>
+              </div>
+            </div>
+
+            <button class="flex h-12 w-full items-center justify-center gap-2 rounded-theme border border-primary/30 bg-secondary text-sm font-bold text-secondary-foreground">
+              <iconify-icon icon="lucide:plus" class="text-lg"></iconify-icon>
+              Başka cins ekle
+            </button>
+
+            <div class="flex items-start gap-2 rounded-theme bg-muted px-3 py-3 text-xs font-medium leading-5 text-muted-foreground">
+              <iconify-icon icon="lucide:scale" class="mt-0.5 shrink-0 text-base"></iconify-icon>
+              <span>Toplam kilo yalnızca kayıt ve raporlama amacıyla saklanır. Ödeme, hayvan sayısı ve tanımlı cins ücretine göre hesaplanır.</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="border-b-2 border-border px-4 py-4">
+            <div class="flex items-center gap-2">
+              <iconify-icon icon="lucide:calculator" class="text-lg text-primary"></iconify-icon>
+              <h2 class="font-heading text-base font-bold text-card-foreground">Ödeme özeti</h2>
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-sm">
+                <span class="font-medium text-muted-foreground">Cins bazlı ara toplamlar</span>
+                <span class="font-bold tabular-nums text-card-foreground">— TL</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="font-medium text-muted-foreground">Toplam hayvan</span>
+                <span class="font-bold tabular-nums text-card-foreground">0</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="font-medium text-muted-foreground">Toplam kilo</span>
+                <span class="font-bold tabular-nums text-card-foreground">0 kg</span>
+              </div>
+            </div>
+            <div class="mt-4 flex items-end justify-between border-t-2 border-border pt-4">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wide text-muted-foreground">Genel ödeme</p>
+                <p class="mt-1 text-xs text-muted-foreground">Otomatik hesaplanır</p>
+              </div>
+              <p class="font-heading text-[28px] font-bold leading-none tracking-tight tabular-nums text-primary">0 <span class="text-base">TL</span></p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-5 pb-5 pt-3 shadow-[0_-4px_16px_rgba(18,48,71,0.08)]">
+        <div class="mx-auto max-w-md">
+          <button disabled class="flex h-14 w-full items-center justify-center gap-2 rounded-theme bg-muted text-base font-bold text-muted-foreground">
+            <iconify-icon icon="lucide:save" class="text-xl"></iconify-icon>
+            Kasap Kesimini Kaydet
+          </button>
+          <p class="mt-2 text-center text-xs font-medium text-muted-foreground">Kasap, personel, cins ve hayvan sayısı zorunludur.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Icon self-healing: a missing icon name renders as INVISIBLE empty space
+    // (iconify-icon fails silently). Its `status` property ('rendered' |
+    // 'loading' | 'failed') lets us swap failures to a neutral glyph.
+    (function() {
+      var els = document.querySelectorAll('iconify-icon');
+      for (var i = 0; i < els.length; i++) (function(el) {
+        var tries = 0;
+        (function check() {
+          var s = el.status;
+          if (s === 'failed') el.setAttribute('icon', 'lucide:circle');
+          else if (s !== 'rendered' && tries++ < 40) setTimeout(check, 250);
+        })();
+      })(els[i]);
+    })();
+  </script>
+<script src="app.js"></script></body>
+</html>

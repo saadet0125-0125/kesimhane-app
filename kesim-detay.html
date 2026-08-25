@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kesim Detayı — Kesimhane</title>
+
+  <!-- Tailwind CSS (pinned — matches the renderer/screenshot surfaces) -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          background: 'rgb(244 247 248 / <alpha-value>)',
+          foreground: 'rgb(23 36 45 / <alpha-value>)',
+          primary: { DEFAULT: 'rgb(18 48 71 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          secondary: { DEFAULT: 'rgb(221 235 233 / <alpha-value>)', foreground: 'rgb(18 63 61 / <alpha-value>)' },
+          accent: { DEFAULT: 'rgb(184 106 0 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          muted: { DEFAULT: 'rgb(232 238 240 / <alpha-value>)', foreground: 'rgb(83 99 109 / <alpha-value>)' },
+          card: { DEFAULT: 'rgb(255 255 255 / <alpha-value>)', foreground: 'rgb(23 36 45 / <alpha-value>)' },
+          border: 'rgb(201 213 217 / <alpha-value>)',
+          input: 'rgb(255 255 255 / <alpha-value>)',
+          destructive: { DEFAULT: 'rgb(180 35 24 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          success: { DEFAULT: 'rgb(44 110 73 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          chart1: 'rgb(18 48 71 / <alpha-value>)',
+          chart2: 'rgb(0 127 120 / <alpha-value>)',
+          chart3: 'rgb(184 106 0 / <alpha-value>)',
+          chart4: 'rgb(44 110 73 / <alpha-value>)',
+          chart5: 'rgb(106 91 158 / <alpha-value>)',
+          ring: 'rgb(18 48 71 / <alpha-value>)',
+        },
+        fontFamily: {
+          heading: ['var(--font-heading, Inter)', 'system-ui'],
+          body: ['var(--font-body, Inter)', 'system-ui'],
+        },
+        borderRadius: { DEFAULT: 'var(--radius, 12px)', theme: 'var(--radius, 12px)' },
+      }}
+    };
+</script>
+
+  <!-- Iconify Web Component -->
+  <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
+
+  <!-- Design Tokens + Custom Classes -->
+  <style>
+  :root {
+    --color-background: #F4F7F8;
+    --color-foreground: #17242D;
+    --color-primary: #123047;
+    --color-primary-foreground: #FFFFFF;
+    --color-secondary: #DDEBE9;
+    --color-secondary-foreground: #123F3D;
+    --color-accent: #B86A00;
+    --color-accent-foreground: #FFFFFF;
+    --color-muted: #E8EEF0;
+    --color-muted-foreground: #53636D;
+    --color-card: #FFFFFF;
+    --color-card-foreground: #17242D;
+    --color-border: #C9D5D9;
+    --color-input: #FFFFFF;
+    --color-destructive: #B42318;
+    --color-destructive-foreground: #FFFFFF;
+    --color-success: #2C6E49;
+    --color-success-foreground: #FFFFFF;
+    --color-chart1: #123047;
+    --color-chart2: #007F78;
+    --color-chart3: #B86A00;
+    --color-chart4: #2C6E49;
+    --color-chart5: #6A5B9E;
+    --font-heading: 'IBM Plex Sans', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --radius: 14px;
+  }
+
+  body {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+  }
+  </style>
+</head>
+<body class="bg-background text-foreground m-0 p-0">
+  <div class="h-screen w-screen overflow-hidden">
+    <div class="min-h-screen w-full bg-background text-foreground font-body pb-28">
+      <header class="px-5 pb-4 pt-12">
+        <div class="flex items-center justify-between">
+          <button class="flex h-12 w-12 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm" aria-label="Geri dön">
+            <iconify-icon icon="lucide:arrow-left" class="text-xl"></iconify-icon>
+          </button>
+          <div class="text-center">
+            <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Kesim kaydı</p>
+            <h1 class="mt-0.5 font-heading text-xl font-bold tracking-tight text-foreground">KS-2026-0809-002</h1>
+          </div>
+          <button class="flex h-12 w-12 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm" aria-label="Daha fazla seçenek">
+            <iconify-icon icon="lucide:ellipsis" class="text-xl"></iconify-icon>
+          </button>
+        </div>
+      </header>
+
+      <main class="space-y-4 px-5">
+        <section class="overflow-hidden rounded-theme bg-primary text-primary-foreground shadow-sm">
+          <div class="border-b border-white/15 px-5 pb-5 pt-5">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm font-semibold text-white/70">Kesim ödemesi</p>
+                <p class="mt-1 text-xs font-medium text-white/60">9 Ağustos 2026 · 14:32</p>
+              </div>
+              <span class="flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-bold text-secondary-foreground">
+                <iconify-icon icon="lucide:scissors" class="text-sm"></iconify-icon>
+                Standart
+              </span>
+            </div>
+            <div class="mt-5 flex items-end justify-between gap-3">
+              <p class="font-heading text-[34px] font-bold leading-none tracking-tight tabular-nums">100.800 <span class="text-xl">TL</span></p>
+              <div class="text-right">
+                <p class="text-xs font-semibold text-white/60">Net ödeme</p>
+                <p class="mt-1 text-sm font-bold tabular-nums text-white">1.610 kg</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 px-5 py-3.5 text-sm font-semibold text-white/85">
+            <iconify-icon icon="lucide-circle-check" class="text-lg text-[#89d6ad]"></iconify-icon>
+            Otomatik hesaplandı
+          </div>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <details open>
+            <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
+                  <iconify-icon icon="lucide-calculator" class="text-xl"></iconify-icon>
+                </div>
+                <div>
+                  <h2 class="font-heading text-base font-bold text-foreground">Ödeme özeti</h2>
+                  <p class="mt-0.5 text-xs font-medium text-muted-foreground">Kesim türüne göre otomatik hesap</p>
+                </div>
+              </div>
+              <iconify-icon icon="lucide-chevron-down" class="text-xl text-muted-foreground"></iconify-icon>
+            </summary>
+            <div class="border-t-2 border-border px-4 pb-4 pt-3">
+              <div class="mb-3 grid grid-cols-2 gap-3">
+                <label class="block">
+                  <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Kesim türü</span>
+                  <div class="flex h-12 items-center justify-between rounded-theme border border-border bg-input px-3 text-sm font-bold text-foreground">
+                    Standart
+                    <iconify-icon icon="lucide-chevron-down" class="text-lg text-muted-foreground"></iconify-icon>
+                  </div>
+                </label>
+                <label class="block">
+                  <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Birim fiyat</span>
+                  <div class="flex h-12 items-center rounded-theme border border-border bg-input px-3 text-sm font-bold text-foreground tabular-nums">62,61 TL</div>
+                </label>
+              </div>
+              <div class="divide-y divide-border rounded-theme border border-border bg-background">
+                <div class="flex items-center justify-between px-3.5 py-3">
+                  <span class="text-sm font-medium text-muted-foreground">Brüt kesim tutarı</span>
+                  <span class="font-heading text-sm font-bold tabular-nums text-foreground">100.800 TL</span>
+                </div>
+                <div class="flex items-center justify-between px-3.5 py-3">
+                  <span class="text-sm font-medium text-muted-foreground">Stopaj</span>
+                  <span class="font-heading text-sm font-bold tabular-nums text-destructive">0 TL</span>
+                </div>
+                <div class="flex items-center justify-between px-3.5 py-3">
+                  <span class="text-sm font-medium text-muted-foreground">KDV</span>
+                  <span class="font-heading text-sm font-bold tabular-nums text-foreground">0 TL</span>
+                </div>
+                <div class="flex items-center justify-between bg-secondary/60 px-3.5 py-3">
+                  <span class="text-sm font-bold text-secondary-foreground">Ödenecek net tutar</span>
+                  <span class="font-heading text-base font-bold tabular-nums text-secondary-foreground">100.800 TL</span>
+                </div>
+              </div>
+              <p class="mt-2 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+                <iconify-icon icon="lucide-lock-keyhole" class="text-sm"></iconify-icon>
+                Hesaplama satırları otomatik oluşturulur ve düzenlenemez.
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <details open>
+            <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-theme bg-muted text-primary">
+                  <iconify-icon icon="lucide-cow" class="text-xl"></iconify-icon>
+                </div>
+                <div>
+                  <h2 class="font-heading text-base font-bold text-foreground">Hayvan bilgileri</h2>
+                  <p class="mt-0.5 text-xs font-medium text-muted-foreground">3 hayvan · 1.610 kg toplam</p>
+                </div>
+              </div>
+              <iconify-icon icon="lucide-chevron-down" class="text-xl text-muted-foreground"></iconify-icon>
+            </summary>
+            <div class="space-y-3 border-t-2 border-border px-4 pb-4 pt-3">
+              <article class="rounded-theme border border-border bg-background p-3.5">
+                <div class="mb-3 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">01</span>
+                    <div>
+                      <p class="text-sm font-bold text-foreground">TR 34 7812</p>
+                      <p class="text-[11px] font-medium text-muted-foreground">Büyükbaş · Holstein</p>
+                    </div>
+                  </div>
+                  <span class="rounded-full bg-success/10 px-2.5 py-1 text-[11px] font-bold text-success">Stokta</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="rounded-theme border border-border bg-card px-3 py-2.5">
+                    <p class="text-[11px] font-semibold text-muted-foreground">Kesim ağırlığı</p>
+                    <p class="mt-1 font-heading text-base font-bold tabular-nums text-foreground">540 kg</p>
+                  </div>
+                  <div class="rounded-theme border border-border bg-card px-3 py-2.5">
+                    <p class="text-[11px] font-semibold text-muted-foreground">Birim fiyat</p>
+                    <p class="mt-1 font-heading text-base font-bold tabular-nums text-foreground">62,61 TL</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="rounded-theme border border-border bg-background p-3.5">
+                <div class="mb-3 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">02</span>
+                    <div>
+                      <p class="text-sm font-bold text-foreground">TR 34 7815</p>
+                      <p class="text-[11px] font-medium text-muted-foreground">Büyükbaş · Simental</p>
+                    </div>
+                  </div>
+                  <span class="rounded-full bg-success/10 px-2.5 py-1 text-[11px] font-bold text-success">Stokta</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="rounded-theme border border-border bg-card px-3 py-2.5">
+                    <p class="text-[11px] font-semibold text-muted-foreground">Kesim ağırlığı</p>
+                    <p class="mt-1 font-heading text-base font-bold tabular-nums text-foreground">520 kg</p>
+                  </div>
+                  <div class="rounded-theme border border-border bg-card px-3 py-2.5">
+                    <p class="text-[11px] font-semibold text-muted-foreground">Birim fiyat</p>
+                    <p class="mt-1 font-heading text-base font-bold tabular-nums text-foreground">62,61 TL</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="rounded-theme border border-border bg-background p-3.5">
+                <div class="mb-3 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">03</span>
+                    <div>
+                      <p class="text-sm font-bold text-foreground">TR 34 7821</p>
+                      <p class="text-[11px] font-medium text-muted-foreground">Büyükbaş · Limuzin</p>
+                    </div>
+                  </div>
+                  <span class="rounded-full bg-success/10 px-2.5 py-1 text-[11px] font-bold text-success">Stokta</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="rounded-theme border border-border bg-card px-3 py-2.5">
+                    <p class="text-[11px] font-semibold text-muted-foreground">Kesim ağırlığı</p>
+                    <p class="mt-1 font-heading text-base font-bold tabular-nums text-foreground">550 kg</p>
+                  </div>
+                  <div class="rounded-theme border border-border bg-card px-3 py-2.5">
+                    <p class="text-[11px] font-semibold text-muted-foreground">Birim fiyat</p>
+                    <p class="mt-1 font-heading text-base font-bold tabular-nums text-foreground">62,61 TL</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </details>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <details>
+            <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-theme bg-success/10 text-success">
+                  <iconify-icon icon="lucide-package-check" class="text-xl"></iconify-icon>
+                </div>
+                <div>
+                  <h2 class="font-heading text-base font-bold text-foreground">Stok bağlantısı</h2>
+                  <p class="mt-0.5 text-xs font-medium text-muted-foreground">3 hayvan stoğa aktarıldı</p>
+                </div>
+              </div>
+              <iconify-icon icon="lucide-chevron-down" class="text-xl text-muted-foreground"></iconify-icon>
+            </summary>
+            <div class="border-t-2 border-border px-4 pb-4 pt-3">
+              <div class="flex items-start gap-3 rounded-theme bg-success/10 p-3.5 text-success">
+                <iconify-icon icon="lucide-circle-check" class="mt-0.5 text-lg"></iconify-icon>
+                <div>
+                  <p class="text-sm font-bold">Stok bağlantısı aktif</p>
+                  <p class="mt-1 text-xs font-medium leading-5">Ürünler STK-2026-0809-014 numaralı stok kaydına bağlandı.</p>
+                </div>
+              </div>
+              <div class="mt-3 flex items-center justify-between rounded-theme border border-border px-3.5 py-3">
+                <div>
+                  <p class="text-xs font-semibold text-muted-foreground">Sevkiyat durumu</p>
+                  <p class="mt-1 text-sm font-bold text-foreground">Sevkiyat bekliyor</p>
+                </div>
+                <iconify-icon icon="lucide-truck" class="text-xl text-muted-foreground"></iconify-icon>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <details>
+            <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-theme bg-accent/10 text-accent">
+                  <iconify-icon icon="lucide-contact" class="text-xl"></iconify-icon>
+                </div>
+                <div>
+                  <h2 class="font-heading text-base font-bold text-foreground">Alıcı bilgileri</h2>
+                  <p class="mt-0.5 text-xs font-medium text-muted-foreground">Mert Et ve Gıda Ltd. Şti.</p>
+                </div>
+              </div>
+              <iconify-icon icon="lucide-chevron-down" class="text-xl text-muted-foreground"></iconify-icon>
+            </summary>
+            <div class="space-y-3 border-t-2 border-border px-4 pb-4 pt-3">
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <p class="text-[11px] font-semibold text-muted-foreground">Yetkili kişi</p>
+                  <p class="mt-1 text-sm font-bold text-foreground">Mert Yıldız</p>
+                </div>
+                <div>
+                  <p class="text-[11px] font-semibold text-muted-foreground">Telefon</p>
+                  <p class="mt-1 text-sm font-bold tabular-nums text-foreground">0532 418 26 70</p>
+                </div>
+              </div>
+              <div>
+                <p class="text-[11px] font-semibold text-muted-foreground">Vergi numarası</p>
+                <p class="mt-1 text-sm font-bold tabular-nums text-foreground">384 019 2764</p>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <details>
+            <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-theme bg-muted text-primary">
+                  <iconify-icon icon="lucide-clipboard-check" class="text-xl"></iconify-icon>
+                </div>
+                <div>
+                  <h2 class="font-heading text-base font-bold text-foreground">Kayıt durumu</h2>
+                  <p class="mt-0.5 text-xs font-medium text-muted-foreground">Son düzenleme: 14:36 · Ayşe Demir</p>
+                </div>
+              </div>
+              <iconify-icon icon="lucide-chevron-down" class="text-xl text-muted-foreground"></iconify-icon>
+            </summary>
+            <div class="border-t-2 border-border px-4 pb-4 pt-3">
+              <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 items-center justify-center rounded-full bg-success text-success-foreground">
+                  <iconify-icon icon="lucide-check" class="text-lg"></iconify-icon>
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-foreground">Kayıt tamamlandı</p>
+                  <p class="mt-0.5 text-xs font-medium text-muted-foreground">Gün sonu mutabakatına dahil edildi.</p>
+                </div>
+              </div>
+            </div>
+          </details>
+        </section>
+      </main>
+
+      <div class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-5 pb-5 pt-3 shadow-[0_-4px_16px_rgba(18,48,71,0.08)]">
+        <div class="mx-auto max-w-md">
+          <button class="flex h-14 w-full items-center justify-center gap-2 rounded-theme bg-primary text-base font-bold text-primary-foreground shadow-sm">
+            <iconify-icon icon="lucide-save" class="text-xl"></iconify-icon>
+            Değişiklikleri kaydet
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Icon self-healing: a missing icon name renders as INVISIBLE empty space
+    // (iconify-icon fails silently). Its `status` property ('rendered' |
+    // 'loading' | 'failed') lets us swap failures to a neutral glyph.
+    (function() {
+      var els = document.querySelectorAll('iconify-icon');
+      for (var i = 0; i < els.length; i++) (function(el) {
+        var tries = 0;
+        (function check() {
+          var s = el.status;
+          if (s === 'failed') el.setAttribute('icon', 'lucide:circle');
+          else if (s !== 'rendered' && tries++ < 40) setTimeout(check, 250);
+        })();
+      })(els[i]);
+    })();
+  </script>
+<script src="app.js"></script></body>
+</html>

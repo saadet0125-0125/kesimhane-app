@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kesim Kaydı Oluştur — Kesimhane</title>
+
+  <!-- Tailwind CSS (pinned — matches the renderer/screenshot surfaces) -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          background: 'rgb(244 247 248 / <alpha-value>)',
+          foreground: 'rgb(23 36 45 / <alpha-value>)',
+          primary: { DEFAULT: 'rgb(18 48 71 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          secondary: { DEFAULT: 'rgb(221 235 233 / <alpha-value>)', foreground: 'rgb(18 63 61 / <alpha-value>)' },
+          accent: { DEFAULT: 'rgb(184 106 0 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          muted: { DEFAULT: 'rgb(232 238 240 / <alpha-value>)', foreground: 'rgb(83 99 109 / <alpha-value>)' },
+          card: { DEFAULT: 'rgb(255 255 255 / <alpha-value>)', foreground: 'rgb(23 36 45 / <alpha-value>)' },
+          border: 'rgb(201 213 217 / <alpha-value>)',
+          input: 'rgb(255 255 255 / <alpha-value>)',
+          destructive: { DEFAULT: 'rgb(180 35 24 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          success: { DEFAULT: 'rgb(44 110 73 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          chart1: 'rgb(18 48 71 / <alpha-value>)',
+          chart2: 'rgb(0 127 120 / <alpha-value>)',
+          chart3: 'rgb(184 106 0 / <alpha-value>)',
+          chart4: 'rgb(44 110 73 / <alpha-value>)',
+          chart5: 'rgb(106 91 158 / <alpha-value>)',
+          ring: 'rgb(18 48 71 / <alpha-value>)',
+        },
+        fontFamily: {
+          heading: ['var(--font-heading, Inter)', 'system-ui'],
+          body: ['var(--font-body, Inter)', 'system-ui'],
+        },
+        borderRadius: { DEFAULT: 'var(--radius, 12px)', theme: 'var(--radius, 12px)' },
+      }}
+    };
+</script>
+
+  <!-- Iconify Web Component -->
+  <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
+
+  <!-- Design Tokens + Custom Classes -->
+  <style>
+  :root {
+    --color-background: #F4F7F8;
+    --color-foreground: #17242D;
+    --color-primary: #123047;
+    --color-primary-foreground: #FFFFFF;
+    --color-secondary: #DDEBE9;
+    --color-secondary-foreground: #123F3D;
+    --color-accent: #B86A00;
+    --color-accent-foreground: #FFFFFF;
+    --color-muted: #E8EEF0;
+    --color-muted-foreground: #53636D;
+    --color-card: #FFFFFF;
+    --color-card-foreground: #17242D;
+    --color-border: #C9D5D9;
+    --color-input: #FFFFFF;
+    --color-destructive: #B42318;
+    --color-destructive-foreground: #FFFFFF;
+    --color-success: #2C6E49;
+    --color-success-foreground: #FFFFFF;
+    --color-chart1: #123047;
+    --color-chart2: #007F78;
+    --color-chart3: #B86A00;
+    --color-chart4: #2C6E49;
+    --color-chart5: #6A5B9E;
+    --font-heading: 'IBM Plex Sans', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --radius: 14px;
+  }
+
+  body {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+  }
+  </style>
+</head>
+<body class="bg-background text-foreground m-0 p-0">
+  <div class="h-screen w-screen overflow-hidden">
+    <div class="min-h-screen w-full bg-background pb-32 font-body text-foreground">
+      <header class="border-b border-border bg-background px-5 pb-5 pt-12">
+        <div class="flex items-center gap-3">
+          <button type="button" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm" aria-label="Geri dön">
+            <iconify-icon icon="lucide:arrow-left" class="text-xl"></iconify-icon>
+          </button>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Yeni kayıt</p>
+            <h1 class="mt-1 font-heading text-[25px] font-bold tracking-tight text-foreground">Kesim Kaydı Oluştur</h1>
+          </div>
+        </div>
+        <div class="mt-5 flex items-center gap-2">
+          <div class="h-1.5 flex-1 rounded-full bg-primary"></div>
+          <div class="h-1.5 flex-1 rounded-full bg-muted"></div>
+          <div class="h-1.5 flex-1 rounded-full bg-muted"></div>
+          <span class="ml-2 text-xs font-bold text-muted-foreground">1 / 3</span>
+        </div>
+      </header>
+
+      <main class="space-y-4 px-5 pt-5">
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="flex items-center gap-3 border-b-2 border-border px-4 py-4">
+            <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
+              <iconify-icon icon="lucide:user-round" class="text-lg"></iconify-icon>
+            </div>
+            <div>
+              <h2 class="font-heading text-base font-bold">Kişi bilgileri</h2>
+              <p class="mt-0.5 text-xs font-medium text-muted-foreground">Ödemeyi alacak kişiyi seçin</p>
+            </div>
+          </div>
+          <div class="space-y-3 p-4">
+            <label class="block">
+              <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Ad Soyad <span class="text-destructive">*</span></span>
+              <div class="flex h-14 items-center gap-3 rounded-theme border border-border bg-input px-4">
+                <iconify-icon icon="lucide:user-round" class="text-lg text-primary"></iconify-icon>
+                <input name="fullName" type="text" required placeholder="Ad Soyad" class="w-full bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+              </div>
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Telefon <span class="text-destructive">*</span></span>
+              <div class="flex h-14 items-center gap-3 rounded-theme border border-border bg-input px-4">
+                <iconify-icon icon="lucide:phone" class="text-lg text-primary"></iconify-icon>
+                <input name="phone" type="tel" required inputmode="tel" placeholder="05XX XXX XX XX" class="w-full bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+              </div>
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-xs font-bold text-muted-foreground">IBAN <span class="text-destructive">*</span></span>
+              <div class="flex h-14 items-center gap-3 rounded-theme border border-border bg-input px-4">
+                <iconify-icon icon="lucide:landmark" class="text-lg text-primary"></iconify-icon>
+                <input name="iban" type="text" required placeholder="TR00 0000 0000 0000 0000 0000 00" class="w-full bg-transparent text-sm font-semibold uppercase tracking-wide text-foreground outline-none placeholder:text-muted-foreground placeholder:normal-case placeholder:tracking-normal" />
+              </div>
+            </label>
+          </div>
+        </section>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="flex items-center gap-3 border-b-2 border-border px-4 py-4">
+            <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
+              <iconify-icon icon="lucide:tag" class="text-lg"></iconify-icon>
+            </div>
+            <div>
+              <h2 class="font-heading text-base font-bold">Hayvan bilgileri</h2>
+              <p class="mt-0.5 text-xs font-medium text-muted-foreground">Kayıt için temel bilgileri girin</p>
+            </div>
+          </div>
+          <div class="space-y-3 p-4">
+            <label class="block">
+              <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Hayvan küpe numarası</span>
+              <div class="flex h-14 items-center gap-3 rounded-theme border border-border bg-input px-4">
+                <iconify-icon icon="lucide:scan-barcode" class="text-lg text-primary"></iconify-icon>
+                <input name="animalId" type="text" placeholder="Örn. TR 01 234567" class="w-full bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+              </div>
+            </label>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="block">
+                <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Karkas ağırlık</span>
+                <div class="flex h-14 items-center rounded-theme border border-border bg-input px-3">
+                  <input name="carcassWeight" type="number" inputmode="decimal" placeholder="0" class="w-full min-w-0 bg-transparent text-base font-bold tabular-nums text-foreground outline-none placeholder:text-muted-foreground" />
+                  <span class="text-xs font-bold text-muted-foreground">kg</span>
+                </div>
+              </label>
+              <label class="block">
+                <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Hayvan cinsi</span>
+                <div class="flex h-14 items-center rounded-theme border border-border bg-input px-3">
+                  <input name="animalBreed" type="text" placeholder="Cins" class="w-full min-w-0 bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+                </div>
+              </label>
+              <label class="block">
+                <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Fiyat</span>
+                <div class="flex h-14 items-center rounded-theme border border-border bg-input px-3">
+                  <input name="price" type="number" inputmode="decimal" placeholder="0" class="w-full min-w-0 bg-transparent text-base font-bold tabular-nums text-foreground outline-none placeholder:text-muted-foreground" />
+                  <span class="text-xs font-bold text-muted-foreground">TL</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <form data-state="selectedCutType" class="rounded-theme border border-border bg-card shadow-sm">
+          <fieldset>
+            <div class="flex items-center justify-between border-b-2 border-border px-4 py-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
+                  <iconify-icon icon="lucide:scissors" class="text-lg"></iconify-icon>
+                </div>
+                <div>
+                  <legend class="font-heading text-base font-bold">Kesim Türü</legend>
+                  <p class="mt-0.5 text-xs font-medium text-muted-foreground">Ödeme yöntemi otomatik hesaplanır</p>
+                </div>
+              </div>
+              <span class="rounded-full bg-destructive/10 px-2.5 py-1 text-[11px] font-bold text-destructive">Zorunlu</span>
+            </div>
+
+            <div class="space-y-3 p-4">
+              <label class="group relative block cursor-pointer">
+                <input type="radio" name="selectedCutType" value="standart" class="peer absolute h-0 w-0 opacity-0" required />
+                <div class="flex min-h-[76px] items-center gap-3 rounded-theme border-2 border-border bg-card px-4 transition-colors peer-checked:border-primary peer-checked:bg-primary">
+                  <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-theme bg-secondary text-secondary-foreground peer-checked:bg-white/15 peer-checked:text-white">
+                    <iconify-icon icon="lucide:scissors" class="text-xl"></iconify-icon>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <p class="font-heading text-base font-bold text-foreground peer-checked:text-white">Standart Kesim</p>
+                    <p class="mt-1 text-xs font-medium text-muted-foreground peer-checked:text-white/75">Standart tarife üzerinden hesaplanır</p>
+                  </div>
+                  <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-border text-transparent peer-checked:border-white peer-checked:bg-white peer-checked:text-primary">
+                    <iconify-icon icon="lucide:check" class="text-base"></iconify-icon>
+                  </div>
+                </div>
+              </label>
+
+              <label class="group relative block cursor-pointer">
+                <input type="radio" name="selectedCutType" value="faturali" class="peer absolute h-0 w-0 opacity-0" required />
+                <div class="flex min-h-[76px] items-center gap-3 rounded-theme border-2 border-border bg-card px-4 transition-colors peer-checked:border-primary peer-checked:bg-primary">
+                  <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-theme bg-accent text-accent-foreground peer-checked:bg-white/15 peer-checked:text-white">
+                    <iconify-icon icon="lucide:receipt-text" class="text-xl"></iconify-icon>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <p class="font-heading text-base font-bold text-foreground peer-checked:text-white">Faturalı Kesim</p>
+                    <p class="mt-1 text-xs font-medium text-muted-foreground peer-checked:text-white/75">Fatura bilgileriyle hesaplanır</p>
+                  </div>
+                  <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-border text-transparent peer-checked:border-white peer-checked:bg-white peer-checked:text-primary">
+                    <iconify-icon icon="lucide:check" class="text-base"></iconify-icon>
+                  </div>
+                </div>
+              </label>
+
+              <p class="flex items-center gap-2 rounded-theme bg-destructive/10 px-3 py-3 text-xs font-semibold text-destructive">
+                <iconify-icon icon="lucide:circle-alert" class="shrink-0 text-base"></iconify-icon>
+                Lütfen kesim türünü seçiniz.
+              </p>
+            </div>
+          </fieldset>
+        </form>
+
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="flex items-center gap-3 border-b-2 border-border px-4 py-4">
+            <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-success/10 text-success">
+              <iconify-icon icon="lucide:calculator" class="text-lg"></iconify-icon>
+            </div>
+            <div>
+              <h2 class="font-heading text-base font-bold">Ödeme özeti</h2>
+              <p class="mt-0.5 text-xs font-medium text-muted-foreground">Seçiminize göre otomatik güncellenir</p>
+            </div>
+          </div>
+          <div class="divide-y divide-border px-4">
+            <div class="flex items-center justify-between py-3.5">
+              <span class="text-sm font-medium text-muted-foreground">Kesim bedeli</span>
+              <span class="font-heading text-base font-bold tabular-nums text-foreground">0,00 TL</span>
+            </div>
+            <div class="flex items-center justify-between py-3.5">
+              <span class="text-sm font-medium text-muted-foreground">Toplam ödeme</span>
+              <span class="font-heading text-xl font-bold tabular-nums text-primary">0,00 TL</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-5 pb-6 pt-3 shadow-[0_-5px_18px_rgba(18,48,71,0.08)]">
+        <button type="submit" form="cut-record-form" class="flex h-14 w-full items-center justify-center gap-2 rounded-theme bg-primary text-base font-bold text-primary-foreground shadow-sm">
+          <iconify-icon icon="lucide:check-circle-2" class="text-xl"></iconify-icon>
+          Onayla ve Bitir
+        </button>
+        <p class="mt-2 text-center text-[11px] font-medium text-muted-foreground">Kesim türü seçilmeden kayıt oluşturulmaz</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Icon self-healing: a missing icon name renders as INVISIBLE empty space
+    // (iconify-icon fails silently). Its `status` property ('rendered' |
+    // 'loading' | 'failed') lets us swap failures to a neutral glyph.
+    (function() {
+      var els = document.querySelectorAll('iconify-icon');
+      for (var i = 0; i < els.length; i++) (function(el) {
+        var tries = 0;
+        (function check() {
+          var s = el.status;
+          if (s === 'failed') el.setAttribute('icon', 'lucide:circle');
+          else if (s !== 'rendered' && tries++ < 40) setTimeout(check, 250);
+        })();
+      })(els[i]);
+    })();
+  </script>
+<script src="app.js"></script></body>
+</html>
