@@ -105,8 +105,72 @@
         </div>
       </header>
 
-      <main class="space-y-4 px-5 pt-5">
+      <main class="space-y-4 px-5 pt-5">       
+        <!-- Dinamik Hayvan Bilgileri Alanı -->
         <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="flex items-center justify-between border-b-2 border-border px-4 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
+                <iconify-icon icon="lucide:tag" class="text-lg"></iconify-icon>
+              </div>
+              <div>
+                <h2 class="font-heading text-base font-bold">Hayvan Bilgileri</h2>
+                <p class="mt-0.5 text-xs font-medium text-muted-foreground">Eklenecek tüm hayvanların bilgilerini girin</p>
+              </div>
+            </div>
+            <span id="hayvan-sayisi-badge" class="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">1 Hayvan</span>
+          </div>
+
+          <!-- Hayvan Satırlarının Ekleneceği Kapsayıcı -->
+          <div id="hayvan-listesi" class="space-y-4 p-4">
+            <!-- 1. Hayvan Satırı -->
+            <div class="hayvan-satiri rounded-theme border border-border/60 bg-muted/20 p-3 space-y-3 relative">
+              <div class="flex items-center justify-between border-b border-border/40 pb-2">
+                <span class="text-xs font-bold text-primary flex items-center gap-1">
+                  <iconify-icon icon="lucide:beef"></iconify-icon> <span class="hayvan-no">1</span>. Hayvan
+                </span>
+              </div>
+              <label class="block">
+                <span class="mb-1 block text-[11px] font-bold text-muted-foreground">Küpe Numarası</span>
+                <div class="flex h-12 items-center gap-2 rounded-theme border border-border bg-input px-3">
+                  <iconify-icon icon="lucide:scan-barcode" class="text-primary"></iconify-icon>
+                  <input name="animalId" type="text" placeholder="Örn. TR 01 234567" class="w-full bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+                </div>
+              </label>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="block">
+                  <span class="mb-1 block text-[11px] font-bold text-muted-foreground">Karkas Ağırlık</span>
+                  <div class="flex h-12 items-center rounded-theme border border-border bg-input px-2.5">
+                    <input name="carcassWeight" type="number" inputmode="decimal" placeholder="0" class="hayvan-kg w-full min-w-0 bg-transparent text-sm font-bold tabular-nums text-foreground outline-none placeholder:text-muted-foreground" />
+                    <span class="text-xs font-bold text-muted-foreground ml-1">kg</span>
+                  </div>
+                </label>
+                <label class="block">
+                  <span class="mb-1 block text-[11px] font-bold text-muted-foreground">Cinsi</span>
+                  <div class="flex h-12 items-center rounded-theme border border-border bg-input px-2.5">
+                    <input name="animalBreed" type="text" placeholder="Örn. İnek" class="w-full min-w-0 bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+                  </div>
+                </label>
+                <label class="block">
+                  <span class="mb-1 block text-[11px] font-bold text-muted-foreground">Fiyat</span>
+                  <div class="flex h-12 items-center rounded-theme border border-border bg-input px-2.5">
+                    <input name="price" type="number" inputmode="decimal" placeholder="0" class="hayvan-fiyat w-full min-w-0 bg-transparent text-sm font-bold tabular-nums text-foreground outline-none placeholder:text-muted-foreground" />
+                    <span class="text-xs font-bold text-muted-foreground ml-1">TL</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hayvan Ekle Butonu -->
+          <div class="p-4 pt-0">
+            <button type="button" id="hayvan-ekle-btn" class="flex h-12 w-full items-center justify-center gap-2 rounded-theme border-2 border-dashed border-primary/40 bg-primary/5 text-sm font-bold text-primary hover:bg-primary/10 transition-colors">
+              <iconify-icon icon="lucide:plus-circle" class="text-lg"></iconify-icon>
+              + Yeni Hayvan Ekle
+            </button>
+          </div>
+        </section>
+
           <div class="flex items-center gap-3 border-b-2 border-border px-4 py-4">
             <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
               <iconify-icon icon="lucide:user-round" class="text-lg"></iconify-icon>
