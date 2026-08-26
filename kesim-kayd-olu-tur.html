@@ -1,94 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kesim Kaydı Oluştur — Kesimhane</title>
-<!-- 1. KİŞİ BİLGİLERİ (EN ÜSTTE) -->
-<div class="card p-4 mb-4">
-  <div class="flex items-center gap-2 mb-3">
-    <div class="icon-box"><i class="lucide:user"></i></div>
-    <div>
-      <h3 class="font-semibold text-lg">Kişi bilgileri</h3>
-      <p class="text-xs text-muted-foreground">Ödemeyi alacak kişiyi seçin</p>
-    </div>
-  </div>
 
-  <div class="space-y-3">
-    <div>
-      <label class="text-sm font-medium">Ad Soyad <span class="text-red-500">*</span></label>
-      <input type="text" name="fullName" placeholder="Ad Soyad" class="form-input" />
-    </div>
-
-    <div>
-      <label class="text-sm font-medium">Telefon <span class="text-red-500">*</span></label>
-      <input type="text" name="phone" placeholder="05XX XXX XX XX" class="form-input" />
-    </div>
-
-    <div>
-      <label class="text-sm font-medium">IBAN <span class="text-red-500">*</span></label>
-      <input type="text" name="iban" placeholder="TR00 0000 0000 0000 0000 0000 00" class="form-input" />
-    </div>
-  </div>
-</div>
-
-<!-- 2. HAYVAN BİLGİLERİ (KİŞİ BİLGİLERİNİN ALTINDA) -->
-<div class="card p-4 mb-4">
-  <div class="flex items-center justify-between mb-3">
-    <div class="flex items-center gap-2">
-      <div class="icon-box"><i class="lucide:tag"></i></div>
-      <div>
-        <h3 class="font-semibold text-lg">Hayvan Bilgileri</h3>
-        <p class="text-xs text-muted-foreground">Eklenecek tüm hayvanların bilgilerini girin</p>
-      </div>
-    </div>
-    <span id="hayvanSayisiBadge" class="badge">1 Hayvan</span>
-  </div>
-
-  <!-- Dynamic Hayvan Listesi Konteynırı -->
-  <div id="hayvanListesiContainer" class="space-y-4">
-    <!-- 1. Hayvan Bloğu (Varsayılan) -->
-    <div class="hayvan-item border rounded-lg p-3 bg-gray-50/50">
-      <div class="text-xs font-semibold text-muted-foreground mb-2">1. Hayvan</div>
-      <div class="space-y-3">
-        <div>
-          <label class="text-xs text-muted-foreground">Küpe Numarası</label>
-          <input type="text" name="earTag" placeholder="Örn. TR 01 234567" class="form-input" />
-        </div>
-        <div class="grid grid-cols-3 gap-2">
-          <div>
-            <label class="text-xs text-muted-foreground">Karkas Ağırlık</label>
-            <div class="relative">
-              <input type="number" name="carcassWeight" class="form-input animal-weight" oninput="hesaplaOdeme()" placeholder="0" />
-              <span class="absolute right-2 top-2 text-xs text-muted-foreground">kg</span>
-            </div>
-          </div>
-          <div>
-            <label class="text-xs text-muted-foreground">Cinsi</label>
-            <input type="text" name="animalType" placeholder="Örn. İnek" class="form-input" />
-          </div>
-          <div>
-            <label class="text-xs text-muted-foreground">Fiyat</label>
-            <div class="relative">
-              <input type="number" name="price" class="form-input animal-price" oninput="hesaplaOdeme()" placeholder="0" />
-              <span class="absolute right-2 top-2 text-xs text-muted-foreground">TL</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- + Yeni Hayvan Ekle Butonu (En Altta) -->
-  <button type="button" onclick="yeniHayvanEkle()" class="w-full mt-3 border-2 border-dashed border-slate-300 py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2 text-slate-700 hover:bg-slate-50 transition">
-    <i class="lucide:plus-circle"></i> + Yeni Hayvan Ekle
-  </button>
-</div>
-
-<!-- 3. KESİM TÜRÜ VE ÖDEME ÖZETİ (EN ALTTA) -->
-<!-- Standart / Faturalı Kesim seçeneğiniz burada yer alacak -->
-
-  <!-- Tailwind CSS (pinned — matches the renderer/screenshot surfaces) -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>
     tailwind.config = {
@@ -104,13 +21,7 @@
           border: 'rgb(201 213 217 / <alpha-value>)',
           input: 'rgb(255 255 255 / <alpha-value>)',
           destructive: { DEFAULT: 'rgb(180 35 24 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
-          success: { DEFAULT: 'rgb(44 110 73 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
-          chart1: 'rgb(18 48 71 / <alpha-value>)',
-          chart2: 'rgb(0 127 120 / <alpha-value>)',
-          chart3: 'rgb(184 106 0 / <alpha-value>)',
-          chart4: 'rgb(44 110 73 / <alpha-value>)',
-          chart5: 'rgb(106 91 158 / <alpha-value>)',
-          ring: 'rgb(18 48 71 / <alpha-value>)',
+          success: { DEFAULT: 'rgb(44 110 73 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' }
         },
         fontFamily: {
           heading: ['var(--font-heading, Inter)', 'system-ui'],
@@ -119,57 +30,26 @@
         borderRadius: { DEFAULT: 'var(--radius, 12px)', theme: 'var(--radius, 12px)' },
       }}
     };
-</script>
+  </script>
 
   <!-- Iconify Web Component -->
   <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap">
 
-  <!-- Google Fonts -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
-
-  <!-- Design Tokens + Custom Classes -->
   <style>
   :root {
-    --color-background: #F4F7F8;
-    --color-foreground: #17242D;
-    --color-primary: #123047;
-    --color-primary-foreground: #FFFFFF;
-    --color-secondary: #DDEBE9;
-    --color-secondary-foreground: #123F3D;
-    --color-accent: #B86A00;
-    --color-accent-foreground: #FFFFFF;
-    --color-muted: #E8EEF0;
-    --color-muted-foreground: #53636D;
-    --color-card: #FFFFFF;
-    --color-card-foreground: #17242D;
-    --color-border: #C9D5D9;
-    --color-input: #FFFFFF;
-    --color-destructive: #B42318;
-    --color-destructive-foreground: #FFFFFF;
-    --color-success: #2C6E49;
-    --color-success-foreground: #FFFFFF;
-    --color-chart1: #123047;
-    --color-chart2: #007F78;
-    --color-chart3: #B86A00;
-    --color-chart4: #2C6E49;
-    --color-chart5: #6A5B9E;
     --font-heading: 'IBM Plex Sans', sans-serif;
     --font-body: 'Inter', sans-serif;
     --radius: 14px;
   }
-
-  body {
-    font-family: var(--font-body);
-    -webkit-font-smoothing: antialiased;
-    margin: 0;
-    padding: 0;
-  }
+  body { font-family: var(--font-body); margin: 0; padding: 0; }
   </style>
 </head>
-<body class="bg-background text-foreground m-0 p-0 overflow-y-auto min-h-screen">
+<body class="bg-background text-foreground min-h-screen">
   <div class="w-full">
     <div class="min-h-screen w-full bg-background pb-44 font-body text-foreground">
 
+      <!-- Header -->
       <header class="border-b border-border bg-background px-5 pb-5 pt-12">
         <div class="flex items-center gap-3">
           <button type="button" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm" aria-label="Geri dön">
@@ -188,8 +68,45 @@
         </div>
       </header>
 
-      <main class="space-y-4 px-5 pt-5">       
-        <!-- Dinamik Hayvan Bilgileri Alanı -->
+      <main class="space-y-4 px-5 pt-5">
+        
+        <!-- 1. KİŞİ BİLGİLERİ (EN ÜSTTE) -->
+        <section class="rounded-theme border border-border bg-card shadow-sm">
+          <div class="flex items-center gap-3 border-b-2 border-border px-4 py-4">
+            <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
+              <iconify-icon icon="lucide:user-round" class="text-lg"></iconify-icon>
+            </div>
+            <div>
+              <h2 class="font-heading text-base font-bold">Kişi bilgileri</h2>
+              <p class="mt-0.5 text-xs font-medium text-muted-foreground">Ödemeyi alacak kişiyi seçin</p>
+            </div>
+          </div>
+          <div class="space-y-3 p-4">
+            <label class="block">
+              <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Ad Soyad <span class="text-destructive">*</span></span>
+              <div class="flex h-14 items-center gap-3 rounded-theme border border-border bg-input px-4">
+                <iconify-icon icon="lucide:user-round" class="text-lg text-primary"></iconify-icon>
+                <input name="fullName" type="text" required placeholder="Ad Soyad" class="w-full bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+              </div>
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Telefon <span class="text-destructive">*</span></span>
+              <div class="flex h-14 items-center gap-3 rounded-theme border border-border bg-input px-4">
+                <iconify-icon icon="lucide:phone" class="text-lg text-primary"></iconify-icon>
+                <input name="phone" type="tel" required inputmode="tel" placeholder="05XX XXX XX XX" class="w-full bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+              </div>
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-xs font-bold text-muted-foreground">IBAN <span class="text-destructive">*</span></span>
+              <div class="flex h-14 items-center gap-3 rounded-theme border border-border bg-input px-4">
+                <iconify-icon icon="lucide:landmark" class="text-lg text-primary"></iconify-icon>
+                <input name="iban" type="text" required placeholder="TR00 0000 0000 0000 0000 0000 00" class="w-full bg-transparent text-sm font-semibold uppercase tracking-wide text-foreground outline-none placeholder:text-muted-foreground placeholder:normal-case placeholder:tracking-normal" />
+              </div>
+            </label>
+          </div>
+        </section>
+
+        <!-- 2. HAYVAN BİLGİLERİ (KİŞİ BİLGİLERİNİN ALTINDA) -->
         <section class="rounded-theme border border-border bg-card shadow-sm">
           <div class="flex items-center justify-between border-b-2 border-border px-4 py-4">
             <div class="flex items-center gap-3">
@@ -204,9 +121,8 @@
             <span id="hayvan-sayisi-badge" class="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">1 Hayvan</span>
           </div>
 
-          <!-- Hayvan Satırlarının Ekleneceği Kapsayıcı -->
+          <!-- Hayvan Satırlarının Dinamik Ekleneceği Konteynır -->
           <div id="hayvan-listesi" class="space-y-4 p-4">
-            <!-- 1. Hayvan Satırı -->
             <div class="hayvan-satiri rounded-theme border border-border/60 bg-muted/20 p-3 space-y-3 relative">
               <div class="flex items-center justify-between border-b border-border/40 pb-2">
                 <span class="text-xs font-bold text-primary flex items-center gap-1">
@@ -254,84 +170,8 @@
           </div>
         </section>
 
-          <div class="flex items-center gap-3 border-b-2 border-border px-4 py-4">
-            <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
-              <iconify-icon icon="lucide:user-round" class="text-lg"></iconify-icon>
-            </div>
-            <div>
-              <h2 class="font-heading text-base font-bold">Kişi bilgileri</h2>
-              <p class="mt-0.5 text-xs font-medium text-muted-foreground">Ödemeyi alacak kişiyi seçin</p>
-            </div>
-          </div>
-          <div class="space-y-3 p-4">
-            <label class="block">
-              <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Ad Soyad <span class="text-destructive">*</span></span>
-              <div class="flex h-14 items-center gap-3 rounded-theme border border-border bg-input px-4">
-                <iconify-icon icon="lucide:user-round" class="text-lg text-primary"></iconify-icon>
-                <input name="fullName" type="text" required placeholder="Ad Soyad" class="w-full bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
-              </div>
-            </label>
-            <label class="block">
-              <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Telefon <span class="text-destructive">*</span></span>
-              <div class="flex h-14 items-center gap-3 rounded-theme border border-border bg-input px-4">
-                <iconify-icon icon="lucide:phone" class="text-lg text-primary"></iconify-icon>
-                <input name="phone" type="tel" required inputmode="tel" placeholder="05XX XXX XX XX" class="w-full bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
-              </div>
-            </label>
-            <label class="block">
-              <span class="mb-1.5 block text-xs font-bold text-muted-foreground">IBAN <span class="text-destructive">*</span></span>
-              <div class="flex h-14 items-center gap-3 rounded-theme border border-border bg-input px-4">
-                <iconify-icon icon="lucide:landmark" class="text-lg text-primary"></iconify-icon>
-                <input name="iban" type="text" required placeholder="TR00 0000 0000 0000 0000 0000 00" class="w-full bg-transparent text-sm font-semibold uppercase tracking-wide text-foreground outline-none placeholder:text-muted-foreground placeholder:normal-case placeholder:tracking-normal" />
-              </div>
-            </label>
-          </div>
-        </section>
-
-        <section class="rounded-theme border border-border bg-card shadow-sm">
-          <div class="flex items-center gap-3 border-b-2 border-border px-4 py-4">
-            <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
-              <iconify-icon icon="lucide:tag" class="text-lg"></iconify-icon>
-            </div>
-            <div>
-              <h2 class="font-heading text-base font-bold">Hayvan bilgileri</h2>
-              <p class="mt-0.5 text-xs font-medium text-muted-foreground">Kayıt için temel bilgileri girin</p>
-            </div>
-          </div>
-          <div class="space-y-3 p-4">
-            <label class="block">
-              <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Hayvan küpe numarası</span>
-              <div class="flex h-14 items-center gap-3 rounded-theme border border-border bg-input px-4">
-                <iconify-icon icon="lucide:scan-barcode" class="text-lg text-primary"></iconify-icon>
-                <input name="animalId" type="text" placeholder="Örn. TR 01 234567" class="w-full bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
-              </div>
-            </label>
-            <div class="grid grid-cols-3 gap-2">
-              <label class="block">
-                <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Karkas ağırlık</span>
-                <div class="flex h-14 items-center rounded-theme border border-border bg-input px-3">
-                  <input name="carcassWeight" type="number" inputmode="decimal" placeholder="0" class="w-full min-w-0 bg-transparent text-base font-bold tabular-nums text-foreground outline-none placeholder:text-muted-foreground" />
-                  <span class="text-xs font-bold text-muted-foreground">kg</span>
-                </div>
-              </label>
-              <label class="block">
-                <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Hayvan cinsi</span>
-                <div class="flex h-14 items-center rounded-theme border border-border bg-input px-3">
-                  <input name="animalBreed" type="text" placeholder="Cins" class="w-full min-w-0 bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
-                </div>
-              </label>
-              <label class="block">
-                <span class="mb-1.5 block text-xs font-bold text-muted-foreground">Fiyat</span>
-                <div class="flex h-14 items-center rounded-theme border border-border bg-input px-3">
-                  <input name="price" type="number" inputmode="decimal" placeholder="0" class="w-full min-w-0 bg-transparent text-base font-bold tabular-nums text-foreground outline-none placeholder:text-muted-foreground" />
-                  <span class="text-xs font-bold text-muted-foreground">TL</span>
-                </div>
-              </label>
-            </div>
-          </div>
-        </section>
-
-        <form data-state="selectedCutType" class="rounded-theme border border-border bg-card shadow-sm">
+        <!-- 3. KESİM TÜRÜ -->
+        <form id="cut-record-form" class="rounded-theme border border-border bg-card shadow-sm">
           <fieldset>
             <div class="flex items-center justify-between border-b-2 border-border px-4 py-4">
               <div class="flex items-center gap-3">
@@ -355,7 +195,7 @@
                   </div>
                   <div class="min-w-0 flex-1">
                     <p class="font-heading text-base font-bold text-foreground peer-checked:text-white">Standart Kesim</p>
-                    <p class="mt-1 text-xs font-medium text-muted-foreground peer-checked:text-white/75">Standart tarife üzerinden hesaplanır</p>
+                    <p class="mt-1 text-xs font-medium text-muted-foreground peer-checked:text-white/75">Standart tarife üzerinden hesaplanır (%1.5 Stopaj)</p>
                   </div>
                   <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-border text-transparent peer-checked:border-white peer-checked:bg-white peer-checked:text-primary">
                     <iconify-icon icon="lucide:check" class="text-base"></iconify-icon>
@@ -371,7 +211,7 @@
                   </div>
                   <div class="min-w-0 flex-1">
                     <p class="font-heading text-base font-bold text-foreground peer-checked:text-white">Faturalı Kesim</p>
-                    <p class="mt-1 text-xs font-medium text-muted-foreground peer-checked:text-white/75">Fatura bilgileriyle hesaplanır</p>
+                    <p class="mt-1 text-xs font-medium text-muted-foreground peer-checked:text-white/75">Fatura bilgileriyle hesaplanır (%1 KDV)</p>
                   </div>
                   <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-border text-transparent peer-checked:border-white peer-checked:bg-white peer-checked:text-primary">
                     <iconify-icon icon="lucide:check" class="text-base"></iconify-icon>
@@ -379,7 +219,7 @@
                 </div>
               </label>
 
-              <p class="flex items-center gap-2 rounded-theme bg-destructive/10 px-3 py-3 text-xs font-semibold text-destructive">
+              <p id="cut-type-alert" class="flex items-center gap-2 rounded-theme bg-destructive/10 px-3 py-3 text-xs font-semibold text-destructive">
                 <iconify-icon icon="lucide:circle-alert" class="shrink-0 text-base"></iconify-icon>
                 Lütfen kesim türünü seçiniz.
               </p>
@@ -387,6 +227,7 @@
           </fieldset>
         </form>
 
+        <!-- 4. ÖDEME ÖZETİ -->
         <section class="rounded-theme border border-border bg-card shadow-sm">
           <div class="flex items-center gap-3 border-b-2 border-border px-4 py-4">
             <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-success/10 text-success">
@@ -400,16 +241,17 @@
           <div class="divide-y divide-border px-4">
             <div class="flex items-center justify-between py-3.5">
               <span class="text-sm font-medium text-muted-foreground">Kesim bedeli</span>
-              <span class="font-heading text-base font-bold tabular-nums text-foreground">0,00 TL</span>
+              <span id="kesimBedeliEl" class="font-heading text-base font-bold tabular-nums text-foreground">0,00 TL</span>
             </div>
             <div class="flex items-center justify-between py-3.5">
               <span class="text-sm font-medium text-muted-foreground">Toplam ödeme</span>
-              <span class="font-heading text-xl font-bold tabular-nums text-primary">0,00 TL</span>
+              <span id="toplamOdemeEl" class="font-heading text-xl font-bold tabular-nums text-primary">0,00 TL</span>
             </div>
           </div>
         </section>
       </main>
 
+      <!-- Alt Buton Barı -->
       <div class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-5 pb-6 pt-3 shadow-[0_-5px_18px_rgba(18,48,71,0.08)]">
         <button type="submit" form="cut-record-form" class="flex h-14 w-full items-center justify-center gap-2 rounded-theme bg-primary text-base font-bold text-primary-foreground shadow-sm">
           <iconify-icon icon="lucide:check-circle-2" class="text-xl"></iconify-icon>
@@ -419,77 +261,141 @@
       </div>
     </div>
   </div>
+
   <script>
-    // Icon self-healing: a missing icon name renders as INVISIBLE empty space
-    // (iconify-icon fails silently). Its `status` property ('rendered' |
-    // 'loading' | 'failed') lets us swap failures to a neutral glyph.
-    (function() {
-      var els = document.querySelectorAll('iconify-icon');
-      for (var i = 0; i < els.length; i++) (function(el) {
-        var tries = 0;
-        (function check() {
-          var s = el.status;
-          if (s === 'failed') el.setAttribute('icon', 'lucide:circle');
-          else if (s !== 'rendered' && tries++ < 40) setTimeout(check, 250);
-        })();
-      })(els[i]);
-    })();
+    // Dynamic Hayvan Yönetimi ve Ödeme Hesaplama Mantığı
+    document.addEventListener("DOMContentLoaded", function () {
+      const hayvanListesi = document.getElementById("hayvan-listesi");
+      const hayvanEkleBtn = document.getElementById("hayvan-ekle-btn");
+      const hayvanBadge = document.getElementById("hayvan-sayisi-badge");
+      const cutTypeInputs = document.querySelectorAll('input[name="selectedCutType"]');
+      const alertBox = document.getElementById("cut-type-alert");
+
+      // Ödeme Hesaplama Fonksiyonu (Tüm Hayvanları Toplar)
+      function hesaplaOdeme() {
+        const kgInputs = document.querySelectorAll('.hayvan-kg');
+        const fiyatInputs = document.querySelectorAll('.hayvan-fiyat');
+        const selectedCut = document.querySelector('input[name="selectedCutType"]:checked');
+        
+        const kesimBedeliEl = document.getElementById('kesimBedeliEl');
+        const toplamOdemeEl = document.getElementById('toplamOdemeEl');
+
+        if (selectedCut && alertBox) {
+          alertBox.style.display = 'none';
+        }
+
+        let rawTotal = 0;
+        kgInputs.forEach((kgInput, index) => {
+          const kg = parseFloat(kgInput.value) || 0;
+          const fiyat = parseFloat(fiyatInputs[index]?.value) || 0;
+          rawTotal += (kg * fiyat);
+        });
+
+        if (rawTotal === 0 || !selectedCut) {
+          if (kesimBedeliEl) kesimBedeliEl.textContent = "0,00 TL";
+          if (toplamOdemeEl) toplamOdemeEl.textContent = "0,00 TL";
+          return;
+        }
+
+        let finalTotal = rawTotal;
+
+        if (selectedCut.value === 'standart') {
+          const stopaj = rawTotal * 0.015;
+          finalTotal = rawTotal - stopaj;
+        } else if (selectedCut.value === 'faturali') {
+          const kdv = rawTotal * 0.01;
+          finalTotal = rawTotal + kdv;
+        }
+
+        const format = (num) => num.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TL";
+
+        if (kesimBedeliEl) kesimBedeliEl.textContent = format(rawTotal);
+        if (toplamOdemeEl) toplamOdemeEl.textContent = format(finalTotal);
+      }
+
+      // Dinamik Hayvan Sayılarını ve Başlığı Güncelleme
+      function updateHayvanNumbers() {
+        const satirlar = hayvanListesi.querySelectorAll('.hayvan-satiri');
+        satirlar.forEach((satir, index) => {
+          satir.querySelector('.hayvan-no').textContent = index + 1;
+        });
+        if (hayvanBadge) hayvanBadge.textContent = `${satirlar.length} Hayvan`;
+      }
+
+      // Yeni Hayvan Satırı Ekleme
+      hayvanEkleBtn.addEventListener('click', function () {
+        const count = hayvanListesi.querySelectorAll('.hayvan-satiri').length + 1;
+        const newRowHtml = `
+          <div class="hayvan-satiri rounded-theme border border-border/60 bg-muted/20 p-3 space-y-3 relative">
+            <div class="flex items-center justify-between border-b border-border/40 pb-2">
+              <span class="text-xs font-bold text-primary flex items-center gap-1">
+                <iconify-icon icon="lucide:beef"></iconify-icon> <span class="hayvan-no">${count}</span>. Hayvan
+              </span>
+              <button type="button" class="hayvan-sil-btn text-destructive hover:opacity-80 flex items-center gap-1 text-xs font-bold">
+                <iconify-icon icon="lucide:trash-2"></iconify-icon> Sil
+              </button>
+            </div>
+            <label class="block">
+              <span class="mb-1 block text-[11px] font-bold text-muted-foreground">Küpe Numarası</span>
+              <div class="flex h-12 items-center gap-2 rounded-theme border border-border bg-input px-3">
+                <iconify-icon icon="lucide:scan-barcode" class="text-primary"></iconify-icon>
+                <input name="animalId" type="text" placeholder="Örn. TR 01 234567" class="w-full bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+              </div>
+            </label>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="block">
+                <span class="mb-1 block text-[11px] font-bold text-muted-foreground">Karkas Ağırlık</span>
+                <div class="flex h-12 items-center rounded-theme border border-border bg-input px-2.5">
+                  <input name="carcassWeight" type="number" inputmode="decimal" placeholder="0" class="hayvan-kg w-full min-w-0 bg-transparent text-sm font-bold tabular-nums text-foreground outline-none placeholder:text-muted-foreground" />
+                  <span class="text-xs font-bold text-muted-foreground ml-1">kg</span>
+                </div>
+              </label>
+              <label class="block">
+                <span class="mb-1 block text-[11px] font-bold text-muted-foreground">Cinsi</span>
+                <div class="flex h-12 items-center rounded-theme border border-border bg-input px-2.5">
+                  <input name="animalBreed" type="text" placeholder="Örn. İnek" class="w-full min-w-0 bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+                </div>
+              </label>
+              <label class="block">
+                <span class="mb-1 block text-[11px] font-bold text-muted-foreground">Fiyat</span>
+                <div class="flex h-12 items-center rounded-theme border border-border bg-input px-2.5">
+                  <input name="price" type="number" inputmode="decimal" placeholder="0" class="hayvan-fiyat w-full min-w-0 bg-transparent text-sm font-bold tabular-nums text-foreground outline-none placeholder:text-muted-foreground" />
+                  <span class="text-xs font-bold text-muted-foreground ml-1">TL</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        `;
+
+        hayvanListesi.insertAdjacentHTML('beforeend', newRowHtml);
+        updateHayvanNumbers();
+      });
+
+      // Silme İşlemi ve Event Delegation (Tüm Sayfayı Dinle)
+      hayvanListesi.addEventListener('click', function(e) {
+        const silBtn = e.target.closest('.hayvan-sil-btn');
+        if (silBtn) {
+          const satir = silBtn.closest('.hayvan-satiri');
+          if (hayvanListesi.querySelectorAll('.hayvan-satiri').length > 1) {
+            satir.remove();
+            updateHayvanNumbers();
+            hesaplaOdeme();
+          } else {
+            alert("En az 1 hayvan bulunmalıdır.");
+          }
+        }
+      });
+
+      // Dinamik input değişikliklerini izleme
+      hayvanListesi.addEventListener('input', function(e) {
+        if (e.target.classList.contains('hayvan-kg') || e.target.classList.contains('hayvan-fiyat')) {
+          hesaplaOdeme();
+        }
+      });
+
+      // Radio buton değişimi
+      cutTypeInputs.forEach(input => input.addEventListener('change', hesaplaOdeme));
+    });
   </script>
-  <script>
-  // Hesaplama fonksiyonu
-  function hesaplaOdeme() {
-    // Girdileri ve Radio butonları al
-    const weightInput = document.querySelector('input[name="carcassWeight"]');
-    const priceInput = document.querySelector('input[name="price"]');
-    const cutTypeInput = document.querySelector('input[name="selectedCutType"]:checked');
-    
-    // Ödeme özeti alanlarını al
-    const kesimBedeliEl = document.querySelectorAll('.divide-y span')[1];
-    const toplamOdemeEl = document.querySelectorAll('.divide-y span')[3];
-
-    const weight = parseFloat(weightInput?.value) || 0;
-    const price = parseFloat(priceInput?.value) || 0;
-    const rawTotal = weight * price;
-
-    if (rawTotal === 0 || !cutTypeInput) {
-      if (kesimBedeliEl) kesimBedeliEl.textContent = "0,00 TL";
-      if (toplamOdemeEl) toplamOdemeEl.textContent = "0,00 TL";
-      return;
-    }
-
-    let finalTotal = rawTotal;
-
-    // Standart Kesim: %1.5 Stopaj Düşer (Ham Tutar - Stopaj)
-    if (cutTypeInput.value === 'standart') {
-      const stopaj = rawTotal * 0.015;
-      finalTotal = rawTotal - stopaj;
-    } 
-    // Faturalı Kesim: %1 KDV Eklenir (Ham Tutar + KDV)
-    else if (cutTypeInput.value === 'faturali') {
-      const kdv = rawTotal * 0.01;
-      finalTotal = rawTotal + kdv;
-    }
-
-    // Ekranı güncelle
-    if (kesimBedeliEl) {
-      kesimBedeliEl.textContent = rawTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TL";
-    }
-    if (toplamOdemeEl) {
-      toplamOdemeEl.textContent = finalTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TL";
-    }
-  }
-
-  // Olay dinleyicilerini bağla (Kilo, Fiyat veya Kesim Türü değiştiğinde otomatik çalışır)
-  document.addEventListener("DOMContentLoaded", function () {
-    const weightInput = document.querySelector('input[name="carcassWeight"]');
-    const priceInput = document.querySelector('input[name="price"]');
-    const cutTypeInputs = document.querySelectorAll('input[name="selectedCutType"]');
-
-    if (weightInput) weightInput.addEventListener('input', hesaplaOdeme);
-    if (priceInput) priceInput.addEventListener('input', hesaplaOdeme);
-    cutTypeInputs.forEach(input => input.addEventListener('change', hesaplaOdeme));
-  });
-</script>
-
-<script src="app.js"></script></body>
+</body>
 </html>
