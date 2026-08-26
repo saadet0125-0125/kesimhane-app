@@ -288,5 +288,61 @@
       })(els[i]);
     })();
   </script>
+  <script>
+  // Hesaplama fonksiyonu
+  function hesaplaOdeme() {
+    // Girdileri ve Radio butonları al
+    const weightInput = document.querySelector('input[name="carcassWeight"]');
+    const priceInput = document.querySelector('input[name="price"]');
+    const cutTypeInput = document.querySelector('input[name="selectedCutType"]:checked');
+    
+    // Ödeme özeti alanlarını al
+    const kesimBedeliEl = document.querySelectorAll('.divide-y span')[1];
+    const toplamOdemeEl = document.querySelectorAll('.divide-y span')[3];
+
+    const weight = parseFloat(weightInput?.value) || 0;
+    const price = parseFloat(priceInput?.value) || 0;
+    const rawTotal = weight * price;
+
+    if (rawTotal === 0 || !cutTypeInput) {
+      if (kesimBedeliEl) kesimBedeliEl.textContent = "0,00 TL";
+      if (toplamOdemeEl) toplamOdemeEl.textContent = "0,00 TL";
+      return;
+    }
+
+    let finalTotal = rawTotal;
+
+    // Standart Kesim: %1.5 Stopaj Düşer (Ham Tutar - Stopaj)
+    if (cutTypeInput.value === 'standart') {
+      const stopaj = rawTotal * 0.015;
+      finalTotal = rawTotal - stopaj;
+    } 
+    // Faturalı Kesim: %1 KDV Eklenir (Ham Tutar + KDV)
+    else if (cutTypeInput.value === 'faturali') {
+      const kdv = rawTotal * 0.01;
+      finalTotal = rawTotal + kdv;
+    }
+
+    // Ekranı güncelle
+    if (kesimBedeliEl) {
+      kesimBedeliEl.textContent = rawTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TL";
+    }
+    if (toplamOdemeEl) {
+      toplamOdemeEl.textContent = finalTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TL";
+    }
+  }
+
+  // Olay dinleyicilerini bağla (Kilo, Fiyat veya Kesim Türü değiştiğinde otomatik çalışır)
+  document.addEventListener("DOMContentLoaded", function () {
+    const weightInput = document.querySelector('input[name="carcassWeight"]');
+    const priceInput = document.querySelector('input[name="price"]');
+    const cutTypeInputs = document.querySelectorAll('input[name="selectedCutType"]');
+
+    if (weightInput) weightInput.addEventListener('input', hesaplaOdeme);
+    if (priceInput) priceInput.addEventListener('input', hesaplaOdeme);
+    cutTypeInputs.forEach(input => input.addEventListener('change', hesaplaOdeme));
+  });
+</script>
+
 <script src="app.js"></script></body>
 </html>
