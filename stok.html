@@ -88,12 +88,12 @@
 
       <div class="bg-card border border-border rounded-xl p-3 shadow-sm">
         <span class="text-xs font-bold text-muted-foreground flex items-center gap-1">
-          <iconify-icon icon="lucide:beef"></iconify-icon> Diğer
+          <iconify-icon icon="lucide:beef"></iconify-icon> Dana
         </span>
         <div class="mt-2 text-xs">
-          <p class="text-muted-foreground">Adet: <strong id="cnt-diger" class="text-foreground">0</strong></p>
-          <p class="text-muted-foreground">Kilo: <strong id="kg-diger" class="text-foreground">0 kg</strong></p>
-          <p class="text-muted-foreground">Maliyet: <strong id="cost-diger" class="text-success font-bold">0 TL</strong></p>
+          <p class="text-muted-foreground">Adet: <strong id="cnt-dana" class="text-foreground">0</strong></p>
+          <p class="text-muted-foreground">Kilo: <strong id="kg-dana" class="text-foreground">0 kg</strong></p>
+          <p class="text-muted-foreground">Maliyet: <strong id="cost-dana" class="text-foreground">0 TL</strong></p>
         </div>
       </div>
 
@@ -159,6 +159,18 @@
       const selectAllCb = document.getElementById('select-all');
       const sevkBtn = document.getElementById('sevk-et-btn');
 
+      // Türkçe Karakter Normalleştirici
+      function normalizeCins(str) {
+        if (!str) return 'diger';
+        const s = str.trim().toUpperCase('tr-TR');
+        if (s.startsWith('İNEK') || s.startsWith('INEK')) return 'inek';
+        if (s.startsWith('DÜVE') || s.startsWith('DUVE')) return 'duve';
+        if (s.startsWith('KOYUN')) return 'koyun';
+        if (s.startsWith('TOSUN')) return 'tosun';
+        if (s.startsWith('DANA')) return 'dana';
+        return 'diger';
+      }
+
       function stokYukle() {
         const tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
         const stoktakiler = tumStoklar.filter(s => !s.durum || s.durum === 'stokta');
@@ -168,7 +180,7 @@
           duve: { count: 0, kg: 0, cost: 0 },
           koyun: { count: 0, kg: 0, cost: 0 },
           tosun: { count: 0, kg: 0, cost: 0 },
-          diger: { count: 0, kg: 0, cost: 0 },
+          dana: { count: 0, kg: 0, cost: 0 },
           toplam: { count: 0, kg: 0, cost: 0 }
         };
 
@@ -176,16 +188,18 @@
           container.innerHTML = `<div class="p-8 text-center text-xs text-muted-foreground">Stokta hayvan bulunmamaktadır.</div>`;
         } else {
           container.innerHTML = stoktakiler.map(item => {
-            const cins = (item.cins || '').toLowerCase();
+            const key = normalizeCins(item.cins || item.kupeNo);
             const kg = parseFloat(item.agirlik || 0);
             const cost = parseFloat(item.maliyet || 0);
 
-            if (stats[cins]) {
-              stats[cins].count++; stats[cins].kg += kg; stats[cins].cost += cost;
-            } else {
-              stats.diger.count++; stats.diger.kg += kg; stats.diger.cost += cost;
+            if (stats[key]) {
+              stats[key].count++; 
+              stats[key].kg += kg; 
+              stats[key].cost += cost;
             }
-            stats.toplam.count++; stats.toplam.kg += kg; stats.toplam.cost += cost;
+            stats.toplam.count++; 
+            stats.toplam.kg += kg; 
+            stats.toplam.cost += cost;
 
             return `
               <div class="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-background hover:bg-muted/20 transition-all">
@@ -206,7 +220,7 @@
           }).join('');
         }
 
-        // Kartları Güncelle
+        // Özet Kartlarını Güncelle
         Object.keys(stats).forEach(key => {
           const c = document.getElementById(`cnt-${key}`);
           const k = document.getElementById(`kg-${key}`);
@@ -232,13 +246,11 @@
         checkSelection();
       });
 
-      // SEÇİLENLERİ SEVKİYAT SAYFASINA GEÇİR
       sevkBtn.addEventListener('click', function () {
         const checked = document.querySelectorAll('.stok-item-cb:checked');
         const selectedIds = Array.from(checked).map(cb => cb.getAttribute('data-id'));
 
         if (selectedIds.length > 0) {
-          // Seçilen ürün kimliklerini 'taslakSevkiyat' olarak sakla
           localStorage.setItem('taslakSevkiyatIds', JSON.stringify(selectedIds));
           window.location.href = 'sevkiyat.html';
         }
@@ -250,3 +262,4 @@
   </script>
 </body>
 </html>
+
