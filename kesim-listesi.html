@@ -13,9 +13,12 @@
           foreground: 'rgb(23 36 45 / <alpha-value>)',
           primary: { DEFAULT: 'rgb(18 48 71 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
           secondary: { DEFAULT: 'rgb(221 235 233 / <alpha-value>)', foreground: 'rgb(18 63 61 / <alpha-value>)' },
+          accent: { DEFAULT: 'rgb(184 106 0 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
           card: { DEFAULT: 'rgb(255 255 255 / <alpha-value>)', foreground: 'rgb(23 36 45 / <alpha-value>)' },
           border: 'rgb(201 213 217 / <alpha-value>)',
           muted: { DEFAULT: 'rgb(232 238 240 / <alpha-value>)', foreground: 'rgb(83 99 109 / <alpha-value>)' },
+          success: { DEFAULT: 'rgb(44 110 73 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
+          destructive: { DEFAULT: 'rgb(180 35 24 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' }
         },
         fontFamily: { body: ['Inter', 'system-ui'] },
         borderRadius: { DEFAULT: '14px' }
@@ -25,20 +28,95 @@
   <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
 </head>
 <body class="bg-background text-foreground min-h-screen font-body pb-28">
+
   <header class="px-5 pb-4 pt-10 flex justify-between items-center">
     <div>
       <p class="text-xs font-semibold text-muted-foreground">Günlük İşlemler</p>
       <h1 class="text-2xl font-bold text-foreground">Kesim Listesi</h1>
     </div>
+    <button id="open-modal-btn" class="flex items-center gap-1.5 text-xs font-bold bg-primary text-primary-foreground px-3.5 py-2.5 rounded-xl shadow hover:opacity-90 transition-all">
+      <iconify-icon icon="lucide:plus-circle" class="text-base"></iconify-icon> Yeni Kesim Kaydı
+    </button>
   </header>
 
   <main class="px-5 space-y-4">
     <section class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
       <div id="kesim-container" class="divide-y divide-border">
-        <!-- Günlük kayıtlar gelecek -->
+        <!-- Günlük kesimler listelenecek -->
       </div>
     </section>
   </main>
+
+  <!-- KESİM KAYIT MODALİ -->
+  <div id="kesim-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-primary/80 p-4 backdrop-blur-sm overflow-y-auto">
+    <div class="w-full max-w-lg rounded-2xl bg-card p-5 shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4 border-b border-border pb-2">
+        <h2 class="text-base font-bold text-foreground flex items-center gap-2">
+          <iconify-icon icon="lucide:plus-circle" class="text-primary"></iconify-icon>
+          Yeni Kesim Kaydı Oluştur
+        </h2>
+        <button id="close-modal-btn" class="text-muted-foreground hover:text-foreground text-xl flex items-center">
+          <iconify-icon icon="lucide:x"></iconify-icon>
+        </button>
+      </div>
+
+      <form id="kesim-form" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-muted-foreground">Müşteri Adı Soyadı</label>
+            <input type="text" id="form-musteri" required class="w-full rounded-lg border border-border p-2 text-sm focus:ring-1 focus:ring-primary" placeholder="Ad Soyad">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-muted-foreground">TC Kimlik / Vergi No</label>
+            <input type="text" id="form-tc" maxlength="11" class="w-full rounded-lg border border-border p-2 text-sm focus:ring-1 focus:ring-primary" placeholder="11 haneli TC No">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-muted-foreground">IBAN Numarası</label>
+            <input type="text" id="form-iban" class="w-full rounded-lg border border-border p-2 text-sm focus:ring-1 focus:ring-primary" placeholder="TR00 0000...">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-muted-foreground">Kısa Adres</label>
+            <input type="text" id="form-adres" class="w-full rounded-lg border border-border p-2 text-sm focus:ring-1 focus:ring-primary" placeholder="İl, İlçe">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-muted-foreground">Kesim Tipi</label>
+            <select id="form-tip" class="w-full rounded-lg border border-border p-2 text-sm focus:ring-1 focus:ring-primary">
+              <option value="Standart">Standart Kesim</option>
+              <option value="Faturalı">Faturalı Kesim</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-muted-foreground">Kesen Personel / Kasap</label>
+            <input type="text" id="form-kesen" required placeholder="Örn: Ahmet Usta" class="w-full rounded-lg border border-border p-2 text-sm focus:ring-1 focus:ring-primary">
+          </div>
+        </div>
+
+        <!-- DİNAMİK HAYVAN EKLEME -->
+        <div class="pt-2 border-t border-border">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <iconify-icon icon="lucide:beef" class="text-primary text-base"></iconify-icon>
+              Kesilecek Hayvanlar
+            </span>
+            <button type="button" id="add-animal-btn" class="flex items-center gap-1 text-xs font-bold text-primary bg-secondary px-3 py-1 rounded-lg">
+              <iconify-icon icon="lucide:plus"></iconify-icon> Hayvan Ekle
+            </button>
+          </div>
+          <div id="animal-list-container" class="space-y-3"></div>
+        </div>
+
+        <button type="submit" class="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground shadow hover:opacity-90">
+          Kaydet ve Stoğa Aktar
+        </button>
+      </form>
+    </div>
+  </div>
 
   <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-lg">
     <div class="mx-auto flex max-w-md items-center justify-between">
@@ -67,33 +145,134 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const kesimler = JSON.parse(localStorage.getItem('gunlukKesimler')) || [];
-      const container = document.getElementById('kesim-container');
+      const kesimModal = document.getElementById('kesim-modal');
+      const openBtn = document.getElementById('open-modal-btn');
+      const closeBtn = document.getElementById('close-modal-btn');
+      const animalContainer = document.getElementById('animal-list-container');
 
-      if (kesimler.length === 0) {
-        container.innerHTML = `
-          <div class="p-8 text-center text-muted-foreground text-sm">
-            Bugün henüz kesim kaydı girilmedi.
-          </div>`;
-        return;
+      openBtn.addEventListener('click', () => kesimModal.classList.remove('hidden'));
+      closeBtn.addEventListener('click', () => kesimModal.classList.add('hidden'));
+
+      let animalCount = 0;
+      function addAnimalRow() {
+        animalCount++;
+        const row = document.createElement('div');
+        row.className = 'animal-row rounded-lg border border-border bg-muted/20 p-3 space-y-2';
+        row.innerHTML = `
+          <div class="flex items-center justify-between border-b border-border/50 pb-1">
+            <span class="text-xs font-bold text-primary">Hayvan #${animalCount}</span>
+            ${animalCount > 1 ? `<button type="button" class="remove-animal-btn text-destructive text-xs font-bold">Sil</button>` : ''}
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] font-semibold text-muted-foreground">Cinsi</label>
+              <select class="animal-cins w-full rounded border border-border p-1.5 text-xs bg-card">
+                <option value="İnek">İnek</option>
+                <option value="Düve">Düve</option>
+                <option value="Tosun">Tosun</option>
+                <option value="Dana">Dana</option>
+                <option value="Koyun">Koyun</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-muted-foreground">Kod / Küpe No</label>
+              <input type="text" class="animal-code w-full rounded border border-border p-1.5 text-xs bg-card" placeholder="inek1, dana2">
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-muted-foreground">Ağırlık (Kg)</label>
+              <input type="number" required min="1" class="animal-kg w-full rounded border border-border p-1.5 text-xs bg-card" placeholder="0">
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-muted-foreground">Maliyet (TL)</label>
+              <input type="number" required min="0" class="animal-tl w-full rounded border border-border p-1.5 text-xs bg-card" placeholder="0">
+            </div>
+          </div>
+        `;
+        const rBtn = row.querySelector('.remove-animal-btn');
+        if(rBtn) rBtn.addEventListener('click', () => row.remove());
+        animalContainer.appendChild(row);
       }
 
-      container.innerHTML = kesimler.map((item, index) => `
-        <div class="p-4 flex justify-between items-center">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-sm text-primary">#${index + 1} - ${item.cins}</span>
-              <span class="text-[10px] font-semibold px-2 py-0.5 rounded ${item.tip === 'Faturalı' ? 'bg-accent/15 text-accent' : 'bg-secondary text-secondary-foreground'}">${item.tip}</span>
+      addAnimalRow();
+      document.getElementById('add-animal-btn').addEventListener('click', addAnimalRow);
+
+      function listeyiYukle() {
+        const kesimler = JSON.parse(localStorage.getItem('gunlukKesimler')) || [];
+        const container = document.getElementById('kesim-container');
+
+        if (kesimler.length === 0) {
+          container.innerHTML = `<div class="p-8 text-center text-muted-foreground text-sm">Bugün henüz kesim kaydı girilmedi.</div>`;
+          return;
+        }
+
+        container.innerHTML = kesimler.map((item, index) => `
+          <div class="p-4 flex justify-between items-center">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-sm text-primary">#${index + 1} - ${item.kupeNo || item.cins}</span>
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded ${item.tip === 'Faturalı' ? 'bg-accent/15 text-accent' : 'bg-secondary text-secondary-foreground'}">${item.tip}</span>
+              </div>
+              <p class="text-xs text-foreground mt-0.5">Müşteri: <strong>${item.musteri}</strong> ${item.tc ? `(${item.tc})` : ''}</p>
+              <p class="text-[11px] text-muted-foreground">Kesen: ${item.kesen} | Saat: ${item.saat}</p>
             </div>
-            <p class="text-xs text-foreground mt-0.5">Müşteri: <strong>${item.musteri}</strong></p>
-            <p class="text-[11px] text-muted-foreground">Kesen: ${item.kesen} | Saat: ${item.saat}</p>
+            <div class="text-right">
+              <p class="text-sm font-bold text-foreground">${item.agirlik} kg</p>
+              <p class="text-xs font-semibold text-success">${item.maliyet.toLocaleString('tr-TR')} TL</p>
+            </div>
           </div>
-          <div class="text-right">
-            <p class="text-sm font-bold text-foreground">${item.agirlik} kg</p>
-            <p class="text-xs font-semibold text-success">${item.maliyet.toLocaleString('tr-TR')} TL</p>
-          </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
+
+      document.getElementById('kesim-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const musteri = document.getElementById('form-musteri').value;
+        const tc = document.getElementById('form-tc').value;
+        const iban = document.getElementById('form-iban').value;
+        const adres = document.getElementById('form-adres').value;
+        const tip = document.getElementById('form-tip').value;
+        const kesen = document.getElementById('form-kesen').value;
+
+        const animalRows = animalContainer.querySelectorAll('.animal-row');
+        const gunlukKesimler = JSON.parse(localStorage.getItem('gunlukKesimler')) || [];
+        const stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+
+        const tarihStr = new Date().toLocaleDateString('tr-TR');
+        const saatStr = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+        animalRows.forEach((row, idx) => {
+          const cins = row.querySelector('.animal-cins').value;
+          const codeInput = row.querySelector('.animal-code').value.trim();
+          const kg = parseFloat(row.querySelector('.animal-kg').value || 0);
+          const tl = parseFloat(row.querySelector('.animal-tl').value || 0);
+
+          const finalEtiket = codeInput || `${cins}-${idx + 1}`;
+
+          const yeniKayit = {
+            id: Date.now() + Math.random(),
+            musteri, tc, iban, adres, cins,
+            kupeNo: finalEtiket,
+            animalId: finalEtiket,
+            tip, agirlik: kg, maliyet: tl, kesen,
+            tarih: tarihStr, saat: saatStr, durum: 'stokta'
+          };
+
+          gunlukKesimler.push(yeniKayit);
+          stoklar.push(yeniKayit);
+        });
+
+        localStorage.setItem('gunlukKesimler', JSON.stringify(gunlukKesimler));
+        localStorage.setItem('stoklar', JSON.stringify(stoklar));
+
+        kesimModal.classList.add('hidden');
+        document.getElementById('kesim-form').reset();
+        animalContainer.innerHTML = '';
+        animalCount = 0;
+        addAnimalRow();
+        listeyiYukle();
+      });
+
+      listeyiYukle();
     });
   </script>
 </body>
