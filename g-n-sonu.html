@@ -6,16 +6,16 @@
     <title>Gün Sonu Raporu - Kesimhane</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-6">
+<body class="bg-gray-100 pb-24 p-4 md:p-6">
 
-    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md mb-8">
         <h1 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-3">Gün Sonu Raporu</h1>
 
         <!-- MÜŞTERİ LİSTESİ VE KESİM DETAYLARI TABLOSU -->
         <div class="overflow-x-auto mb-6">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-gray-800 text-white">
+                    <tr class="bg-slate-800 text-white">
                         <th class="p-3 border">Müşteri Adı</th>
                         <th class="p-3 border">Telefon</th>
                         <th class="p-3 border">IBAN</th>
@@ -24,7 +24,7 @@
                     </tr>
                 </thead>
                 <tbody id="raporTablosu" class="bg-white divide-y">
-                    <!-- JavaScript burayı otomatik dolduracak -->
+                    <!-- Javascript ile doldurulacak -->
                 </tbody>
             </table>
         </div>
@@ -47,7 +47,37 @@
         </div>
     </div>
 
-    <!-- OTOMATİK VERİ ÇEKME KODU -->
+    <!-- UYGULAMA ALT GEZİNTİ MENÜSÜ (BOTTOM NAVIGATION BAR) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div class="max-w-md mx-auto flex justify-around items-center py-2 text-xs text-gray-600">
+            <a href="ana-sayfa.html" class="flex flex-col items-center hover:text-blue-600">
+                <span>🏠</span>
+                <span>Anasayfa</span>
+            </a>
+            <a href="kesim-listesi.html" class="flex flex-col items-center hover:text-blue-600">
+                <span>📋</span>
+                <span>Kesim Listesi</span>
+            </a>
+            <a href="stok.html" class="flex flex-col items-center hover:text-blue-600">
+                <span>📦</span>
+                <span>Stok</span>
+            </a>
+            <a href="sevkiyat.html" class="flex flex-col items-center hover:text-blue-600">
+                <span>🚚</span>
+                <span>Sevkiyat</span>
+            </a>
+            <a href="g-n-sonu.html" class="flex flex-col items-center font-bold text-blue-600">
+                <span>📊</span>
+                <span>Gün Sonu</span>
+            </a>
+            <a href="kasap-kesimleri.html" class="flex flex-col items-center hover:text-blue-600">
+                <span>🥩</span>
+                <span>Kasap Kesimleri</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- OTOMATİK VERİ ÇEKME VE HESAPLAMA SCRIPT -->
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         let gunSonuRaporu = JSON.parse(localStorage.getItem('gunSonuRaporu')) || [];
@@ -73,7 +103,7 @@
                     <tr class="hover:bg-gray-50">
                         <td class="p-3 border">${item.musteriAdi || '-'}</td>
                         <td class="p-3 border">${item.telefon || '-'}</td>
-                        <td class="p-3 border font-mono text-sm">${item.iban || '-'}</td>
+                        <td class="p-3 border font-mono text-xs">${item.iban || '-'}</td>
                         <td class="p-3 border font-medium">${item.kesimTuru === 'faturali' ? 'Faturalı Kesim' : 'Standart Kesim'}</td>
                         <td class="p-3 border text-right font-bold">${tutar.toFixed(2)} TL</td>
                     </tr>
@@ -88,52 +118,6 @@
         document.getElementById("genelToplam").innerText = genelToplam.toFixed(2) + " TL";
     });
     </script>
-    <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Onayla ve Bitir Butonunu Yakala
-    const onaylaBtn = document.querySelector('button:has(span), .btn, button') || document.getElementById("onaylaBtn");
-
-    if (onaylaBtn) {
-        onaylaBtn.addEventListener("click", function(e) {
-            e.preventDefault();
-
-            // Form Elemanlarından Verileri Topla (Varsayılan input ID/Name değerlerine göre)
-            const seciliKesimTuru = document.querySelector('input[name="cutType"]:checked')?.value || "standart";
-            const musteriAdi = document.querySelector('input[placeholder*="Ad"], input[name*="musteri"]')?.value || "Ahmet Yılmaz";
-            const telefon = document.querySelector('input[type="tel"], input[placeholder*="Tel"]')?.value || "0555 000 00 00";
-            const iban = document.querySelector('input[placeholder*="TR"], input[name*="iban"]')?.value || "TR00 0000 0000 0000 0000 0000 00";
-            const tutarText = document.querySelector('.toplam-odeme, #toplamOdeme, span:contains("TL")')?.innerText || "1500";
-            const tutar = parseFloat(tutarText.replace(/[^0-9.-]+/g, "")) || 1500;
-
-            // 1. STOK LİSTESİNE EKLEME
-            let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-            stoklar.push({
-                id: Date.now(),
-                cins: "Büyükbaş / Dana",
-                fiyat: tutar,
-                kesimTuru: seciliKesimTuru,
-                tarih: new Date().toLocaleDateString('tr-TR')
-            });
-            localStorage.setItem('stoklar', JSON.stringify(stoklar));
-
-            // 2. GÜN SONU RAPORUNA EKLEME
-            let gunSonuRaporu = JSON.parse(localStorage.getItem('gunSonuRaporu')) || [];
-            gunSonuRaporu.push({
-                id: Date.now(),
-                musteriAdi: musteriAdi,
-                telefon: telefon,
-                iban: iban,
-                kesimTuru: seciliKesimTuru,
-                tutar: tutar
-            });
-            localStorage.setItem('gunSonuRaporu', JSON.stringify(gunSonuRaporu));
-
-            alert("Kayıt Başarılı! Hayvan stoğa ve gün sonu raporuna eklendi.");
-            window.location.href = "g-n-sonu.html";
-        });
-    }
-});
-</script>
-
 </body>
 </html>
+
