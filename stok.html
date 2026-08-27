@@ -46,8 +46,8 @@
   </style>
 </head>
 <body class="bg-background text-foreground min-h-screen">
-  <div class="min-h-screen w-full bg-background pb-28 font-body text-foreground">
-    <header class="px-5 pb-5 pt-12">
+  <div class="min-h-screen w-full bg-background pb-32 font-body text-foreground">
+    <header class="px-5 pb-4 pt-10">
       <div class="flex items-start justify-between gap-4">
         <div>
           <div class="mb-1 flex items-center gap-2">
@@ -56,68 +56,93 @@
             </div>
             <p class="text-xs font-semibold tracking-wide text-muted-foreground">Et Entegre Tesisi Üretim</p>
           </div>
-          <h1 class="font-heading text-[26px] font-bold tracking-tight text-foreground">Stok</h1>
-          <p class="mt-1 text-sm font-medium text-muted-foreground">Onaylı kesimlerden otomatik güncellenir</p>
+          <h1 class="font-heading text-[26px] font-bold tracking-tight text-foreground">Stok Yönetimi</h1>
         </div>
-        <button id="refresh-btn" class="mt-1 flex h-12 w-12 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm hover:bg-muted" aria-label="Yenile">
-          <iconify-icon icon="lucide:refresh-cw" class="text-xl"></iconify-icon>
+        <button id="refresh-btn" class="mt-1 flex h-11 w-11 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm hover:bg-muted" aria-label="Yenile">
+          <iconify-icon icon="lucide:refresh-cw" class="text-lg"></iconify-icon>
         </button>
       </div>
     </header>
 
     <main class="space-y-4 px-5">
-      <!-- İSTATİSTİKLER -->
-      <section class="grid grid-cols-3 overflow-hidden rounded-theme border border-border bg-card shadow-sm">
-        <div class="border-r-2 border-border px-3 py-4">
-          <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
-            <iconify-icon icon="lucide:beef" class="text-lg"></iconify-icon>
+      <!-- 6 KARE ÖZET ALANI (İNEK, DÜVE, KOYUN, TOSUN, DİĞER, TOPLAM) -->
+      <section class="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+        <!-- İnek -->
+        <div class="rounded-theme border border-border bg-card p-3 shadow-sm">
+          <p class="text-xs font-bold text-primary flex items-center gap-1.5"><iconify-icon icon="lucide:beef"></iconify-icon> İnek</p>
+          <div class="mt-2 space-y-0.5 text-xs">
+            <p class="text-muted-foreground">Adet: <strong id="c-inek-adet" class="text-foreground">0</strong></p>
+            <p class="text-muted-foreground">Kilo: <strong id="c-inek-kilo" class="text-foreground">0 kg</strong></p>
+            <p class="text-muted-foreground">Maliyet: <strong id="c-inek-maliyet" class="text-success">0 TL</strong></p>
           </div>
-          <p class="text-[11px] font-semibold leading-4 text-muted-foreground">Hayvan</p>
-          <p id="stat-hayvan" class="mt-1 font-heading text-2xl font-bold tabular-nums text-foreground">0</p>
         </div>
-        <div class="border-r-2 border-border px-3 py-4">
-          <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
-            <iconify-icon icon="lucide:scale" class="text-lg"></iconify-icon>
+
+        <!-- Düve -->
+        <div class="rounded-theme border border-border bg-card p-3 shadow-sm">
+          <p class="text-xs font-bold text-primary flex items-center gap-1.5"><iconify-icon icon="lucide:beef"></iconify-icon> Düve</p>
+          <div class="mt-2 space-y-0.5 text-xs">
+            <p class="text-muted-foreground">Adet: <strong id="c-duve-adet" class="text-foreground">0</strong></p>
+            <p class="text-muted-foreground">Kilo: <strong id="c-duve-kilo" class="text-foreground">0 kg</strong></p>
+            <p class="text-muted-foreground">Maliyet: <strong id="c-duve-maliyet" class="text-success">0 TL</strong></p>
           </div>
-          <p class="text-[11px] font-semibold leading-4 text-muted-foreground">Toplam ağırlık</p>
-          <p id="stat-agirlik" class="mt-1 font-heading text-2xl font-bold tabular-nums text-foreground">0 <span class="text-sm">kg</span></p>
         </div>
-        <div class="px-3 py-4">
-          <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-theme bg-accent text-accent-foreground">
-            <iconify-icon icon="lucide:badge-turkish-lira" class="text-lg"></iconify-icon>
+
+        <!-- Koyun -->
+        <div class="rounded-theme border border-border bg-card p-3 shadow-sm">
+          <p class="text-xs font-bold text-primary flex items-center gap-1.5"><iconify-icon icon="lucide:footprints"></iconify-icon> Koyun</p>
+          <div class="mt-2 space-y-0.5 text-xs">
+            <p class="text-muted-foreground">Adet: <strong id="c-koyun-adet" class="text-foreground">0</strong></p>
+            <p class="text-muted-foreground">Kilo: <strong id="c-koyun-kilo" class="text-foreground">0 kg</strong></p>
+            <p class="text-muted-foreground">Maliyet: <strong id="c-koyun-maliyet" class="text-success">0 TL</strong></p>
           </div>
-          <p class="text-[11px] font-semibold leading-4 text-muted-foreground">Toplam maliyet</p>
-          <p id="stat-maliyet" class="mt-1 font-heading text-2xl font-bold tabular-nums text-foreground">0 <span class="text-sm">TL</span></p>
+        </div>
+
+        <!-- Tosun -->
+        <div class="rounded-theme border border-border bg-card p-3 shadow-sm">
+          <p class="text-xs font-bold text-primary flex items-center gap-1.5"><iconify-icon icon="lucide:beef"></iconify-icon> Tosun</p>
+          <div class="mt-2 space-y-0.5 text-xs">
+            <p class="text-muted-foreground">Adet: <strong id="c-tosun-adet" class="text-foreground">0</strong></p>
+            <p class="text-muted-foreground">Kilo: <strong id="c-tosun-kilo" class="text-foreground">0 kg</strong></p>
+            <p class="text-muted-foreground">Maliyet: <strong id="c-tosun-maliyet" class="text-success">0 TL</strong></p>
+          </div>
+        </div>
+
+        <!-- Diğer -->
+        <div class="rounded-theme border border-border bg-card p-3 shadow-sm">
+          <p class="text-xs font-bold text-primary flex items-center gap-1.5"><iconify-icon icon="lucide:help-circle"></iconify-icon> Diğer</p>
+          <div class="mt-2 space-y-0.5 text-xs">
+            <p class="text-muted-foreground">Adet: <strong id="c-diger-adet" class="text-foreground">0</strong></p>
+            <p class="text-muted-foreground">Kilo: <strong id="c-diger-kilo" class="text-foreground">0 kg</strong></p>
+            <p class="text-muted-foreground">Maliyet: <strong id="c-diger-maliyet" class="text-success">0 TL</strong></p>
+          </div>
+        </div>
+
+        <!-- Genel Toplam -->
+        <div class="rounded-theme border-2 border-primary bg-primary/5 p-3 shadow-sm">
+          <p class="text-xs font-bold text-primary flex items-center gap-1.5"><iconify-icon icon="lucide:calculator"></iconify-icon> Toplam</p>
+          <div class="mt-2 space-y-0.5 text-xs">
+            <p class="text-muted-foreground">Adet: <strong id="c-toplam-adet" class="text-foreground">0</strong></p>
+            <p class="text-muted-foreground">Kilo: <strong id="c-toplam-kilo" class="text-foreground">0 kg</strong></p>
+            <p class="text-muted-foreground">Maliyet: <strong id="c-toplam-maliyet" class="text-accent">0 TL</strong></p>
+          </div>
         </div>
       </section>
 
-      <!-- SEKMELER -->
-      <section class="rounded-theme border border-border bg-card p-1.5 shadow-sm">
-        <div class="grid grid-cols-2 gap-1">
-          <button id="tab-stokta" class="flex h-11 items-center justify-center gap-2 rounded-theme bg-primary px-3 text-sm font-bold text-primary-foreground">
-            <iconify-icon icon="lucide:package-open" class="text-lg"></iconify-icon>
-            Stokta
-            <span id="badge-stokta" class="rounded-full bg-white/15 px-2 py-0.5 text-xs tabular-nums">0</span>
-          </button>
-          <button id="tab-sevk" class="flex h-11 items-center justify-center gap-2 rounded-theme px-3 text-sm font-bold text-muted-foreground hover:bg-muted/50">
-            <iconify-icon icon="lucide:truck" class="text-lg"></iconify-icon>
-            Sevk Edildi
-            <span id="badge-sevk" class="rounded-full bg-muted px-2 py-0.5 text-xs tabular-nums text-muted-foreground">0</span>
-          </button>
-        </div>
-      </section>
-
-      <!-- STOK LİSTESİ -->
+      <!-- STOK KART LİSTESİ VE SEÇİM EYLEMLERİ -->
       <section class="rounded-theme border border-border bg-card shadow-sm">
-        <div class="flex items-center justify-between border-b-2 border-border px-4 py-3.5">
-          <div>
-            <h2 class="font-heading text-base font-bold text-foreground">Stok kayıtları</h2>
-            <p class="mt-0.5 text-xs font-medium text-muted-foreground">Onaylanan kesimler burada görünür</p>
-          </div>
+        <div class="flex items-center justify-between border-b border-border px-4 py-3 bg-muted/20">
+          <label class="flex items-center gap-2 text-xs font-bold text-foreground cursor-pointer select-none">
+            <input type="checkbox" id="select-all-cb" class="h-4 w-4 rounded border-border text-primary focus:ring-primary" />
+            Tümünü Seç
+          </label>
+          <button id="sevk-et-btn" class="flex items-center gap-1.5 rounded-theme bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground shadow-sm hover:opacity-90 transition-all">
+            <iconify-icon icon="lucide:truck" class="text-base"></iconify-icon>
+            Seçilenleri Sevk Et
+          </button>
         </div>
 
         <div id="stok-container" class="divide-y divide-border">
-          <!-- Veriler Buraya Yüklenecek -->
+          <!-- Otomatik Doldurulacak -->
         </div>
       </section>
     </main>
@@ -151,53 +176,90 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      function yukleStokVerileri() {
-        const stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+      let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+
+      function getCinsKategorisi(cins) {
+        if (!cins) return 'diger';
+        const c = cins.toLowerCase().trim();
+        if (c.includes('inek')) return 'inek';
+        if (c.includes('düve') || c.includes('duve')) return 'duve';
+        if (c.includes('koyun')) return 'koyun';
+        if (c.includes('tosun') || c.includes('dana') || c.includes('büyükbaş') || c.includes('buyukbas')) return 'tosun';
+        return 'diger';
+      }
+
+      function yukleStok() {
+        stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
         const container = document.getElementById('stok-container');
         
-        const stoktaOlanlar = stoklar.filter(item => item.durum === 'stokta' || item.status === 'stokta');
-        const sevkEdilenler = stoklar.filter(item => item.durum === 'sevk' || item.status === 'sevk');
+        // Stokta olanlar
+        const stoktaOlanlar = stoklar.filter(item => (item.durum === 'stokta' || item.status === 'stokta'));
 
-        // Sayaçları Güncelle
-        document.getElementById('stat-hayvan').textContent = stoktaOlanlar.length;
-        document.getElementById('badge-stokta').textContent = stoktaOlanlar.length;
-        document.getElementById('badge-sevk').textContent = sevkEdilenler.length;
+        // Sayaç Sıfırlama
+        const ozet = {
+          inek: { adet: 0, kilo: 0, maliyet: 0 },
+          duve: { adet: 0, kilo: 0, maliyet: 0 },
+          koyun: { adet: 0, kilo: 0, maliyet: 0 },
+          tosun: { adet: 0, kilo: 0, maliyet: 0 },
+          diger: { adet: 0, kilo: 0, maliyet: 0 },
+          toplam: { adet: 0, kilo: 0, maliyet: 0 }
+        };
 
-        let toplamKg = 0;
-        let toplamTL = 0;
-
-        stoktaOlanlar.forEach(item => {
-          toplamKg += parseFloat(item.agirlik || item.carcassWeight || 0);
-          toplamTL += parseFloat(item.maliyet || item.fiyat || item.price || 0);
+        // Alfabetik Sıralama (İnek-1, Tosun-2 vb.)
+        stoktaOlanlar.sort((a, b) => {
+          const nameA = (a.kupeNo || a.animalId || '').toString();
+          const nameB = (b.kupeNo || b.animalId || '').toString();
+          return nameA.localeCompare(nameB, 'tr', { numeric: true, sensitivity: 'base' });
         });
 
-        document.getElementById('stat-agirlik').innerHTML = `${toplamKg.toLocaleString('tr-TR')} <span class="text-sm">kg</span>`;
-        document.getElementById('stat-maliyet').innerHTML = `${toplamTL.toLocaleString('tr-TR', {minimumFractionDigits: 2})} <span class="text-sm">TL</span>`;
+        // Hesaplamalar
+        stoktaOlanlar.forEach(item => {
+          const cat = getCinsKategorisi(item.cins || item.breed);
+          const kg = parseFloat(item.agirlik || item.carcassWeight || 0);
+          const tl = parseFloat(item.maliyet || item.fiyat || 0);
+
+          ozet[cat].adet += 1;
+          ozet[cat].kilo += kg;
+          ozet[cat].maliyet += tl;
+
+          ozet.toplam.adet += 1;
+          ozet.toplam.kilo += kg;
+          ozet.toplam.maliyet += tl;
+        });
+
+        // Kartlara Yazdırma
+        ['inek', 'duve', 'koyun', 'tosun', 'diger', 'toplam'].forEach(key => {
+          document.getElementById(`c-${key}-adet`).textContent = ozet[key].adet;
+          document.getElementById(`c-${key}-kilo`).textContent = `${ozet[key].kilo.toLocaleString('tr-TR')} kg`;
+          document.getElementById(`c-${key}-maliyet`).textContent = `${ozet[key].maliyet.toLocaleString('tr-TR', {minimumFractionDigits: 0})} TL`;
+        });
 
         // Liste Boşsa
         if (stoktaOlanlar.length === 0) {
           container.innerHTML = `
             <div class="px-5 py-10 text-center">
-              <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-                <iconify-icon icon="lucide:package-check" class="text-3xl"></iconify-icon>
+              <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+                <iconify-icon icon="lucide:package-check" class="text-2xl"></iconify-icon>
               </div>
-              <h3 class="mt-4 font-heading text-lg font-bold text-foreground">Stokta kayıt yok</h3>
-              <p class="mx-auto mt-2 max-w-[260px] text-sm leading-5 text-muted-foreground">Onaylanmış bir kesim kaydı tamamlandığında hayvan bilgileri, ağırlık ve maliyet otomatik olarak stoğa eklenir.</p>
+              <h3 class="mt-3 font-heading text-base font-bold text-foreground">Stokta kayıt yok</h3>
+              <p class="mt-1 text-xs text-muted-foreground">Onaylanan kesimler otomatik buraya eklenir.</p>
             </div>
           `;
           return;
         }
 
-        // Listeyi Doldur
+        // Listeyi Render Etme
         container.innerHTML = stoktaOlanlar.map(item => `
-          <div class="p-4 flex items-center justify-between">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-primary text-sm">${item.kupeNo || item.animalId || 'Küpesiz'}</span>
-                <span class="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-secondary-foreground">${item.cins || item.breed || 'Büyükbaş'}</span>
+          <div class="p-4 flex items-center justify-between hover:bg-muted/10 transition-colors">
+            <div class="flex items-center gap-3">
+              <input type="checkbox" value="${item.id}" class="stok-item-cb h-5 w-5 rounded border-border text-primary focus:ring-primary cursor-pointer" />
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="inline-block rounded bg-secondary/80 px-2 py-0.5 text-xs font-bold text-secondary-foreground">${item.kupeNo || item.animalId || 'Küpesiz'}</span>
+                </div>
+                <p class="mt-1 text-xs font-medium text-foreground">Müşteri: <strong>${item.musteri || '-'}</strong></p>
+                <p class="text-[11px] text-muted-foreground">Tarih: ${item.tarih || '-'}</p>
               </div>
-              <p class="text-xs text-muted-foreground">Müşteri: <strong class="text-foreground">${item.musteri || '-'}</strong></p>
-              <p class="text-[11px] text-muted-foreground">Tarih: ${item.tarih || '-'}</p>
             </div>
             <div class="text-right space-y-1">
               <p class="font-bold text-foreground text-sm tabular-nums">${item.agirlik || item.carcassWeight || 0} kg</p>
@@ -205,12 +267,43 @@
             </div>
           </div>
         `).join('');
+
+        document.getElementById('select-all-cb').checked = false;
       }
 
-      document.getElementById('refresh-btn').addEventListener('click', yukleStokVerileri);
-      yukleStokVerileri();
+      // Tümünü Seç / Kaldır
+      document.getElementById('select-all-cb').addEventListener('change', function(e) {
+        const checkboxes = document.querySelectorAll('.stok-item-cb');
+        checkboxes.forEach(cb => cb.checked = e.target.checked);
+      });
+
+      // Seçilenleri Sevkiyata Aktar
+      document.getElementById('sevk-et-btn').addEventListener('click', function() {
+        const selectedCbs = document.querySelectorAll('.stok-item-cb:checked');
+        if (selectedCbs.length === 0) {
+          alert('Lütfen sevk etmek istediğiniz hayvanları seçiniz.');
+          return;
+        }
+
+        if (!confirm(`${selectedCbs.length} adet hayvanı sevkiyata aktarmak istediğinize emin misiniz?`)) return;
+
+        const selectedIds = Array.from(selectedCbs).map(cb => cb.value);
+
+        stoklar = stoklar.map(item => {
+          if (selectedIds.includes(String(item.id))) {
+            return { ...item, durum: 'sevk', status: 'sevk' };
+          }
+          return item;
+        });
+
+        localStorage.setItem('stoklar', JSON.stringify(stoklar));
+        alert('Seçilen hayvanlar başarıyla sevkiyata aktarıldı!');
+        yukleStok();
+      });
+
+      document.getElementById('refresh-btn').addEventListener('click', yukleStok);
+      yukleStok();
     });
   </script>
 </body>
 </html>
-
