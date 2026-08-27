@@ -88,5 +88,52 @@
         document.getElementById("genelToplam").innerText = genelToplam.toFixed(2) + " TL";
     });
     </script>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Onayla ve Bitir Butonunu Yakala
+    const onaylaBtn = document.querySelector('button:has(span), .btn, button') || document.getElementById("onaylaBtn");
+
+    if (onaylaBtn) {
+        onaylaBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+
+            // Form Elemanlarından Verileri Topla (Varsayılan input ID/Name değerlerine göre)
+            const seciliKesimTuru = document.querySelector('input[name="cutType"]:checked')?.value || "standart";
+            const musteriAdi = document.querySelector('input[placeholder*="Ad"], input[name*="musteri"]')?.value || "Ahmet Yılmaz";
+            const telefon = document.querySelector('input[type="tel"], input[placeholder*="Tel"]')?.value || "0555 000 00 00";
+            const iban = document.querySelector('input[placeholder*="TR"], input[name*="iban"]')?.value || "TR00 0000 0000 0000 0000 0000 00";
+            const tutarText = document.querySelector('.toplam-odeme, #toplamOdeme, span:contains("TL")')?.innerText || "1500";
+            const tutar = parseFloat(tutarText.replace(/[^0-9.-]+/g, "")) || 1500;
+
+            // 1. STOK LİSTESİNE EKLEME
+            let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+            stoklar.push({
+                id: Date.now(),
+                cins: "Büyükbaş / Dana",
+                fiyat: tutar,
+                kesimTuru: seciliKesimTuru,
+                tarih: new Date().toLocaleDateString('tr-TR')
+            });
+            localStorage.setItem('stoklar', JSON.stringify(stoklar));
+
+            // 2. GÜN SONU RAPORUNA EKLEME
+            let gunSonuRaporu = JSON.parse(localStorage.getItem('gunSonuRaporu')) || [];
+            gunSonuRaporu.push({
+                id: Date.now(),
+                musteriAdi: musteriAdi,
+                telefon: telefon,
+                iban: iban,
+                kesimTuru: seciliKesimTuru,
+                tutar: tutar
+            });
+            localStorage.setItem('gunSonuRaporu', JSON.stringify(gunSonuRaporu));
+
+            alert("Kayıt Başarılı! Hayvan stoğa ve gün sonu raporuna eklendi.");
+            window.location.href = "g-n-sonu.html";
+        });
+    }
+});
+</script>
+
 </body>
 </html>
