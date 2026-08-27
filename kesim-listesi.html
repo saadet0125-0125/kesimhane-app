@@ -47,7 +47,7 @@
       <input type="text" id="search-input" placeholder="Müşteri adı veya küpe no ile ara..." class="w-full bg-transparent text-xs outline-none">
     </div>
 
-    <!-- KESİM LİSTESİ TABLOSU / KARTLARI -->
+    <!-- KESİM LİSTESİ -->
     <div id="kesim-listesi-container" class="space-y-3">
       <!-- Dinamik İçerik -->
     </div>
@@ -67,7 +67,7 @@
       </div>
 
       <form id="kesim-form" class="space-y-4">
-        <!-- Müşteri ve İşlem Bilgileri -->
+        <!-- Müşteri Bilgileri -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-[11px] font-semibold text-muted-foreground mb-1">Müşteri Adı Soyadı</label>
@@ -87,9 +87,9 @@
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-muted-foreground mb-1">Kesim Tipi</label>
-            <select id="m-kesim-tipi" class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none bg-card">
+            <select id="m-kesim-tipi" class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none bg-card font-semibold">
               <option value="Standart Kesim (%1.5 Stopaj)">Standart Kesim (%1.5 Stopaj Dâhil)</option>
-              <option value="Özel Kesim">Özel Kesim</option>
+              <option value="Faturalı Kesim (+%1 KDV)">Faturalı Kesim (+%1 KDV)</option>
             </select>
           </div>
           <div>
@@ -98,7 +98,7 @@
           </div>
         </div>
 
-        <!-- Kesilecek Hayvanlar Bölümü -->
+        <!-- Kesilecek Hayvanlar -->
         <div class="space-y-3 pt-2">
           <div class="flex justify-between items-center border-b border-border pb-2">
             <span class="text-xs font-bold text-foreground flex items-center gap-1.5">
@@ -115,7 +115,7 @@
           </div>
         </div>
 
-        <!-- Özet Hesaplama Tablosu -->
+        <!-- Hesaplama Özeti -->
         <div class="rounded-xl bg-muted/30 border border-border p-3 space-y-1">
           <div class="flex justify-between items-center text-xs">
             <span class="text-muted-foreground">Ham Tutar (Kg × Birim Fiyat):</span>
@@ -179,6 +179,7 @@
       const kesimForm = document.getElementById('kesim-form');
       const listContainer = document.getElementById('kesim-listesi-container');
       const searchInput = document.getElementById('search-input');
+      const kesimTipiSelect = document.getElementById('m-kesim-tipi');
 
       openBtn.addEventListener('click', () => {
         modal.classList.remove('hidden');
@@ -189,11 +190,9 @@
 
       closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
-      // AKTİF STOKTAKI EN YÜKSEK KODU BULAN/SIFIRLAYAN GELİŞMİŞ FONKSİYON
+      // Stok durumuna göre numara üreten kod
       function getNextCodeForForm(cins, currentRowIndex) {
         const upperCins = cins.toUpperCase().trim();
-
-        // Stoktaki duruma bak (Sadece sevkiyatı yapılmamış "stokta" olanlar)
         const tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
         const aktifStoklar = tumStoklar.filter(item => !item.durum || item.durum === 'stokta');
 
@@ -210,7 +209,6 @@
           }
         });
 
-        // Form içerisinde aynı anda eklenen aynı cinsleri say
         const activeRows = animalContainer.querySelectorAll('.animal-row');
         let sameCinsCountInForm = 0;
         
@@ -275,12 +273,9 @@
         const cinsSelect = row.querySelector('.animal-cins');
         const codeInput = row.querySelector('.animal-code');
 
-        // Otomatik ilk koda atama
         codeInput.value = getNextCodeForForm(cinsSelect.value, rowIdx);
 
-        cinsSelect.addEventListener('change', () => {
-          updateAllRowCodes();
-        });
+        cinsSelect.addEventListener('change', () => updateAllRowCodes());
 
         row.querySelectorAll('.animal-kg, .animal-price').forEach(input => {
           input.addEventListener('input', calculateTotal);
@@ -310,9 +305,12 @@
       }
 
       addAnimalBtn.addEventListener('click', addAnimalRow);
+      kesimTipiSelect.addEventListener('change', calculateTotal);
 
+      // HESAPLAMA MANTIĞI: KDV VEYA STOPAJ
       function calculateTotal() {
         let totalHam = 0;
+        const kesimTipi = kesimTipiSelect.value;
 
         document.querySelectorAll('.animal-row').forEach(row => {
           const kg = parseFloat(row.querySelector('.animal-kg').value) || 0;
@@ -320,14 +318,26 @@
           totalHam += (kg * price);
         });
 
-        const stopajMiktari = totalHam * 0.015;
-        const netTutar = totalHam - stopajMiktari;
+        const summaryStopajEl = document.getElementById('summary-stopaj');
+        let netTutar = totalHam;
+
+        if (kesimTipi.includes('Faturalı')) {
+          const kdvTutar = totalHam * 0.01; // %1 KDV ekle
+          netTutar = totalHam + kdvTutar;
+          summaryStopajEl.textContent = `+%1 KDV (+${kdvTutar.toLocaleString('tr-TR', {minimumFractionDigits:2})} TL)`;
+          summaryStopajEl.className = 'font-bold text-success';
+        } else {
+          const stopajTutar = totalHam * 0.015; // %1.5 Stopaj düş
+          netTutar = totalHam - stopajTutar;
+          summaryStopajEl.textContent = `-%1.5 Stopaj (-${stopajTutar.toLocaleString('tr-TR', {minimumFractionDigits:2})} TL)`;
+          summaryStopajEl.className = 'font-bold text-destructive';
+        }
 
         document.getElementById('summary-ham').textContent = `${totalHam.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
         document.getElementById('summary-net').textContent = `${netTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
       }
 
-      // FORM KAYDI & STOĞA AKTARIM
+      // KAYIT İŞLEMİ
       kesimForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -335,7 +345,7 @@
         const tc = document.getElementById('m-tc').value;
         const iban = document.getElementById('m-iban').value;
         const adres = document.getElementById('m-adres').value;
-        const kesimTipi = document.getElementById('m-kesim-tipi').value;
+        const kesimTipi = kesimTipiSelect.value;
         const kasap = document.getElementById('m-kasap').value;
 
         const rows = animalContainer.querySelectorAll('.animal-row');
@@ -353,7 +363,13 @@
           const kg = parseFloat(row.querySelector('.animal-kg').value) || 0;
           const price = parseFloat(row.querySelector('.animal-price').value) || 0;
           const hamMaliyet = kg * price;
-          const netMaliyet = hamMaliyet - (hamMaliyet * 0.015);
+          
+          let netMaliyet = hamMaliyet;
+          if (kesimTipi.includes('Faturalı')) {
+            netMaliyet = hamMaliyet + (hamMaliyet * 0.01); // KDV ekleme
+          } else {
+            netMaliyet = hamMaliyet - (hamMaliyet * 0.015); // Stopaj düşme
+          }
 
           yeniStoklar.push({
             id: Date.now() + Math.random(),
@@ -363,6 +379,7 @@
             animalId: code,
             agirlik: kg,
             birimFiyat: price,
+            hamMaliyet: hamMaliyet,
             maliyet: netMaliyet,
             tarih: bugun,
             durum: 'stokta'
@@ -378,7 +395,7 @@
         modal.classList.add('hidden');
 
         listeyiYukle();
-        alert(`${yeniStoklar.length} adet hayvan kesim kaydı yapıldı ve stoğa eklendi.`);
+        alert(`${yeniStoklar.length} adet hayvan kaydedildi ve stoğa eklendi.`);
       });
 
       function listeyiYukle() {
@@ -401,8 +418,8 @@
               <div class="flex items-center gap-2">
                 <span class="text-xs font-bold bg-secondary text-secondary-foreground px-2 py-0.5 rounded">${item.kupeNo || item.animalId}</span>
                 <span class="text-xs font-bold text-foreground">${item.cins}</span>
-                <span class="text-[10px] px-2 py-0.5 rounded-full ${item.durum === 'sevk_edildi' ? 'bg-destructive/10 text-destructive' : 'bg-success/10 text-success'} font-bold">
-                  ${item.durum === 'sevk_edildi' ? 'Sevk Edildi' : 'Stokta'}
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${item.kesimTipi && item.kesimTipi.includes('Faturalı') ? 'bg-accent/10 text-accent' : 'bg-primary/10 text-primary'}">
+                  ${item.kesimTipi || 'Standart'}
                 </span>
               </div>
               <p class="text-xs text-muted-foreground">Müşteri: <strong class="text-foreground">${item.musteri}</strong></p>
@@ -422,3 +439,4 @@
   </script>
 </body>
 </html>
+
