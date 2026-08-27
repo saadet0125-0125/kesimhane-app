@@ -36,7 +36,6 @@
 
   <main class="px-5 space-y-6">
 
-    <!-- 1. SEVKİYAT OLUŞTURMA ALANI -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
       
       <!-- SOL: Stoktaki Hazır Ürünler -->
@@ -86,12 +85,17 @@
               <input type="text" id="sevk-sofor" required placeholder="Ad Soyad" class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary">
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-muted-foreground mb-1">Şoför Telefon</label>
-              <input type="tel" id="sevk-telefon" placeholder="05XX XXX XX XX" class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary">
+              <label class="block text-[11px] font-semibold text-muted-foreground mb-1">Şoför TC Kimlik No</label>
+              <input type="text" id="sevk-tc" maxlength="11" placeholder="11 haneli TC No" class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary">
             </div>
           </div>
 
-          <!-- Seçilen Toplam Maliyet & Ağırlık Özeti -->
+          <div>
+            <label class="block text-[11px] font-semibold text-muted-foreground mb-1">Şoför Telefon</label>
+            <input type="tel" id="sevk-telefon" placeholder="05XX XXX XX XX" class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary">
+          </div>
+
+          <!-- Hesaplama Özeti -->
           <div class="rounded-lg bg-muted/40 border border-border p-3 space-y-1">
             <div class="flex justify-between items-center text-xs">
               <span class="text-muted-foreground">Seçilen Adet:</span>
@@ -116,7 +120,7 @@
 
     </div>
 
-    <!-- 2. TAMAMLANAN SEVKİYATLAR & GEÇMİŞ ARŞİV -->
+    <!-- TAMAMLANAN SEVKİYATLAR & GEÇMİŞ ARŞİV -->
     <section class="bg-card border border-border rounded-xl shadow-sm p-4 space-y-4">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-border">
         <div>
@@ -127,7 +131,6 @@
           <p class="text-xs text-muted-foreground">Tarih bazlı geriye dönük arama ve sevk detayları</p>
         </div>
 
-        <!-- Tarih Filtresi -->
         <div class="flex items-center gap-2">
           <input type="date" id="archive-date-filter" class="rounded-lg border border-border p-1.5 text-xs bg-background">
           <button id="clear-filter-btn" class="text-xs text-muted-foreground hover:text-foreground underline">Tümünü Göster</button>
@@ -135,13 +138,12 @@
       </div>
 
       <div id="arsiv-container" class="space-y-3">
-        <!-- Dinamik Sevkiyat Arşivi Kartları -->
+        <!-- Arşiv Kartları -->
       </div>
     </section>
 
   </main>
 
-  <!-- ALT NAVİGASYON -->
   <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-lg">
     <div class="mx-auto flex max-w-md items-center justify-between">
       <a href="ana-sayfa.html" class="flex flex-col items-center gap-1 text-muted-foreground">
@@ -174,18 +176,17 @@
       const selectAllBtn = document.getElementById('select-all-btn');
       const sevkBaslatBtn = document.getElementById('sevk-baslat-btn');
       const arsivContainer = document.getElementById('arsiv-container');
-      const dateFilterInput = document.getElementById('archive-date-filter');
-      const clearFilterBtn = document.getElementById('clear-filter-btn');
 
       let currentStoklar = [];
       let allSelected = false;
 
-      // 1. STOKTAKİ ÜRÜNLERİ LİSTELE
       function stoklariGetir() {
         const tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-        // Sadece durumu 'stokta' olan veya durum bilgisi belirsiz/yeni eklenen hayvanları göster
         currentStoklar = tumStoklar.filter(item => !item.durum || item.durum === 'stokta');
         stokAdetSpan.textContent = currentStoklar.length;
+
+        // Stok sayfasından aktarılan taslak verileri oku
+        const taslakIds = JSON.parse(localStorage.getItem('taslakSevkiyatIds')) || [];
 
         if (currentStoklar.length === 0) {
           stokContainer.innerHTML = `<div class="p-6 text-center text-xs text-muted-foreground">Sevke hazır stokta ürün kalmadı.</div>`;
@@ -193,38 +194,43 @@
           return;
         }
 
-        stokContainer.innerHTML = currentStoklar.map((item) => `
-          <div class="py-2.5 px-1 flex items-center justify-between gap-2 hover:bg-muted/30 rounded-lg transition-all">
-            <div class="flex items-center gap-2.5">
-              <input type="checkbox" data-id="${String(item.id)}" class="stok-checkbox rounded border-border text-primary focus:ring-primary w-4 h-4 cursor-pointer">
-              <div>
-                <span class="font-bold text-xs text-primary">${item.kupeNo || item.animalId}</span>
-                <span class="text-[10px] font-semibold text-muted-foreground ml-1">(${item.cins})</span>
-                <p class="text-[11px] text-foreground">Müşteri: ${item.musteri}</p>
+        stokContainer.innerHTML = currentStoklar.map((item) => {
+          const isSelected = taslakIds.includes(String(item.id));
+          return `
+            <div class="py-2.5 px-1 flex items-center justify-between gap-2 hover:bg-muted/30 rounded-lg transition-all">
+              <div class="flex items-center gap-2.5">
+                <input type="checkbox" data-id="${String(item.id)}" ${isSelected ? 'checked' : ''} class="stok-checkbox rounded border-border text-primary focus:ring-primary w-4 h-4 cursor-pointer">
+                <div>
+                  <span class="font-bold text-xs text-primary">${item.kupeNo || item.animalId}</span>
+                  <span class="text-[10px] font-semibold text-muted-foreground ml-1">(${item.cins})</span>
+                  <p class="text-[11px] text-foreground">Müşteri: ${item.musteri}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-bold text-foreground block">${item.agirlik} kg</span>
+                <span class="text-[11px] font-semibold text-success">${parseFloat(item.maliyet || 0).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
               </div>
             </div>
-            <div class="text-right">
-              <span class="text-xs font-bold text-foreground block">${item.agirlik} kg</span>
-              <span class="text-[11px] font-semibold text-success">${parseFloat(item.maliyet || 0).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
+
+        // Taslak ID'lerini okunduktan sonra temizle ki sonraki girişlerde karışmasın
+        localStorage.removeItem('taslakSevkiyatIds');
 
         document.querySelectorAll('.stok-checkbox').forEach(cb => {
           cb.addEventListener('change', sevkHesapla);
         });
+
+        sevkHesapla();
       }
 
-      // 2. TÜMÜNÜ SEÇ / KALDIR
       selectAllBtn.addEventListener('click', function() {
         allSelected = !allSelected;
-        const checkboxes = document.querySelectorAll('.stok-checkbox');
-        checkboxes.forEach(cb => cb.checked = allSelected);
+        document.querySelectorAll('.stok-checkbox').forEach(cb => cb.checked = allSelected);
         selectAllBtn.textContent = allSelected ? 'Seçimi Kaldır' : 'Tümünü Seç';
         sevkHesapla();
       });
 
-      // 3. SEÇİLİ OLANLARIN TOPLAMINI HESAPLA
       function sevkHesapla() {
         const checkedBoxes = document.querySelectorAll('.stok-checkbox:checked');
         let secilenAdet = checkedBoxes.length;
@@ -247,7 +253,6 @@
         sevkBaslatBtn.disabled = secilenAdet === 0;
       }
 
-      // 4. SEVKİYATI BAŞLAT VE SADECE SEÇİLENLERİ STOKTAN DÜŞ
       document.getElementById('sevkiyat-form').addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -258,6 +263,7 @@
         const plaka = document.getElementById('sevk-plaka').value;
         const dorse = document.getElementById('sevk-dorse').value;
         const sofor = document.getElementById('sevk-sofor').value;
+        const tc = document.getElementById('sevk-tc').value;
         const telefon = document.getElementById('sevk-telefon').value;
 
         const secilenIds = Array.from(checkedBoxes).map(cb => String(cb.getAttribute('data-id')));
@@ -267,7 +273,6 @@
         let toplamKg = 0;
         let toplamTutar = 0;
 
-        // Stok dizisinde gezin: Sadece seçilenlerin durumunu 'sevk_edildi' yap, diğerlerine dokunma
         tumStoklar = tumStoklar.map(item => {
           if (secilenIds.includes(String(item.id))) {
             item.durum = 'sevk_edildi';
@@ -283,7 +288,7 @@
           tarih: new Date().toLocaleDateString('tr-TR'),
           isoTarih: new Date().toISOString().split('T')[0],
           saat: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
-          nereye, plaka, dorse, sofor, telefon,
+          nereye, plaka, dorse, sofor, tc, telefon,
           urunler: sevkEdilenUrunler,
           toplamAdet: sevkEdilenUrunler.length,
           toplamKg,
@@ -293,19 +298,15 @@
         const tamamlananSevkler = JSON.parse(localStorage.getItem('tamamlananSevkler')) || [];
         tamamlananSevkler.unshift(sevkiyatKaydi);
 
-        // Güncellenmiş tüm stokları kaydet
         localStorage.setItem('stoklar', JSON.stringify(tumStoklar));
         localStorage.setItem('tamamlananSevkler', JSON.stringify(tamamlananSevkler));
 
         document.getElementById('sevkiyat-form').reset();
-        allSelected = false;
-        selectAllBtn.textContent = 'Tümünü Seç';
         stoklariGetir();
         arsivYukle();
-        alert(`${sevkEdilenUrunler.length} adet ürün başarıyla sevk edildi. Kalan ürünler stokta korundu.`);
+        alert(`${sevkEdilenUrunler.length} adet ürün sevkiyata işlendi ve stoktan düşüldü.`);
       });
 
-      // 5. SEVKİYAT ARŞİVİNİ YÜKLE
       function arsivYukle(filtreTarih = null) {
         let sevkler = JSON.parse(localStorage.getItem('tamamlananSevkler')) || [];
 
@@ -331,10 +332,11 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-muted-foreground bg-card p-2.5 rounded-lg border border-border/50">
-              <div><strong>Araç / Dorse:</strong> ${sevk.plaka} / ${sevk.dorse || '-'}</div>
-              <div><strong>Sürücü:</strong> ${sevk.sofor}</div>
-              <div><strong>Sürücü Tel:</strong> ${sevk.telefon || '-'}</div>
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs text-muted-foreground bg-card p-2.5 rounded-lg border border-border/50">
+              <div><strong>Plaka / Dorse:</strong> ${sevk.plaka} / ${sevk.dorse || '-'}</div>
+              <div><strong>Şoför:</strong> ${sevk.sofor}</div>
+              <div><strong>Şoför TC:</strong> ${sevk.tc || '-'}</div>
+              <div><strong>Telefon:</strong> ${sevk.telefon || '-'}</div>
             </div>
 
             <div>
@@ -350,12 +352,6 @@
           </div>
         `).join('');
       }
-
-      dateFilterInput.addEventListener('change', (e) => arsivYukle(e.target.value));
-      clearFilterBtn.addEventListener('click', () => {
-        dateFilterInput.value = '';
-        arsivYukle();
-      });
 
       stoklariGetir();
       arsivYukle();
