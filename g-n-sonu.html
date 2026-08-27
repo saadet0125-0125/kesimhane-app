@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gün Sonu Raporu — Kesimhane</title>
+  <title>Gün Sonu — Kesimhane</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>
     tailwind.config = {
@@ -29,84 +29,75 @@
 </head>
 <body class="bg-background text-foreground min-h-screen font-body pb-28">
 
-  <div class="max-w-5xl mx-auto p-4 sm:p-6">
-    <div class="bg-card border border-border rounded-2xl p-6 shadow-sm">
-      
-      <!-- ÜST BAŞLIK, TARİH SEÇİCİ VE SIFIRLAMA BUTONU -->
-      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <div>
-          <h1 class="text-2xl font-bold text-foreground">Gün Sonu Raporu</h1>
-          <p class="text-xs text-muted-foreground mt-0.5">Günlük ödeme ve kesim hareketleri</p>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <div class="flex items-center gap-1.5 bg-muted/40 border border-border rounded-xl px-3 py-1.5">
-            <iconify-icon icon="lucide:calendar" class="text-muted-foreground text-sm"></iconify-icon>
-            <input type="date" id="filter-date" class="bg-transparent text-xs font-semibold focus:outline-none text-foreground">
-          </div>
-          
-          <button id="reset-btn" class="flex items-center gap-1 bg-destructive text-destructive-foreground px-3 py-2 rounded-xl text-xs font-bold shadow hover:opacity-90">
-            <iconify-icon icon="lucide:trash-2"></iconify-icon> Eski Verileri Sıfırla
-          </button>
-        </div>
-      </div>
-
-      <!-- SEKME GEÇİŞLERİ (BEKLEYEN VE ÖDENENLER) -->
-      <div class="flex border-b border-border mb-4">
-        <button id="tab-pending" class="px-4 py-2 text-xs font-bold border-b-2 border-primary text-primary transition-all">
-          <iconify-icon icon="lucide:clock" class="inline mr-1"></iconify-icon> Bekleyen Ödemeler
-        </button>
-        <button id="tab-completed" class="px-4 py-2 text-xs font-bold border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-all">
-          <iconify-icon icon="lucide:check-circle-2" class="inline mr-1 text-success"></iconify-icon> Tamamlanan / Ödenenler (Arşiv)
-        </button>
-      </div>
-
-      <!-- ÖDEMELER TABLOSU -->
-      <div class="overflow-x-auto rounded-xl border border-border mb-6">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-primary text-primary-foreground font-semibold">
-            <tr>
-              <th class="p-3">Müşteri Adı</th>
-              <th class="p-3">Adres / İletişim</th>
-              <th class="p-3">IBAN</th>
-              <th class="p-3">Kesim Türü</th>
-              <th class="p-3">Tutar</th>
-              <th class="p-3 text-right" id="action-header">İşlem</th>
-            </tr>
-          </thead>
-          <tbody id="report-table-body" class="divide-y divide-border bg-card">
-            <!-- Dinamik veriler gelecek -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- ÖZET TOPLAMLAR KARTI -->
-      <div class="flex justify-end">
-        <div class="w-full sm:w-80 rounded-xl bg-secondary/30 border border-border p-4 space-y-2">
-          <div class="flex justify-between items-center text-xs text-muted-foreground">
-            <span>Standart Kesim Ödemesi:</span>
-            <span id="stat-std-tutar" class="font-bold text-foreground">0.00 TL</span>
-          </div>
-          <div class="flex justify-between items-center text-xs text-muted-foreground">
-            <span>Faturalı Kesim Ödemesi:</span>
-            <span id="stat-fat-tutar" class="font-bold text-foreground">0.00 TL</span>
-          </div>
-          <div class="flex justify-between items-center text-sm font-bold pt-2 border-t border-border">
-            <span id="label-toplam" class="text-foreground">Toplam Ödenecek Tutar:</span>
-            <span id="stat-toplam-tutar" class="text-base font-extrabold text-success">0.00 TL</span>
-          </div>
-        </div>
-      </div>
-
+  <header class="px-5 pb-4 pt-8 flex justify-between items-center">
+    <div>
+      <p class="text-xs font-semibold text-muted-foreground">Raporlama ve Muhasebe</p>
+      <h1 class="text-2xl font-bold text-foreground">Gün Sonu Raporu</h1>
     </div>
-  </div>
+    <div class="text-right">
+      <span id="tarih-label" class="text-xs font-bold text-primary bg-secondary px-2.5 py-1 rounded-lg">--.--.----</span>
+    </div>
+  </header>
 
-  <!-- NAV MENÜ -->
+  <main class="px-5 space-y-4">
+    <!-- MALİ ÖZET KARTLARI -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div class="bg-card border border-border p-4 rounded-2xl shadow-sm">
+        <span class="text-xs font-bold text-muted-foreground block">Toplam Ham Tutar</span>
+        <strong id="gs-ham-tutar" class="text-lg text-foreground block mt-1">0,00 TL</strong>
+      </div>
+
+      <div class="bg-card border border-border p-4 rounded-2xl shadow-sm">
+        <span class="text-xs font-bold text-accent block">Toplam Hesaplanan KDV (+%1)</span>
+        <strong id="gs-kdv-tutar" class="text-lg text-accent block mt-1">0,00 TL</strong>
+      </div>
+
+      <div class="bg-card border border-border p-4 rounded-2xl shadow-sm">
+        <span class="text-xs font-bold text-destructive block">Toplam Kesilen Stopaj (-%1.5)</span>
+        <strong id="gs-stopaj-tutar" class="text-lg text-destructive block mt-1">0,00 TL</strong>
+      </div>
+    </div>
+
+    <div class="bg-primary text-primary-foreground p-4 rounded-2xl shadow-md flex justify-between items-center">
+      <div>
+        <span class="text-xs opacity-80 block font-semibold">Net Genel Toplam</span>
+        <strong id="gs-net-tutar" class="text-xl font-extrabold block mt-0.5">0,00 TL</strong>
+      </div>
+      <iconify-icon icon="lucide:wallet" class="text-3xl opacity-80"></iconify-icon>
+    </div>
+
+    <!-- KESİM TİPİ BAZINDA DETAYLAR -->
+    <section class="bg-card border border-border rounded-2xl p-4 shadow-sm space-y-3">
+      <h3 class="text-xs font-bold text-foreground border-b border-border pb-2 flex items-center gap-2">
+        <iconify-icon icon="lucide:file-text" class="text-primary"></iconify-icon>
+        Kesim Tipleri Detayı
+      </h3>
+
+      <div class="space-y-2">
+        <div class="flex justify-between items-center p-3 rounded-xl bg-muted/20 border border-border/60 text-xs">
+          <div>
+            <strong class="text-foreground block">Standart Kesim (%1.5 Stopaj Dâhil)</strong>
+            <span id="gs-std-cnt" class="text-[11px] text-muted-foreground">0 Hayvan</span>
+          </div>
+          <span id="gs-std-val" class="font-bold text-foreground">0,00 TL</span>
+        </div>
+
+        <div class="flex justify-between items-center p-3 rounded-xl bg-accent/5 border border-accent/20 text-xs">
+          <div>
+            <strong class="text-accent block">Faturalı Kesim (+%1 KDV)</strong>
+            <span id="gs-fat-cnt" class="text-[11px] text-muted-foreground">0 Hayvan</span>
+          </div>
+          <span id="gs-fat-val" class="font-bold text-accent">0,00 TL</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
   <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-lg">
     <div class="mx-auto flex max-w-md items-center justify-between">
       <a href="ana-sayfa.html" class="flex flex-col items-center gap-1 text-muted-foreground">
         <iconify-icon icon="lucide:house" class="text-xl"></iconify-icon>
-        <span class="text-[10px] font-bold">Anasayfa</span>
+        <span class="text-[10px] font-bold">Ana Sayfa</span>
       </a>
       <a href="kesim-listesi.html" class="flex flex-col items-center gap-1 text-muted-foreground">
         <iconify-icon icon="lucide:clipboard-list" class="text-xl"></iconify-icon>
@@ -129,132 +120,47 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const dateInput = document.getElementById('filter-date');
-      const tabPending = document.getElementById('tab-pending');
-      const tabCompleted = document.getElementById('tab-completed');
-      
-      let activeTab = 'pending'; // 'pending' veya 'completed'
+      const bugun = new Date().toLocaleDateString('tr-TR');
+      document.getElementById('tarih-label').textContent = bugun;
 
-      const now = new Date();
-      dateInput.value = now.toISOString().split('T')[0];
+      const tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
 
-      dateInput.addEventListener('change', raporuYukle);
+      let hamTutar = 0;
+      let kdvTutar = 0;
+      let stopajTutar = 0;
+      let netTutar = 0;
 
-      tabPending.addEventListener('click', () => {
-        activeTab = 'pending';
-        tabPending.className = "px-4 py-2 text-xs font-bold border-b-2 border-primary text-primary transition-all";
-        tabCompleted.className = "px-4 py-2 text-xs font-bold border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-all";
-        document.getElementById('action-header').innerText = "İşlem";
-        document.getElementById('label-toplam').innerText = "Toplam Ödenecek Tutar:";
-        raporuYukle();
-      });
+      let stdCnt = 0, stdVal = 0;
+      let fatCnt = 0, fatVal = 0;
 
-      tabCompleted.addEventListener('click', () => {
-        activeTab = 'completed';
-        tabCompleted.className = "px-4 py-2 text-xs font-bold border-b-2 border-success text-success transition-all";
-        tabPending.className = "px-4 py-2 text-xs font-bold border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-all";
-        document.getElementById('action-header').innerText = "Ödeme Durumu";
-        document.getElementById('label-toplam').innerText = "Toplam Ödenen Tutar:";
-        raporuYukle();
-      });
+      tumStoklar.forEach(item => {
+        const hMaliyet = parseFloat(item.hamMaliyet || (parseFloat(item.agirlik || 0) * parseFloat(item.birimFiyat || 0)));
+        const nMaliyet = parseFloat(item.maliyet || 0);
 
-      // TEK SEÇİM ÖDENDİ YAPMA (ARŞİVE AKTARMA)
-      window.odendiYap = function(id) {
-        if (confirm('Bu kaydın ödemesi yapıldı olarak arşivlensin mi?')) {
-          let gunlukKesimler = JSON.parse(localStorage.getItem('gunlukKesimler')) || [];
-          let odenenKesimler = JSON.parse(localStorage.getItem('odenenKesimler')) || [];
+        hamTutar += hMaliyet;
+        netTutar += nMaliyet;
 
-          const index = gunlukKesimler.findIndex(item => item.id === id);
-          if (index !== -1) {
-            const odendiItem = gunlukKesimler.splice(index, 1)[0];
-            odendiItem.odemeTarihi = new Date().toLocaleDateString('tr-TR');
-            odenenKesimler.push(odendiItem);
-
-            localStorage.setItem('gunlukKesimler', JSON.stringify(gunlukKesimler));
-            localStorage.setItem('odenenKesimler', JSON.stringify(odenenKesimler));
-            raporuYukle();
-          }
-        }
-      };
-
-      // TÜMÜNÜ SIFIRLAMA
-      document.getElementById('reset-btn').addEventListener('click', function() {
-        if (confirm('Tüm gün sonu ve arşivlenmiş ödeme verilerini sıfırlamak istediğinize emin misiniz?')) {
-          localStorage.removeItem('gunlukKesimler');
-          localStorage.removeItem('odenenKesimler');
-          raporuYukle();
-        }
-      });
-
-      function raporuYukle() {
-        const selectedDate = dateInput.value; 
-        const targetKey = activeTab === 'pending' ? 'gunlukKesimler' : 'odenenKesimler';
-        const kesimler = JSON.parse(localStorage.getItem(targetKey)) || [];
-        const tbody = document.getElementById('report-table-body');
-
-        const filtrelenmis = kesimler.filter(item => {
-          const checkDate = activeTab === 'pending' ? item.tarih : (item.odemeTarihi || item.tarih);
-          if(!checkDate) return true;
-          const parts = checkDate.split('.');
-          if(parts.length === 3) {
-            const itemIsoDate = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-            return itemIsoDate === selectedDate;
-          }
-          return true;
-        });
-
-        let stdTutar = 0;
-        let fatTutar = 0;
-
-        if (filtrelenmis.length === 0) {
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="6" class="p-8 text-center text-muted-foreground">
-                ${activeTab === 'pending' ? 'Bekleyen ödeme kaydı bulunmuyor.' : 'Seçilen tarihte ödenmiş kayıt bulunmuyor.'}
-              </td>
-            </tr>
-          `;
+        if (item.kesimTipi && item.kesimTipi.includes('Faturalı')) {
+          fatCnt++;
+          fatVal += nMaliyet;
+          kdvTutar += (hMaliyet * 0.01);
         } else {
-          tbody.innerHTML = filtrelenmis.map(item => {
-            const maliyetVal = parseFloat(item.maliyet || 0);
-            if (item.tip === 'Faturalı') fatTutar += maliyetVal;
-            else stdTutar += maliyetVal;
-
-            return `
-              <tr class="hover:bg-muted/10 transition-colors">
-                <td class="p-3 font-bold text-foreground">${item.musteri}</td>
-                <td class="p-3 text-muted-foreground">${item.adres || '---'}</td>
-                <td class="p-3 font-mono text-[11px]">${item.iban || '---'}</td>
-                <td class="p-3">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.tip === 'Faturalı' ? 'bg-accent/15 text-accent' : 'bg-secondary text-secondary-foreground'}">
-                    ${item.tip} Kesim
-                  </span>
-                </td>
-                <td class="p-3 font-bold text-success">${maliyetVal.toLocaleString('tr-TR', {minimumFractionDigits:2})} TL</td>
-                <td class="p-3 text-right">
-                  ${activeTab === 'pending' ? `
-                    <button onclick="odendiYap(${item.id})" class="bg-success text-success-foreground px-2.5 py-1 rounded-lg text-[10px] font-bold shadow hover:opacity-90">
-                      <iconify-icon icon="lucide:check" class="inline text-xs mr-0.5"></iconify-icon> Ödendi Yap
-                    </button>
-                  ` : `
-                    <span class="inline-flex items-center gap-1 text-xs font-bold text-success bg-success/10 px-2 py-1 rounded-lg">
-                      <iconify-icon icon="lucide:check-check"></iconify-icon> Ödendi
-                    </span>
-                  `}
-                </td>
-              </tr>
-            `;
-          }).join('');
+          stdCnt++;
+          stdVal += nMaliyet;
+          stopajTutar += (hMaliyet * 0.015);
         }
+      });
 
-        document.getElementById('stat-std-tutar').textContent = `${stdTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
-        document.getElementById('stat-fat-tutar').textContent = `${fatTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
-        
-        const toplam = stdTutar + fatTutar;
-        document.getElementById('stat-toplam-tutar').textContent = `${toplam.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
-      }
+      document.getElementById('gs-ham-tutar').textContent = `${hamTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
+      document.getElementById('gs-kdv-tutar').textContent = `+${kdvTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
+      document.getElementById('gs-stopaj-tutar').textContent = `-${stopajTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
+      document.getElementById('gs-net-tutar').textContent = `${netTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
 
-      raporuYukle();
+      document.getElementById('gs-std-cnt').textContent = `${stdCnt} Hayvan`;
+      document.getElementById('gs-std-val').textContent = `${stdVal.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
+
+      document.getElementById('gs-fat-cnt').textContent = `${fatCnt} Hayvan`;
+      document.getElementById('gs-fat-val').textContent = `${fatVal.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
     });
   </script>
 </body>
