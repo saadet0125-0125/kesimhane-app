@@ -342,5 +342,42 @@
       })(els[i]);
     })();
   </script>
+  <script>
+document.addEventListener("DOMContentLoaded", function() {
+    let gunSonuRaporu = JSON.parse(localStorage.getItem('gunSonuRaporu')) || [];
+
+    let standartToplam = 0;
+    let faturaliToplam = 0;
+
+    const raporTablosu = document.getElementById("raporTablosu");
+    if (raporTablosu) {
+        raporTablosu.innerHTML = gunSonuRaporu.map(item => {
+            const tutar = parseFloat(item.tutar || 0);
+            if (item.kesimTuru === 'faturali') {
+                faturaliToplam += tutar;
+            } else {
+                standartToplam += tutar;
+            }
+            
+            return `
+                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                    <td class="p-3">${item.musteriAdi || '-'}</td>
+                    <td class="p-3">${item.telefon || '-'}</td>
+                    <td class="p-3 font-mono text-sm">${item.iban || '-'}</td>
+                    <td class="p-3 font-semibold">${item.kesimTuru === 'faturali' ? 'Faturalı Kesim' : 'Standart Kesim'}</td>
+                    <td class="p-3 text-right font-bold">${tutar.toFixed(2)} TL</td>
+                </tr>
+            `;
+        }).join('') || '<tr><td colspan="5" class="p-4 text-center text-gray-500">Henüz kayıtlı işlem bulunmuyor.</td></tr>';
+    }
+
+    const genelToplam = standartToplam + faturaliToplam;
+
+    if (document.getElementById("standartToplam")) document.getElementById("standartToplam").innerText = standartToplam.toFixed(2) + " TL";
+    if (document.getElementById("faturaliToplam")) document.getElementById("faturaliToplam").innerText = faturaliToplam.toFixed(2) + " TL";
+    if (document.getElementById("genelToplam")) document.getElementById("genelToplam").innerText = genelToplam.toFixed(2) + " TL";
+});
+</script>
+
 <script src="app.js"></script></body>
 </html>
