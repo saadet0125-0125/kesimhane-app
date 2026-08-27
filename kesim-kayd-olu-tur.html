@@ -52,7 +52,7 @@
       <!-- Header -->
       <header class="border-b border-border bg-background px-5 pb-5 pt-12">
         <div class="flex items-center gap-3">
-          <button type="button" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm" aria-label="Geri dön">
+          <button type="button" onclick="history.back()" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm" aria-label="Geri dön">
             <iconify-icon icon="lucide:arrow-left" class="text-xl"></iconify-icon>
           </button>
           <div class="min-w-0">
@@ -60,17 +60,11 @@
             <h1 class="mt-1 font-heading text-[25px] font-bold tracking-tight text-foreground">Kesim Kaydı Oluştur</h1>
           </div>
         </div>
-        <div class="mt-5 flex items-center gap-2">
-          <div class="h-1.5 flex-1 rounded-full bg-primary"></div>
-          <div class="h-1.5 flex-1 rounded-full bg-muted"></div>
-          <div class="h-1.5 flex-1 rounded-full bg-muted"></div>
-          <span class="ml-2 text-xs font-bold text-muted-foreground">1 / 3</span>
-        </div>
       </header>
 
       <main class="space-y-4 px-5 pt-5">
         
-        <!-- 1. KİŞİ BİLGİLERİ (EN ÜSTTE) -->
+        <!-- 1. KİŞİ BİLGİLERİ -->
         <section class="rounded-theme border border-border bg-card shadow-sm">
           <div class="flex items-center gap-3 border-b-2 border-border px-4 py-4">
             <div class="flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
@@ -106,7 +100,7 @@
           </div>
         </section>
 
-        <!-- 2. HAYVAN BİLGİLERİ (KİŞİ BİLGİLERİNİN ALTINDA) -->
+        <!-- 2. HAYVAN BİLGİLERİ -->
         <section class="rounded-theme border border-border bg-card shadow-sm">
           <div class="flex items-center justify-between border-b-2 border-border px-4 py-4">
             <div class="flex items-center gap-3">
@@ -121,7 +115,7 @@
             <span id="hayvan-sayisi-badge" class="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">1 Hayvan</span>
           </div>
 
-          <!-- Hayvan Satırlarının Dinamik Ekleneceği Konteynır -->
+          <!-- Hayvan Satırları -->
           <div id="hayvan-listesi" class="space-y-4 p-4">
             <div class="hayvan-satiri rounded-theme border border-border/60 bg-muted/20 p-3 space-y-3 relative">
               <div class="flex items-center justify-between border-b border-border/40 pb-2">
@@ -147,7 +141,7 @@
                 <label class="block">
                   <span class="mb-1 block text-[11px] font-bold text-muted-foreground">Cinsi</span>
                   <div class="flex h-12 items-center rounded-theme border border-border bg-input px-2.5">
-                    <input name="animalBreed" type="text" placeholder="Örn. İnek" class="w-full min-w-0 bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+                    <input name="animalBreed" type="text" placeholder="Örn. Dana" class="hayvan-cins w-full min-w-0 bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
                   </div>
                 </label>
                 <label class="block">
@@ -253,7 +247,7 @@
 
       <!-- Alt Buton Barı -->
       <div class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-5 pb-6 pt-3 shadow-[0_-5px_18px_rgba(18,48,71,0.08)]">
-        <button type="submit" form="cut-record-form" class="flex h-14 w-full items-center justify-center gap-2 rounded-theme bg-primary text-base font-bold text-primary-foreground shadow-sm">
+        <button type="submit" form="cut-record-form" id="onaylaBtn" class="flex h-14 w-full items-center justify-center gap-2 rounded-theme bg-primary text-base font-bold text-primary-foreground shadow-sm">
           <iconify-icon icon="lucide:check-circle-2" class="text-xl"></iconify-icon>
           Onayla ve Bitir
         </button>
@@ -263,15 +257,16 @@
   </div>
 
   <script>
-    // Dynamic Hayvan Yönetimi ve Ödeme Hesaplama Mantığı
     document.addEventListener("DOMContentLoaded", function () {
       const hayvanListesi = document.getElementById("hayvan-listesi");
       const hayvanEkleBtn = document.getElementById("hayvan-ekle-btn");
       const hayvanBadge = document.getElementById("hayvan-sayisi-badge");
       const cutTypeInputs = document.querySelectorAll('input[name="selectedCutType"]');
       const alertBox = document.getElementById("cut-type-alert");
+      
+      let hesaplananToplamOdeme = 0;
 
-      // Ödeme Hesaplama Fonksiyonu (Tüm Hayvanları Toplar)
+      // Ödeme Hesaplama
       function hesaplaOdeme() {
         const kgInputs = document.querySelectorAll('.hayvan-kg');
         const fiyatInputs = document.querySelectorAll('.hayvan-fiyat');
@@ -294,6 +289,7 @@
         if (rawTotal === 0 || !selectedCut) {
           if (kesimBedeliEl) kesimBedeliEl.textContent = "0,00 TL";
           if (toplamOdemeEl) toplamOdemeEl.textContent = "0,00 TL";
+          hesaplananToplamOdeme = 0;
           return;
         }
 
@@ -307,13 +303,14 @@
           finalTotal = rawTotal + kdv;
         }
 
+        hesaplananToplamOdeme = finalTotal;
+
         const format = (num) => num.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TL";
 
         if (kesimBedeliEl) kesimBedeliEl.textContent = format(rawTotal);
         if (toplamOdemeEl) toplamOdemeEl.textContent = format(finalTotal);
       }
 
-      // Dinamik Hayvan Sayılarını ve Başlığı Güncelleme
       function updateHayvanNumbers() {
         const satirlar = hayvanListesi.querySelectorAll('.hayvan-satiri');
         satirlar.forEach((satir, index) => {
@@ -322,7 +319,7 @@
         if (hayvanBadge) hayvanBadge.textContent = `${satirlar.length} Hayvan`;
       }
 
-      // Yeni Hayvan Satırı Ekleme
+      // Yeni Hayvan Satırı Ekle
       hayvanEkleBtn.addEventListener('click', function () {
         const count = hayvanListesi.querySelectorAll('.hayvan-satiri').length + 1;
         const newRowHtml = `
@@ -353,7 +350,7 @@
               <label class="block">
                 <span class="mb-1 block text-[11px] font-bold text-muted-foreground">Cinsi</span>
                 <div class="flex h-12 items-center rounded-theme border border-border bg-input px-2.5">
-                  <input name="animalBreed" type="text" placeholder="Örn. İnek" class="w-full min-w-0 bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
+                  <input name="animalBreed" type="text" placeholder="Örn. Dana" class="hayvan-cins w-full min-w-0 bg-transparent text-sm font-semibold text-foreground outline-none placeholder:text-muted-foreground" />
                 </div>
               </label>
               <label class="block">
@@ -371,7 +368,6 @@
         updateHayvanNumbers();
       });
 
-      // Silme İşlemi ve Event Delegation (Tüm Sayfayı Dinle)
       hayvanListesi.addEventListener('click', function(e) {
         const silBtn = e.target.closest('.hayvan-sil-btn');
         if (silBtn) {
@@ -386,66 +382,66 @@
         }
       });
 
-      // Dinamik input değişikliklerini izleme
       hayvanListesi.addEventListener('input', function(e) {
         if (e.target.classList.contains('hayvan-kg') || e.target.classList.contains('hayvan-fiyat')) {
           hesaplaOdeme();
         }
       });
 
-      // Radio buton değişimi
       cutTypeInputs.forEach(input => input.addEventListener('change', hesaplaOdeme));
+
+      // --- ONAYLA VE BİTİR İŞLEMİ ---
+      const form = document.getElementById("cut-record-form");
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const selectedCut = document.querySelector('input[name="selectedCutType"]:checked')?.value;
+        if (!selectedCut) {
+          alert("Lütfen bir kesim türü seçiniz!");
+          return;
+        }
+
+        const fullName = document.querySelector('input[name="fullName"]')?.value.trim() || "-";
+        const phone = document.querySelector('input[name="phone"]')?.value.trim() || "-";
+        const iban = document.querySelector('input[name="iban"]')?.value.trim() || "-";
+
+        // Hayvanları Topla
+        let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        const satirlar = hayvanListesi.querySelectorAll('.hayvan-satiri');
+
+        satirlar.forEach(satir => {
+          const kupeNo = satir.querySelector('input[name="animalId"]')?.value || "-";
+          const cins = satir.querySelector('.hayvan-cins')?.value || "Dana";
+          const fiyat = parseFloat(satir.querySelector('.hayvan-fiyat')?.value) || 0;
+
+          stoklar.push({
+            id: Date.now() + Math.random(),
+            kupeNo: kupeNo,
+            cins: cins,
+            fiyat: fiyat,
+            kesimTuru: selectedCut,
+            tarih: new Date().toLocaleDateString('tr-TR')
+          });
+        });
+        localStorage.setItem('stoklar', JSON.stringify(stoklar));
+
+        // Gün Sonu Raporuna Kaydet
+        let gunSonuRaporu = JSON.parse(localStorage.getItem('gunSonuRaporu')) || [];
+        gunSonuRaporu.push({
+          id: Date.now(),
+          musteriAdi: fullName,
+          telefon: phone,
+          iban: iban,
+          kesimTuru: selectedCut,
+          tutar: hesaplananToplamOdeme
+        });
+        localStorage.setItem('gunSonuRaporu', JSON.stringify(gunSonuRaporu));
+
+        alert("Kayıt Başarılı! Veriler Stoğa ve Gün Sonu Raporuna eklendi.");
+        window.location.href = "g-n-sonu.html";
+      });
     });
   </script>
-  <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // "Onayla ve Bitir" butonuna basıldığında tetiklenecek fonksiyon
-    const btnOnayla = document.querySelector('button[type="submit"], .btn-primary, #onaylaBtn'); // Sayfanızdaki butonun sınıfı/id'si
-
-    if (btnOnayla) {
-        btnOnayla.addEventListener("click", function(e) {
-            // Form varsayılan gönderimini engelle
-            e.preventDefault();
-
-            // Kesim Türü Seçimi Kontrolü
-            const seciliKesimTuru = document.querySelector('input[name="cutType"]:checked')?.value || "standart"; 
-
-            // Formdan alınan örnek veriler (kendi input id'lerinize göre düzenleyebilirsiniz)
-            const hayvanCinsi = document.getElementById("hayvanCinsi")?.value || "Büyükbaş / Dana";
-            const kesimBedeli = parseFloat(document.getElementById("kesimBedeli")?.value || "0");
-            const musteriAdi = document.getElementById("musteriAdi")?.value || "Müşteri";
-            const telefon = document.getElementById("telefon")?.value || "-";
-            const iban = document.getElementById("iban")?.value || "-";
-
-            // 1. STOK KISMINA VERİ EKLEME (localStorage)
-            let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-            stoklar.push({
-                id: Date.now(),
-                cins: hayvanCinsi,
-                fiyat: kesimBedeli,
-                kesimTuru: seciliKesimTuru,
-                tarih: new Date().toLocaleDateString('tr-TR')
-            });
-            localStorage.setItem('stoklar', JSON.stringify(stoklar));
-
-            // 2. GÜN SONU RAPORUNA VERİ EKLEME
-            let gunSonuRaporu = JSON.parse(localStorage.getItem('gunSonuRaporu')) || [];
-            gunSonuRaporu.push({
-                id: Date.now(),
-                musteriAdi: musteriAdi,
-                telefon: telefon,
-                iban: iban,
-                kesimTuru: seciliKesimTuru, // "standart" veya "faturali"
-                tutar: kesimBedeli
-            });
-            localStorage.setItem('gunSonuRaporu', JSON.stringify(gunSonuRaporu));
-
-            alert("İşlem onaylandı! Hayvan stoğa eklendi ve Gün Sonu Raporu güncellendi.");
-            window.location.href = "g-n-sonu.html"; // Kayıttan sonra Gün Sonu sayfasına yönlendirir
-        });
-    }
-});
-</script>
-
 </body>
 </html>
+
