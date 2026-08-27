@@ -182,57 +182,76 @@
       const closeBtn = document.getElementById('close-modal-btn');
       const animalContainer = document.getElementById('animal-list-container');
 
-      openBtn.addEventListener('click', () => kesimModal.classList.remove('hidden'));
+      openBtn.addEventListener('click', () => {
+        kesimModal.classList.remove('hidden');
+      });
+      
       closeBtn.addEventListener('click', () => kesimModal.classList.add('hidden'));
 
-      // STOKTAKİ AKTİF (SEVK EDİLMEMİŞ) HAYVANLARDAN SAYAÇ BULMA
-      function getNextCodeForCins(cins, currentRowIndex) {
-        const stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+      // GENEL GEÇMİŞİ VE FORM İÇİ KESİMLERİ TARIYARAK OTOMATİK KOD VEREN MANTIKSAL FONKSİYON
+      function getNextCodeForForm(cins, currentRowIndex) {
         const upperCins = cins.toUpperCase().trim();
 
-        // 1. Sadece mevcut stokta bulunan ilgili cinsteki hayvanları incele
-        let maxNum = 0;
-        stoklar.forEach(item => {
-          const itemCins = (item.cins || '').toUpperCase().trim();
-          const itemCode = (item.kupeNo || item.animalId || '').toUpperCase().trim();
+        // 1. Tüm geçmiş kayıtları (Stok + Kesimler) birleştir
+        const tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        const gunlukKesimler = JSON.parse(localStorage.getItem('gunlukKesimler')) || [];
+        const tumGecmis = [...tumStoklar, ...gunlukKesimler];
 
-          if (itemCins === upperCins || itemCode.startsWith(upperCins)) {
-            const numPart = itemCode.replace(upperCins, '').trim();
-            const parsedNum = parseInt(numPart, 10);
-            if (!isNaN(parsedNum) && parsedNum > maxNum) {
-              maxNum = parsedNum;
+        let maxNumber = 0;
+
+        // Geçmiş verilerde seçilen cinsten en yüksek numarayı bul
+        tumGecmis.forEach(item => {
+          const code = (item.kupeNo || item.animalId || '').toUpperCase();
+          if (code.startsWith(upperCins)) {
+            const numMatch = code.replace(upperCins, '').match(/\d+/);
+            if (numMatch) {
+              const num = parseInt(numMatch[0], 10);
+              if (num > maxNumber) maxNumber = num;
             }
           }
         });
 
-        // 2. Açık olan modaldaki kendinden önceki aynı cinsteki satırları say
+        // 2. Şu an açık olan formun içindeki önceki satırları da hesaba kat
         const activeRows = animalContainer.querySelectorAll('.animal-row');
-        let formCountBefore = 0;
+        let sameCinsCountInForm = 0;
         
         activeRows.forEach((r, idx) => {
           if (idx < currentRowIndex) {
             const selCins = r.querySelector('.animal-cins')?.value;
             if (selCins && selCins.toUpperCase().trim() === upperCins) {
-              formCountBefore++;
+              sameCinsCountInForm++;
             }
           }
         });
 
-        // 3. Stokta ve formda hiç yoksa varsayılan olarak 1 versin
-        const calculatedNum = maxNum + formCountBefore + 1;
-        return `${upperCins}${calculatedNum}`;
+        const nextNum = maxNumber + sameCinsCountInForm + 1;
+        return `${upperCins}${nextNum}`;
       }
 
-      let animalCount = 0;
+      function updateAllAnimalHeadersAndCodes() {
+        const activeRows = animalContainer.querySelectorAll('.animal-row');
+        activeRows.forEach((row, idx) => {
+          // Sol üstteki etiketi her zaman Hayvan #1, Hayvan #2 yapar
+          const headerSpan = row.querySelector('.animal-header-title');
+          if (headerSpan) headerSpan.textContent = `Hayvan #${idx + 1}`;
+
+          // Cins değiştikçe veya sıra yenilendikçe kod otomatik belirlenir
+          const cinsSelect = row.querySelector('.animal-cins');
+          const codeInput = row.querySelector('.animal-code');
+          if (cinsSelect && codeInput) {
+            codeInput.value = getNextCodeForForm(cinsSelect.value, idx);
+          }
+        });
+      }
+
       function addAnimalRow() {
-        animalCount++;
         const row = document.createElement('div');
         row.className = 'animal-row rounded-lg border border-border bg-muted/20 p-3 space-y-2';
         
         row.innerHTML = `
           <div class="flex items-center justify-between border-b border-border/50 pb-1">
-            <span class="text-xs font-bold text-primary">Hayvan #${animalCount}</span>
-            ${animalCount > 1 ? `<button type="button" class="remove-animal-btn text-destructive text-xs font-bold">Sil</button>` : ''}
+            <span class="animal-header-title text-xs font-bold text-primary">Hayvan #1</span>
+            <button type="button" class="remove-animal-btn text-destructive text-xs font-bold hidden">Sil</button>
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
@@ -261,19 +280,15 @@
         `;
 
         const cinsSelect = row.querySelector('.animal-cins');
-        const codeInput = row.querySelector('.animal-code');
-
-        function updateCodeIfDefault() {
-          const allRows = Array.from(animalContainer.querySelectorAll('.animal-row'));
-          const rowIndex = allRows.indexOf(row);
-          codeInput.value = getNextCodeForCins(cinsSelect.value, rowIndex >= 0 ? rowIndex : allRows.length);
-        }
-
-        cinsSelect.addEventListener('change', updateCodeIfDefault);
+        cinsSelect.addEventListener('change', () => {
+          updateAllAnimalHeadersAndCodes();
+        });
 
         const rBtn = row.querySelector('.remove-animal-btn');
-        if(rBtn) rBtn.addEventListener('click', () => {
+        rBtn.addEventListener('click', () => {
           row.remove();
+          updateAllAnimalHeadersAndCodes();
+          updateRemoveButtons();
           calculateTotals();
         });
 
@@ -282,8 +297,23 @@
         });
 
         animalContainer.appendChild(row);
-        updateCodeIfDefault();
+        updateAllAnimalHeadersAndCodes();
+        updateRemoveButtons();
         calculateTotals();
+      }
+
+      function updateRemoveButtons() {
+        const rows = animalContainer.querySelectorAll('.animal-row');
+        rows.forEach((r, idx) => {
+          const btn = r.querySelector('.remove-animal-btn');
+          if (btn) {
+            if (rows.length > 1) {
+              btn.classList.remove('hidden');
+            } else {
+              btn.classList.add('hidden');
+            }
+          }
+        });
       }
 
       function calculateTotals() {
@@ -426,7 +456,7 @@
 
           const ham = kg * birimFiyat;
           const netMaliyet = tip === 'Standart' ? (ham * 0.985) : (ham * 1.01);
-          const finalEtiket = codeInput || getNextCodeForCins(cins, idx);
+          const finalEtiket = codeInput || getNextCodeForForm(cins, idx);
 
           const yeniKayit = {
             id: Date.now() + Math.random(),
@@ -447,7 +477,6 @@
         kesimModal.classList.add('hidden');
         document.getElementById('kesim-form').reset();
         animalContainer.innerHTML = '';
-        animalCount = 0;
         addAnimalRow();
         listeyiYukle();
       });
@@ -457,3 +486,4 @@
   </script>
 </body>
 </html>
+
