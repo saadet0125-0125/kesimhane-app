@@ -397,5 +397,55 @@
       cutTypeInputs.forEach(input => input.addEventListener('change', hesaplaOdeme));
     });
   </script>
+  <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // "Onayla ve Bitir" butonuna basıldığında tetiklenecek fonksiyon
+    const btnOnayla = document.querySelector('button[type="submit"], .btn-primary, #onaylaBtn'); // Sayfanızdaki butonun sınıfı/id'si
+
+    if (btnOnayla) {
+        btnOnayla.addEventListener("click", function(e) {
+            // Form varsayılan gönderimini engelle
+            e.preventDefault();
+
+            // Kesim Türü Seçimi Kontrolü
+            const seciliKesimTuru = document.querySelector('input[name="cutType"]:checked')?.value || "standart"; 
+
+            // Formdan alınan örnek veriler (kendi input id'lerinize göre düzenleyebilirsiniz)
+            const hayvanCinsi = document.getElementById("hayvanCinsi")?.value || "Büyükbaş / Dana";
+            const kesimBedeli = parseFloat(document.getElementById("kesimBedeli")?.value || "0");
+            const musteriAdi = document.getElementById("musteriAdi")?.value || "Müşteri";
+            const telefon = document.getElementById("telefon")?.value || "-";
+            const iban = document.getElementById("iban")?.value || "-";
+
+            // 1. STOK KISMINA VERİ EKLEME (localStorage)
+            let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+            stoklar.push({
+                id: Date.now(),
+                cins: hayvanCinsi,
+                fiyat: kesimBedeli,
+                kesimTuru: seciliKesimTuru,
+                tarih: new Date().toLocaleDateString('tr-TR')
+            });
+            localStorage.setItem('stoklar', JSON.stringify(stoklar));
+
+            // 2. GÜN SONU RAPORUNA VERİ EKLEME
+            let gunSonuRaporu = JSON.parse(localStorage.getItem('gunSonuRaporu')) || [];
+            gunSonuRaporu.push({
+                id: Date.now(),
+                musteriAdi: musteriAdi,
+                telefon: telefon,
+                iban: iban,
+                kesimTuru: seciliKesimTuru, // "standart" veya "faturali"
+                tutar: kesimBedeli
+            });
+            localStorage.setItem('gunSonuRaporu', JSON.stringify(gunSonuRaporu));
+
+            alert("İşlem onaylandı! Hayvan stoğa eklendi ve Gün Sonu Raporu güncellendi.");
+            window.location.href = "g-n-sonu.html"; // Kayıttan sonra Gün Sonu sayfasına yönlendirir
+        });
+    }
+});
+</script>
+
 </body>
 </html>
