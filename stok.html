@@ -65,7 +65,7 @@
     </header>
 
     <main class="space-y-4 px-5">
-      <!-- 6 KARE ÖZET ALANI (İNEK, DÜVE, KOYUN, TOSUN, DİĞER, TOPLAM) -->
+      <!-- 6 KARE ÖZET ALANI -->
       <section class="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
         <!-- İnek -->
         <div class="rounded-theme border border-border bg-card p-3 shadow-sm">
@@ -192,10 +192,10 @@
         stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
         const container = document.getElementById('stok-container');
         
-        // Stokta olanlar
+        // Stokta olan kayıtlar
         const stoktaOlanlar = stoklar.filter(item => (item.durum === 'stokta' || item.status === 'stokta'));
 
-        // Sayaç Sıfırlama
+        // Özet Hesabı
         const ozet = {
           inek: { adet: 0, kilo: 0, maliyet: 0 },
           duve: { adet: 0, kilo: 0, maliyet: 0 },
@@ -205,16 +205,27 @@
           toplam: { adet: 0, kilo: 0, maliyet: 0 }
         };
 
-        // Alfabetik Sıralama (İnek-1, Tosun-2 vb.)
-        stoktaOlanlar.sort((a, b) => {
-          const nameA = (a.kupeNo || a.animalId || '').toString();
-          const nameB = (b.kupeNo || b.animalId || '').toString();
-          return nameA.localeCompare(nameB, 'tr', { numeric: true, sensitivity: 'base' });
-        });
+        const turSayaclari = { İnek: 0, Düve: 0, Koyun: 0, Tosun: 0, Dana: 0, Diğer: 0 };
 
-        // Hesaplamalar
-        stoktaOlanlar.forEach(item => {
-          const cat = getCinsKategorisi(item.cins || item.breed);
+        // İsim Formatlama
+        const islenmisVeriler = stoktaOlanlar.map(item => {
+          const rawCins = item.cins || item.tur || item.breed || 'Tosun';
+          const cat = getCinsKategorisi(rawCins);
+          
+          let baslikCins = rawCins.charAt(0).toUpperCase() + rawCins.slice(1).toLowerCase();
+          if (cat === 'duve') baslikCins = 'Düve';
+          if (cat === 'inek') baslikCins = 'İnek';
+          if (cat === 'koyun') baslikCins = 'Koyun';
+          if (cat === 'tosun' && !rawCins.toLowerCase().includes('dana')) baslikCins = 'Tosun';
+
+          turSayaclari[baslikCins] = (turSayaclari[baslikCins] || 0) + 1;
+
+          // Eğer isim/küpeNo boşsa veya '-' ise tür isminden otomatik numara üret (İnek-1, Tosun-1 vb.)
+          let etiket = item.kupeNo || item.animalId || item.hayvanAdi || '';
+          if (!etiket || etiket === '-') {
+            etiket = `${baslikCins}-${turSayaclari[baslikCins]}`;
+          }
+
           const kg = parseFloat(item.agirlik || item.carcassWeight || 0);
           const tl = parseFloat(item.maliyet || item.fiyat || 0);
 
@@ -225,17 +236,21 @@
           ozet.toplam.adet += 1;
           ozet.toplam.kilo += kg;
           ozet.toplam.maliyet += tl;
+
+          return { ...item, etiket, kg, tl };
         });
 
-        // Kartlara Yazdırma
+        // Alfabetik Sıralama (Düve-1, İnek-1, Tosun-1 vb.)
+        islenmisVeriler.sort((a, b) => a.etiket.localeCompare(b.etiket, 'tr', { numeric: true, sensitivity: 'base' }));
+
+        // Kare Kartları Yazdır
         ['inek', 'duve', 'koyun', 'tosun', 'diger', 'toplam'].forEach(key => {
           document.getElementById(`c-${key}-adet`).textContent = ozet[key].adet;
           document.getElementById(`c-${key}-kilo`).textContent = `${ozet[key].kilo.toLocaleString('tr-TR')} kg`;
           document.getElementById(`c-${key}-maliyet`).textContent = `${ozet[key].maliyet.toLocaleString('tr-TR', {minimumFractionDigits: 0})} TL`;
         });
 
-        // Liste Boşsa
-        if (stoktaOlanlar.length === 0) {
+        if (islenmisVeriler.length === 0) {
           container.innerHTML = `
             <div class="px-5 py-10 text-center">
               <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
@@ -248,22 +263,22 @@
           return;
         }
 
-        // Listeyi Render Etme
-        container.innerHTML = stoktaOlanlar.map(item => `
+        // Listeyi Çiz
+        container.innerHTML = islenmisVeriler.map(item => `
           <div class="p-4 flex items-center justify-between hover:bg-muted/10 transition-colors">
             <div class="flex items-center gap-3">
               <input type="checkbox" value="${item.id}" class="stok-item-cb h-5 w-5 rounded border-border text-primary focus:ring-primary cursor-pointer" />
               <div>
                 <div class="flex items-center gap-2">
-                  <span class="inline-block rounded bg-secondary/80 px-2 py-0.5 text-xs font-bold text-secondary-foreground">${item.kupeNo || item.animalId || 'Küpesiz'}</span>
+                  <span class="inline-block rounded bg-secondary/80 px-2 py-0.5 text-xs font-bold text-secondary-foreground">${item.etiket}</span>
                 </div>
                 <p class="mt-1 text-xs font-medium text-foreground">Müşteri: <strong>${item.musteri || '-'}</strong></p>
                 <p class="text-[11px] text-muted-foreground">Tarih: ${item.tarih || '-'}</p>
               </div>
             </div>
             <div class="text-right space-y-1">
-              <p class="font-bold text-foreground text-sm tabular-nums">${item.agirlik || item.carcassWeight || 0} kg</p>
-              <p class="text-xs font-semibold text-success tabular-nums">${(item.maliyet || item.fiyat || 0).toLocaleString('tr-TR')} TL</p>
+              <p class="font-bold text-foreground text-sm tabular-nums">${item.kg} kg</p>
+              <p class="text-xs font-semibold text-success tabular-nums">${item.tl.toLocaleString('tr-TR')} TL</p>
             </div>
           </div>
         `).join('');
