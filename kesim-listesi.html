@@ -31,117 +31,80 @@
 
   <header class="px-5 pb-4 pt-8 flex justify-between items-center">
     <div>
-      <p class="text-xs font-semibold text-muted-foreground">Et Entegre Tesisi Üretim</p>
+      <p class="text-xs font-semibold text-muted-foreground">Operasyon Yönetimi</p>
       <h1 class="text-2xl font-bold text-foreground">Kesim Listesi</h1>
     </div>
-    <button id="open-modal-btn" class="flex items-center gap-1.5 bg-primary text-primary-foreground text-xs font-bold px-4 py-2.5 rounded-xl shadow hover:opacity-90 transition-all">
-      <iconify-icon icon="lucide:plus-circle" class="text-base"></iconify-icon>
-      Yeni Kesim Kaydı
+    <button id="temizle-kesim-btn" class="text-xs font-bold bg-destructive/10 text-destructive border border-destructive/20 px-3 py-2 rounded-xl shadow-sm hover:bg-destructive hover:text-white transition-all flex items-center gap-1.5">
+      <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
+      Listeyi Temizle
     </button>
   </header>
 
   <main class="px-5 space-y-4">
-    <!-- ARAMA / FİLTRE -->
-    <div class="flex items-center gap-2 bg-card p-2 rounded-xl border border-border shadow-sm">
-      <iconify-icon icon="lucide:search" class="text-muted-foreground text-lg ml-1"></iconify-icon>
-      <input type="text" id="search-input" placeholder="Müşteri adı veya küpe no ile ara..." class="w-full bg-transparent text-xs outline-none">
-    </div>
-
-    <!-- KESİM LİSTESİ -->
-    <div id="kesim-listesi-container" class="space-y-3">
-      <!-- Dinamik İçerik -->
-    </div>
-  </main>
-
-  <!-- YENİ KESİM KAYDI MODAL -->
-  <div id="kesim-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-card w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-border shadow-2xl p-6 space-y-5">
-      <div class="flex justify-between items-center border-b border-border pb-3">
-        <h2 class="text-base font-bold text-foreground flex items-center gap-2">
-          <iconify-icon icon="lucide:plus-circle" class="text-primary"></iconify-icon>
-          Yeni Kesim Kaydı Oluştur
-        </h2>
-        <button id="close-modal-btn" class="text-muted-foreground hover:text-foreground">
-          <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
-        </button>
-      </div>
-
-      <form id="kesim-form" class="space-y-4">
-        <!-- Müşteri Bilgileri -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-[11px] font-semibold text-muted-foreground mb-1">Müşteri Adı Soyadı</label>
-            <input type="text" id="m-ad" required placeholder="Ad Soyad" class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-muted-foreground mb-1">TC Kimlik / Vergi No</label>
-            <input type="text" id="m-tc" maxlength="11" placeholder="11 haneli TC No" class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-muted-foreground mb-1">IBAN Numarası</label>
-            <input type="text" id="m-iban" placeholder="TR00 0000..." class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-muted-foreground mb-1">Kısa Adres</label>
-            <input type="text" id="m-adres" placeholder="İl, İlçe" class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-muted-foreground mb-1">Kesim Tipi</label>
-            <select id="m-kesim-tipi" class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none bg-card font-semibold">
-              <option value="Standart Kesim (%1.5 Stopaj)">Standart Kesim (%1.5 Stopaj Dâhil)</option>
-              <option value="Faturalı Kesim (+%1 KDV)">Faturalı Kesim (+%1 KDV)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-muted-foreground mb-1">Kesen Personel / Kasap</label>
-            <input type="text" id="m-kasap" placeholder="Örn: Ahmet Usta" class="w-full rounded-lg border border-border p-2 text-xs focus:ring-1 focus:ring-primary outline-none">
-          </div>
+    <!-- FORM -->
+    <div class="bg-card border border-border rounded-2xl p-4 shadow-sm space-y-3">
+      <h3 class="text-xs font-bold text-foreground flex items-center gap-2 border-b border-border pb-2">
+        <iconify-icon icon="lucide:plus-circle" class="text-primary text-base"></iconify-icon>
+        Yeni Hayvan / Kesim Ekle
+      </h3>
+      
+      <form id="kesim-form" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div>
+          <label class="block font-bold text-muted-foreground mb-1">Müşteri Adı</label>
+          <input type="text" id="musteri" required class="w-full bg-background border border-border px-3 py-2 rounded-xl outline-none font-semibold">
         </div>
-
-        <!-- Kesilecek Hayvanlar -->
-        <div class="space-y-3 pt-2">
-          <div class="flex justify-between items-center border-b border-border pb-2">
-            <span class="text-xs font-bold text-foreground flex items-center gap-1.5">
-              <iconify-icon icon="lucide:beef" class="text-primary"></iconify-icon>
-              Kesilecek Hayvanlar
-            </span>
-            <button type="button" id="add-animal-btn" class="text-xs font-bold text-primary bg-secondary/60 hover:bg-secondary px-3 py-1 rounded-lg flex items-center gap-1">
-              + Hayvan Ekle
-            </button>
-          </div>
-
-          <div id="animal-container" class="space-y-3">
-            <!-- Dinamik Hayvan Satırları -->
-          </div>
+        <div>
+          <label class="block font-bold text-muted-foreground mb-1">Telefon</label>
+          <input type="text" id="telefon" class="w-full bg-background border border-border px-3 py-2 rounded-xl outline-none font-semibold">
         </div>
-
-        <!-- Hesaplama Özeti -->
-        <div class="rounded-xl bg-muted/30 border border-border p-3 space-y-1">
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-muted-foreground">Ham Tutar (Kg × Birim Fiyat):</span>
-            <span id="summary-ham" class="font-bold text-foreground">0,00 TL</span>
-          </div>
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-muted-foreground">Uygulanan Oran:</span>
-            <span id="summary-stopaj" class="font-bold text-destructive">-%1.5 Stopaj</span>
-          </div>
-          <div class="flex justify-between items-center text-sm pt-1 border-t border-border/50">
-            <span class="font-bold text-foreground">Net Ödenecek Tutar:</span>
-            <span id="summary-net" class="font-extrabold text-success text-base">0,00 TL</span>
-          </div>
+        <div>
+          <label class="block font-bold text-muted-foreground mb-1">IBAN</label>
+          <input type="text" id="iban" class="w-full bg-background border border-border px-3 py-2 rounded-xl outline-none font-semibold">
         </div>
-
-        <div class="flex gap-2 pt-2">
-          <button type="button" id="print-fis-btn" class="w-1/2 py-2.5 rounded-xl border border-border font-bold text-xs hover:bg-muted/50 flex items-center justify-center gap-1.5">
-            <iconify-icon icon="lucide:printer"></iconify-icon> Fiş Yazdır
-          </button>
-          <button type="submit" class="w-1/2 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 shadow">
-            Kaydet ve Stoğa Aktar
+        <div>
+          <label class="block font-bold text-muted-foreground mb-1">Küpe Numarası</label>
+          <input type="text" id="kupeNo" required class="w-full bg-background border border-border px-3 py-2 rounded-xl outline-none font-semibold">
+        </div>
+        <div>
+          <label class="block font-bold text-muted-foreground mb-1">Cins / Tür</label>
+          <input type="text" id="cins" placeholder="Örn: Düve / İnek" required class="w-full bg-background border border-border px-3 py-2 rounded-xl outline-none font-semibold">
+        </div>
+        <div>
+          <label class="block font-bold text-muted-foreground mb-1">Kesim Türü</label>
+          <select id="kesimTipi" class="w-full bg-background border border-border px-3 py-2 rounded-xl outline-none font-semibold">
+            <option value="Standart Kesim">Standart Kesim</option>
+            <option value="Faturalı Kesim">Faturalı Kesim (+%1 KDV)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-muted-foreground mb-1">Ağırlık (kg)</label>
+          <input type="number" step="0.01" id="agirlik" required class="w-full bg-background border border-border px-3 py-2 rounded-xl outline-none font-semibold">
+        </div>
+        <div>
+          <label class="block font-bold text-muted-foreground mb-1">Toplam Tutar (TL)</label>
+          <input type="number" step="0.01" id="maliyet" required class="w-full bg-background border border-border px-3 py-2 rounded-xl outline-none font-semibold text-success font-extrabold">
+        </div>
+        
+        <div class="sm:col-span-2 pt-2">
+          <button type="submit" class="w-full bg-primary text-primary-foreground font-bold py-2.5 rounded-xl shadow-md hover:opacity-90 transition-all flex items-center justify-center gap-1.5">
+            <iconify-icon icon="lucide:check" class="text-base"></iconify-icon>
+            Listeye Kaydet
           </button>
         </div>
       </form>
     </div>
-  </div>
+
+    <!-- KAYITLI LİSTE -->
+    <div class="bg-card border border-border rounded-2xl p-4 shadow-sm space-y-3">
+      <h3 class="text-xs font-bold text-foreground flex items-center gap-2 border-b border-border pb-2">
+        <iconify-icon icon="lucide:list" class="text-primary text-base"></iconify-icon>
+        Güncel Kesim Listesi
+      </h3>
+      <div id="liste-container" class="space-y-2">
+        <!-- Dinamik liste -->
+      </div>
+    </div>
+  </main>
 
   <!-- ALT NAVİGASYON -->
   <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-lg">
@@ -171,270 +134,77 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const modal = document.getElementById('kesim-modal');
-      const openBtn = document.getElementById('open-modal-btn');
-      const closeBtn = document.getElementById('close-modal-btn');
-      const animalContainer = document.getElementById('animal-container');
-      const addAnimalBtn = document.getElementById('add-animal-btn');
-      const kesimForm = document.getElementById('kesim-form');
-      const listContainer = document.getElementById('kesim-listesi-container');
-      const searchInput = document.getElementById('search-input');
-      const kesimTipiSelect = document.getElementById('m-kesim-tipi');
+      const form = document.getElementById('kesim-form');
+      const listeContainer = document.getElementById('liste-container');
+      const temizleBtn = document.getElementById('temizle-kesim-btn');
 
-      openBtn.addEventListener('click', () => {
-        modal.classList.remove('hidden');
-        if (animalContainer.children.length === 0) {
-          addAnimalRow();
-        }
-      });
-
-      closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
-
-      // Stok durumuna göre numara üreten kod
-      function getNextCodeForForm(cins, currentRowIndex) {
-        const upperCins = cins.toUpperCase().trim();
-        const tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-        const aktifStoklar = tumStoklar.filter(item => !item.durum || item.durum === 'stokta');
-
-        let maxNumber = 0;
-
-        aktifStoklar.forEach(item => {
-          const code = (item.kupeNo || item.animalId || '').toUpperCase();
-          if (code.startsWith(upperCins)) {
-            const numMatch = code.replace(upperCins, '').match(/\d+/);
-            if (numMatch) {
-              const num = parseInt(numMatch[0], 10);
-              if (num > maxNumber) maxNumber = num;
-            }
-          }
-        });
-
-        const activeRows = animalContainer.querySelectorAll('.animal-row');
-        let sameCinsCountInForm = 0;
-        
-        activeRows.forEach((r, idx) => {
-          if (idx < currentRowIndex) {
-            const selCins = r.querySelector('.animal-cins')?.value;
-            if (selCins && selCins.toUpperCase().trim() === upperCins) {
-              sameCinsCountInForm++;
-            }
-          }
-        });
-
-        const nextNum = maxNumber + sameCinsCountInForm + 1;
-        return `${upperCins}${nextNum}`;
-      }
-
-      function addAnimalRow() {
-        const rowId = Date.now();
-        const rowIdx = animalContainer.children.length;
-
-        const row = document.createElement('div');
-        row.className = 'animal-row bg-background p-3 rounded-xl border border-border/80 space-y-2 relative';
-        row.dataset.id = rowId;
-
-        row.innerHTML = `
-          <div class="flex justify-between items-center text-xs font-bold text-muted-foreground">
-            <span>Hayvan #${rowIdx + 1}</span>
-            ${rowIdx > 0 ? `<button type="button" class="remove-row-btn text-destructive hover:underline text-[11px]">Sil</button>` : ''}
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] font-semibold text-muted-foreground mb-1">Cinsi</label>
-              <select class="animal-cins w-full rounded-lg border border-border p-1.5 text-xs bg-card outline-none">
-                <option value="İnek">İnek</option>
-                <option value="Dana">Dana</option>
-                <option value="Düve">Düve</option>
-                <option value="Tosun">Tosun</option>
-                <option value="Koyun">Koyun</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] font-semibold text-muted-foreground mb-1">Kod / Küpe No</label>
-              <input type="text" class="animal-code w-full rounded-lg border border-border p-1.5 text-xs bg-muted/40 font-bold text-primary" readonly>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] font-semibold text-muted-foreground mb-1">Ağırlık (Kg)</label>
-              <input type="number" step="0.1" class="animal-kg w-full rounded-lg border border-border p-1.5 text-xs outline-none" value="0">
-            </div>
-            <div>
-              <label class="block text-[10px] font-semibold text-muted-foreground mb-1">Birim Fiyat (TL/Kg)</label>
-              <input type="number" step="0.1" class="animal-price w-full rounded-lg border border-border p-1.5 text-xs outline-none" value="0">
-            </div>
-          </div>
-        `;
-
-        animalContainer.appendChild(row);
-
-        const cinsSelect = row.querySelector('.animal-cins');
-        const codeInput = row.querySelector('.animal-code');
-
-        codeInput.value = getNextCodeForForm(cinsSelect.value, rowIdx);
-
-        cinsSelect.addEventListener('change', () => updateAllRowCodes());
-
-        row.querySelectorAll('.animal-kg, .animal-price').forEach(input => {
-          input.addEventListener('input', calculateTotal);
-        });
-
-        const removeBtn = row.querySelector('.remove-row-btn');
-        if (removeBtn) {
-          removeBtn.addEventListener('click', () => {
-            row.remove();
-            updateAllRowCodes();
-            calculateTotal();
-          });
-        }
-
-        calculateTotal();
-      }
-
-      function updateAllRowCodes() {
-        const rows = animalContainer.querySelectorAll('.animal-row');
-        rows.forEach((r, idx) => {
-          const cinsSel = r.querySelector('.animal-cins');
-          const codeInp = r.querySelector('.animal-code');
-          if (cinsSel && codeInp) {
-            codeInp.value = getNextCodeForForm(cinsSel.value, idx);
-          }
-        });
-      }
-
-      addAnimalBtn.addEventListener('click', addAnimalRow);
-      kesimTipiSelect.addEventListener('change', calculateTotal);
-
-      // HESAPLAMA MANTIĞI: KDV VEYA STOPAJ
-      function calculateTotal() {
-        let totalHam = 0;
-        const kesimTipi = kesimTipiSelect.value;
-
-        document.querySelectorAll('.animal-row').forEach(row => {
-          const kg = parseFloat(row.querySelector('.animal-kg').value) || 0;
-          const price = parseFloat(row.querySelector('.animal-price').value) || 0;
-          totalHam += (kg * price);
-        });
-
-        const summaryStopajEl = document.getElementById('summary-stopaj');
-        let netTutar = totalHam;
-
-        if (kesimTipi.includes('Faturalı')) {
-          const kdvTutar = totalHam * 0.01; // %1 KDV ekle
-          netTutar = totalHam + kdvTutar;
-          summaryStopajEl.textContent = `+%1 KDV (+${kdvTutar.toLocaleString('tr-TR', {minimumFractionDigits:2})} TL)`;
-          summaryStopajEl.className = 'font-bold text-success';
-        } else {
-          const stopajTutar = totalHam * 0.015; // %1.5 Stopaj düş
-          netTutar = totalHam - stopajTutar;
-          summaryStopajEl.textContent = `-%1.5 Stopaj (-${stopajTutar.toLocaleString('tr-TR', {minimumFractionDigits:2})} TL)`;
-          summaryStopajEl.className = 'font-bold text-destructive';
-        }
-
-        document.getElementById('summary-ham').textContent = `${totalHam.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
-        document.getElementById('summary-net').textContent = `${netTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
-      }
-
-      // KAYIT İŞLEMİ
-      kesimForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const musteri = document.getElementById('m-ad').value;
-        const tc = document.getElementById('m-tc').value;
-        const iban = document.getElementById('m-iban').value;
-        const adres = document.getElementById('m-adres').value;
-        const kesimTipi = kesimTipiSelect.value;
-        const kasap = document.getElementById('m-kasap').value;
-
-        const rows = animalContainer.querySelectorAll('.animal-row');
-        if (rows.length === 0) {
-          alert('Lütfen en az bir hayvan ekleyin.');
+      function listeyiGoster() {
+        const stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        if (stoklar.length === 0) {
+          listeContainer.innerHTML = `<p class="text-xs text-muted-foreground text-center py-4">Henüz kayıtlı kesim bulunmuyor.</p>`;
           return;
         }
 
-        let yeniStoklar = [];
-        const bugun = new Date().toLocaleDateString('tr-TR');
-
-        rows.forEach(row => {
-          const cins = row.querySelector('.animal-cins').value;
-          const code = row.querySelector('.animal-code').value;
-          const kg = parseFloat(row.querySelector('.animal-kg').value) || 0;
-          const price = parseFloat(row.querySelector('.animal-price').value) || 0;
-          const hamMaliyet = kg * price;
-          
-          let netMaliyet = hamMaliyet;
-          if (kesimTipi.includes('Faturalı')) {
-            netMaliyet = hamMaliyet + (hamMaliyet * 0.01); // KDV ekleme
-          } else {
-            netMaliyet = hamMaliyet - (hamMaliyet * 0.015); // Stopaj düşme
-          }
-
-          yeniStoklar.push({
-            id: Date.now() + Math.random(),
-            musteri, tc, iban, adres, kesimTipi, kasap,
-            cins,
-            kupeNo: code,
-            animalId: code,
-            agirlik: kg,
-            birimFiyat: price,
-            hamMaliyet: hamMaliyet,
-            maliyet: netMaliyet,
-            tarih: bugun,
-            durum: 'stokta'
-          });
-        });
-
-        let mevcutStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-        mevcutStoklar = [...mevcutStoklar, ...yeniStoklar];
-        localStorage.setItem('stoklar', JSON.stringify(mevcutStoklar));
-
-        kesimForm.reset();
-        animalContainer.innerHTML = '';
-        modal.classList.add('hidden');
-
-        listeyiYukle();
-        alert(`${yeniStoklar.length} adet hayvan kaydedildi ve stoğa eklendi.`);
-      });
-
-      function listeyiYukle() {
-        const tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-        const arama = searchInput.value.toLowerCase('tr-TR');
-
-        const filtrelenmiş = tumStoklar.filter(item => 
-          (item.musteri || '').toLowerCase('tr-TR').includes(arama) || 
-          (item.kupeNo || item.animalId || '').toLowerCase('tr-TR').includes(arama)
-        );
-
-        if (filtrelenmiş.length === 0) {
-          listContainer.innerHTML = `<div class="p-8 text-center text-xs text-muted-foreground">Kayıtlı kesim bulunamadı.</div>`;
-          return;
-        }
-
-        listContainer.innerHTML = filtrelenmiş.reverse().map(item => `
-          <div class="bg-card border border-border rounded-xl p-4 shadow-sm flex items-center justify-between">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-bold bg-secondary text-secondary-foreground px-2 py-0.5 rounded">${item.kupeNo || item.animalId}</span>
-                <span class="text-xs font-bold text-foreground">${item.cins}</span>
-                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${item.kesimTipi && item.kesimTipi.includes('Faturalı') ? 'bg-accent/10 text-accent' : 'bg-primary/10 text-primary'}">
-                  ${item.kesimTipi || 'Standart'}
-                </span>
-              </div>
-              <p class="text-xs text-muted-foreground">Müşteri: <strong class="text-foreground">${item.musteri}</strong></p>
-              <p class="text-[10px] text-muted-foreground">Tarih: ${item.tarih || '-'}</p>
+        listeContainer.innerHTML = stoklar.map((item, index) => `
+          <div class="bg-muted/30 border border-border/70 rounded-xl p-3 flex justify-between items-center text-xs">
+            <div>
+              <span class="font-bold text-foreground">${item.musteri}</span>
+              <span class="text-[10px] bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded ml-1">${item.kupeNo} (${item.cins})</span>
+              <p class="text-[10px] text-muted-foreground mt-0.5">${item.kesimTipi} - ${item.agirlik} kg</p>
             </div>
-            <div class="text-right">
-              <span class="text-sm font-bold text-foreground block">${item.agirlik} kg</span>
-              <span class="text-xs font-bold text-success">${parseFloat(item.maliyet || 0).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
+            <div class="flex items-center gap-3">
+              <span class="font-extrabold text-foreground">${parseFloat(item.maliyet || 0).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
+              <button onclick="kaydiSil(${index})" class="text-destructive hover:opacity-80 p-1">
+                <iconify-icon icon="lucide:trash" class="text-sm"></iconify-icon>
+              </button>
             </div>
           </div>
         `).join('');
       }
 
-      searchInput.addEventListener('input', listeyiYukle);
-      listeyiYukle();
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const simdi = new Date();
+        const bugunStr = `${simdi.getFullYear()}-${String(simdi.getMonth() + 1).padStart(2, '0')}-${String(simdi.getDate()).padStart(2, '0')}`;
+
+        const yeniKayit = {
+          id: Date.now(),
+          tarih: bugunStr,
+          musteri: document.getElementById('musteri').value,
+          telefon: document.getElementById('telefon').value,
+          iban: document.getElementById('iban').value,
+          kupeNo: document.getElementById('kupeNo').value,
+          cins: document.getElementById('cins').value,
+          kesimTipi: document.getElementById('kesimTipi').value,
+          agirlik: document.getElementById('agirlik').value,
+          maliyet: document.getElementById('maliyet').value,
+          odendi: false
+        };
+
+        const stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        stoklar.push(yeniKayit);
+        localStorage.setItem('stoklar', JSON.stringify(stoklar));
+
+        form.reset();
+        listeyiGoster();
+        alert('Kesim başarıyla eklendi!');
+      });
+
+      window.kaydiSil = function(index) {
+        let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        stoklar.splice(index, 1);
+        localStorage.setItem('stoklar', JSON.stringify(stoklar));
+        listeyiGoster();
+      };
+
+      temizleBtn.addEventListener('click', function() {
+        if (confirm('Tüm kesim listesini silmek istediğinize emin misiniz?')) {
+          localStorage.removeItem('stoklar');
+          listeyiGoster();
+        }
+      });
+
+      listeyiGoster();
     });
   </script>
 </body>
