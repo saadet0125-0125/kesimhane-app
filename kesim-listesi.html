@@ -49,7 +49,7 @@
   <main class="px-5 space-y-4">
     <section class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
       <div id="kesim-container" class="divide-y divide-border">
-        <!-- Günlük kesimler listelenecek -->
+        <!-- Günlük kesimler sıralı olarak listelenecek -->
       </div>
     </section>
   </main>
@@ -94,8 +94,8 @@
           <div>
             <label class="block text-xs font-semibold mb-1 text-muted-foreground">Kesim Tipi</label>
             <select id="form-tip" class="w-full rounded-lg border border-border p-2 text-sm focus:ring-1 focus:ring-primary">
-              <option value="Standart">Standart Kesim</option>
-              <option value="Faturalı">Faturalı Kesim</option>
+              <option value="Standart">Standart Kesim (%1.5 Stopaj Düşülür)</option>
+              <option value="Faturalı">Faturalı Kesim (%1 KDV Eklenir)</option>
             </select>
           </div>
           <div>
@@ -121,15 +121,15 @@
         <!-- HESAPLANAN ÖDENECEK TUTAR ÖZETİ -->
         <div class="rounded-xl border border-border bg-secondary/30 p-3.5 space-y-1">
           <div class="flex justify-between items-center text-xs">
-            <span class="text-muted-foreground">Seçili Kesim Tipi:</span>
-            <span id="summary-tip" class="font-bold text-primary">Standart Kesim</span>
+            <span class="text-muted-foreground">Ham Tutar (Kg × Birim Fiyat):</span>
+            <span id="summary-ham-tutar" class="font-bold text-foreground">0 TL</span>
           </div>
           <div class="flex justify-between items-center text-xs">
-            <span class="text-muted-foreground">Toplam Hayvan Adedi:</span>
-            <span id="summary-adet" class="font-bold text-foreground">1 baş</span>
+            <span class="text-muted-foreground">Uygulanan Oran:</span>
+            <span id="summary-oran" class="font-bold text-destructive">-%1.5 Stopaj</span>
           </div>
           <div class="flex justify-between items-center text-sm pt-1 border-t border-border/50">
-            <span class="font-bold text-foreground">Ödenecek Toplam Tutar:</span>
+            <span class="font-bold text-foreground">Net Ödenecek Tutar:</span>
             <span id="summary-tutar" class="text-base font-extrabold text-success">0 TL</span>
           </div>
         </div>
@@ -212,11 +212,11 @@
             </div>
             <div>
               <label class="block text-[10px] font-semibold text-muted-foreground">Ağırlık (Kg)</label>
-              <input type="number" required min="1" class="animal-kg w-full rounded border border-border p-1.5 text-xs bg-card" placeholder="0">
+              <input type="number" required min="1" step="0.1" class="animal-kg w-full rounded border border-border p-1.5 text-xs bg-card" placeholder="0">
             </div>
             <div>
-              <label class="block text-[10px] font-semibold text-muted-foreground">Maliyet (TL)</label>
-              <input type="number" required min="0" class="animal-tl w-full rounded border border-border p-1.5 text-xs bg-card" placeholder="0">
+              <label class="block text-[10px] font-semibold text-muted-foreground">Birim Fiyat (TL/Kg)</label>
+              <input type="number" required min="0" step="0.1" class="animal-fiyat w-full rounded border border-border p-1.5 text-xs bg-card" placeholder="0">
             </div>
           </div>
         `;
@@ -234,19 +234,34 @@
         calculateTotals();
       }
 
-      // TUTAR VE CANLI HESAPLAMA
+      // STOPAJ VE KDV CANLI HESAPLAMA
       function calculateTotals() {
         const rows = animalContainer.querySelectorAll('.animal-row');
-        let totalTl = 0;
+        let hamTutar = 0;
+
         rows.forEach(r => {
-          const val = parseFloat(r.querySelector('.animal-tl').value || 0);
-          totalTl += val;
+          const kg = parseFloat(r.querySelector('.animal-kg').value || 0);
+          const birimFiyat = parseFloat(r.querySelector('.animal-fiyat').value || 0);
+          hamTutar += (kg * birimFiyat);
         });
 
-        const tipVal = document.getElementById('form-tip').value;
-        document.getElementById('summary-tip').textContent = `${tipVal} Kesim`;
-        document.getElementById('summary-adet').textContent = `${rows.length} baş`;
-        document.getElementById('summary-tutar').textContent = `${totalTl.toLocaleString('tr-TR')} TL`;
+        const tip = document.getElementById('form-tip').value;
+        let netTutar = hamTutar;
+
+        if (tip === 'Standart') {
+          netTutar = hamTutar * 0.985; // %1.5 Stopaj Düşüşü
+          document.getElementById('summary-oran').textContent = "-%1.5 Stopaj";
+          document.getElementById('summary-oran').className = "font-bold text-destructive";
+        } else {
+          netTutar = hamTutar * 1.01; // %1 KDV Eklenmesi
+          document.getElementById('summary-oran').textContent = "+%1.0 KDV";
+          document.getElementById('summary-oran').className = "font-bold text-success";
+        }
+
+        document.getElementById('summary-ham-tutar').textContent = `${hamTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
+        document.getElementById('summary-tutar').textContent = `${netTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL`;
+
+        return { hamTutar, netTutar };
       }
 
       document.getElementById('form-tip').addEventListener('change', calculateTotals);
@@ -254,7 +269,7 @@
       addAnimalRow();
       document.getElementById('add-animal-btn').addEventListener('click', addAnimalRow);
 
-      // YAZDIRMA FİŞİ HAZIRLAMA
+      // YAZDIRMA İŞLEMİ
       function generatePrintReceipt() {
         const musteri = document.getElementById('form-musteri').value || '---';
         const tc = document.getElementById('form-tc').value || '---';
@@ -262,21 +277,20 @@
         const tip = document.getElementById('form-tip').value;
         const kesen = document.getElementById('form-kesen').value || '---';
         const rows = animalContainer.querySelectorAll('.animal-row');
+        const calc = calculateTotals();
 
         let animalDetailsHtml = '';
-        let totalTl = 0;
-
         rows.forEach((r, idx) => {
           const cins = r.querySelector('.animal-cins').value;
           const code = r.querySelector('.animal-code').value || `${cins}-${idx+1}`;
-          const kg = r.querySelector('.animal-kg').value || 0;
-          const tl = parseFloat(r.querySelector('.animal-tl').value || 0);
-          totalTl += tl;
+          const kg = parseFloat(r.querySelector('.animal-kg').value || 0);
+          const birimFiyat = parseFloat(r.querySelector('.animal-fiyat').value || 0);
+          const t = kg * birimFiyat;
 
           animalDetailsHtml += `
             <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-              <span>#${idx+1} ${code} (${cins} - ${kg} kg)</span>
-              <span>${tl.toLocaleString('tr-TR')} TL</span>
+              <span>#${idx+1} ${code} (${cins} - ${kg}kg × ${birimFiyat}TL)</span>
+              <span>${t.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
             </div>
           `;
         });
@@ -297,9 +311,11 @@
             <p style="font-weight:bold; margin-bottom:5px;">KESİLEN HAYVANLAR:</p>
             ${animalDetailsHtml}
             <hr style="border-top:1px dashed #000; margin:10px 0;">
-            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold;">
-              <span>ÖDENECEK TUTAR:</span>
-              <span>${totalTl.toLocaleString('tr-TR')} TL</span>
+            <p>Ham Toplam: ${calc.hamTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</p>
+            <p>Uygulanan Kesinti/KDV: ${tip === 'Standart' ? '-%1.5 Stopaj' : '+%1.0 KDV'}</p>
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; margin-top:5px;">
+              <span>NET ÖDENECEK TUTAR:</span>
+              <span>${calc.netTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
             </div>
           </div>
         `;
@@ -329,12 +345,13 @@
             </div>
             <div class="text-right">
               <p class="text-sm font-bold text-foreground">${item.agirlik} kg</p>
-              <p class="text-xs font-semibold text-success">${item.maliyet.toLocaleString('tr-TR')} TL</p>
+              <p class="text-xs font-semibold text-success">${parseFloat(item.maliyet).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</p>
             </div>
           </div>
         `).join('');
       }
 
+      // FORM KAYDETME VE SİSTEME AKTARMA
       document.getElementById('kesim-form').addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -356,8 +373,10 @@
           const cins = row.querySelector('.animal-cins').value;
           const codeInput = row.querySelector('.animal-code').value.trim();
           const kg = parseFloat(row.querySelector('.animal-kg').value || 0);
-          const tl = parseFloat(row.querySelector('.animal-tl').value || 0);
+          const birimFiyat = parseFloat(row.querySelector('.animal-fiyat').value || 0);
 
+          const ham = kg * birimFiyat;
+          const netMaliyet = tip === 'Standart' ? (ham * 0.985) : (ham * 1.01);
           const finalEtiket = codeInput || `${cins}-${idx + 1}`;
 
           const yeniKayit = {
@@ -365,7 +384,7 @@
             musteri, tc, iban, adres, cins,
             kupeNo: finalEtiket,
             animalId: finalEtiket,
-            tip, agirlik: kg, maliyet: tl, kesen,
+            tip, agirlik: kg, birimFiyat, hamMaliyet: ham, maliyet: netMaliyet, kesen,
             tarih: tarihStr, saat: saatStr, durum: 'stokta'
           };
 
