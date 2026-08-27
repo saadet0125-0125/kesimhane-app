@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stok — Kesimhane</title>
 
-  <!-- Tailwind CSS (pinned — matches the renderer/screenshot surfaces) -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>
     tailwind.config = {
@@ -22,12 +22,6 @@
           input: 'rgb(255 255 255 / <alpha-value>)',
           destructive: { DEFAULT: 'rgb(180 35 24 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
           success: { DEFAULT: 'rgb(44 110 73 / <alpha-value>)', foreground: 'rgb(255 255 255 / <alpha-value>)' },
-          chart1: 'rgb(18 48 71 / <alpha-value>)',
-          chart2: 'rgb(0 127 120 / <alpha-value>)',
-          chart3: 'rgb(184 106 0 / <alpha-value>)',
-          chart4: 'rgb(44 110 73 / <alpha-value>)',
-          chart5: 'rgb(106 91 158 / <alpha-value>)',
-          ring: 'rgb(18 48 71 / <alpha-value>)',
         },
         fontFamily: {
           heading: ['var(--font-heading, Inter)', 'system-ui'],
@@ -36,191 +30,187 @@
         borderRadius: { DEFAULT: 'var(--radius, 12px)', theme: 'var(--radius, 12px)' },
       }}
     };
-</script>
+  </script>
 
   <!-- Iconify Web Component -->
   <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap">
 
-  <!-- Google Fonts -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
-
-  <!-- Design Tokens + Custom Classes -->
   <style>
   :root {
-    --color-background: #F4F7F8;
-    --color-foreground: #17242D;
-    --color-primary: #123047;
-    --color-primary-foreground: #FFFFFF;
-    --color-secondary: #DDEBE9;
-    --color-secondary-foreground: #123F3D;
-    --color-accent: #B86A00;
-    --color-accent-foreground: #FFFFFF;
-    --color-muted: #E8EEF0;
-    --color-muted-foreground: #53636D;
-    --color-card: #FFFFFF;
-    --color-card-foreground: #17242D;
-    --color-border: #C9D5D9;
-    --color-input: #FFFFFF;
-    --color-destructive: #B42318;
-    --color-destructive-foreground: #FFFFFF;
-    --color-success: #2C6E49;
-    --color-success-foreground: #FFFFFF;
-    --color-chart1: #123047;
-    --color-chart2: #007F78;
-    --color-chart3: #B86A00;
-    --color-chart4: #2C6E49;
-    --color-chart5: #6A5B9E;
     --font-heading: 'IBM Plex Sans', sans-serif;
     --font-body: 'Inter', sans-serif;
     --radius: 14px;
   }
-
-  body {
-    font-family: var(--font-body);
-    -webkit-font-smoothing: antialiased;
-    margin: 0;
-    padding: 0;
-  }
+  body { font-family: var(--font-body); margin: 0; padding: 0; }
   </style>
 </head>
-<body class="bg-background text-foreground m-0 p-0">
-  <div class="h-screen w-screen overflow-hidden">
-    <div class="min-h-screen w-full bg-background text-foreground font-body pb-28">
-      <header class="px-5 pb-5 pt-12">
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <div class="mb-1 flex items-center gap-2">
-              <div class="flex h-8 w-8 items-center justify-center rounded-theme bg-primary text-primary-foreground">
-                <iconify-icon icon="lucide:package" class="text-lg"></iconify-icon>
-              </div>
-              <p class="text-xs font-semibold tracking-wide text-muted-foreground">Et Entegre Tesisi Üretim</p>
+<body class="bg-background text-foreground min-h-screen">
+  <div class="min-h-screen w-full bg-background pb-28 font-body text-foreground">
+    <header class="px-5 pb-5 pt-12">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <div class="mb-1 flex items-center gap-2">
+            <div class="flex h-8 w-8 items-center justify-center rounded-theme bg-primary text-primary-foreground">
+              <iconify-icon icon="lucide:package" class="text-lg"></iconify-icon>
             </div>
-            <h1 class="font-heading text-[26px] font-bold tracking-tight text-foreground">Stok</h1>
-            <p class="mt-1 text-sm font-medium text-muted-foreground">Onaylı kesimlerden otomatik güncellenir</p>
+            <p class="text-xs font-semibold tracking-wide text-muted-foreground">Et Entegre Tesisi Üretim</p>
           </div>
-          <button class="mt-1 flex h-12 w-12 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm" aria-label="Stok ayarları">
-            <iconify-icon icon="lucide:sliders-horizontal" class="text-xl"></iconify-icon>
+          <h1 class="font-heading text-[26px] font-bold tracking-tight text-foreground">Stok</h1>
+          <p class="mt-1 text-sm font-medium text-muted-foreground">Onaylı kesimlerden otomatik güncellenir</p>
+        </div>
+        <button id="refresh-btn" class="mt-1 flex h-12 w-12 items-center justify-center rounded-theme border border-border bg-card text-foreground shadow-sm hover:bg-muted" aria-label="Yenile">
+          <iconify-icon icon="lucide:refresh-cw" class="text-xl"></iconify-icon>
+        </button>
+      </div>
+    </header>
+
+    <main class="space-y-4 px-5">
+      <!-- İSTATİSTİKLER -->
+      <section class="grid grid-cols-3 overflow-hidden rounded-theme border border-border bg-card shadow-sm">
+        <div class="border-r-2 border-border px-3 py-4">
+          <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
+            <iconify-icon icon="lucide:beef" class="text-lg"></iconify-icon>
+          </div>
+          <p class="text-[11px] font-semibold leading-4 text-muted-foreground">Hayvan</p>
+          <p id="stat-hayvan" class="mt-1 font-heading text-2xl font-bold tabular-nums text-foreground">0</p>
+        </div>
+        <div class="border-r-2 border-border px-3 py-4">
+          <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
+            <iconify-icon icon="lucide:scale" class="text-lg"></iconify-icon>
+          </div>
+          <p class="text-[11px] font-semibold leading-4 text-muted-foreground">Toplam ağırlık</p>
+          <p id="stat-agirlik" class="mt-1 font-heading text-2xl font-bold tabular-nums text-foreground">0 <span class="text-sm">kg</span></p>
+        </div>
+        <div class="px-3 py-4">
+          <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-theme bg-accent text-accent-foreground">
+            <iconify-icon icon="lucide:badge-turkish-lira" class="text-lg"></iconify-icon>
+          </div>
+          <p class="text-[11px] font-semibold leading-4 text-muted-foreground">Toplam maliyet</p>
+          <p id="stat-maliyet" class="mt-1 font-heading text-2xl font-bold tabular-nums text-foreground">0 <span class="text-sm">TL</span></p>
+        </div>
+      </section>
+
+      <!-- SEKMELER -->
+      <section class="rounded-theme border border-border bg-card p-1.5 shadow-sm">
+        <div class="grid grid-cols-2 gap-1">
+          <button id="tab-stokta" class="flex h-11 items-center justify-center gap-2 rounded-theme bg-primary px-3 text-sm font-bold text-primary-foreground">
+            <iconify-icon icon="lucide:package-open" class="text-lg"></iconify-icon>
+            Stokta
+            <span id="badge-stokta" class="rounded-full bg-white/15 px-2 py-0.5 text-xs tabular-nums">0</span>
+          </button>
+          <button id="tab-sevk" class="flex h-11 items-center justify-center gap-2 rounded-theme px-3 text-sm font-bold text-muted-foreground hover:bg-muted/50">
+            <iconify-icon icon="lucide:truck" class="text-lg"></iconify-icon>
+            Sevk Edildi
+            <span id="badge-sevk" class="rounded-full bg-muted px-2 py-0.5 text-xs tabular-nums text-muted-foreground">0</span>
           </button>
         </div>
-      </header>
+      </section>
 
-      <main class="space-y-4 px-5">
-        <section class="grid grid-cols-3 overflow-hidden rounded-theme border border-border bg-card shadow-sm">
-          <div class="border-r-2 border-border px-3 py-4">
-            <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
-              <iconify-icon icon="lucide:cow" class="text-lg"></iconify-icon>
-            </div>
-            <p class="text-[11px] font-semibold leading-4 text-muted-foreground">Hayvan</p>
-            <p class="mt-1 font-heading text-2xl font-bold tabular-nums text-foreground">0</p>
+      <!-- STOK LİSTESİ -->
+      <section class="rounded-theme border border-border bg-card shadow-sm">
+        <div class="flex items-center justify-between border-b-2 border-border px-4 py-3.5">
+          <div>
+            <h2 class="font-heading text-base font-bold text-foreground">Stok kayıtları</h2>
+            <p class="mt-0.5 text-xs font-medium text-muted-foreground">Onaylanan kesimler burada görünür</p>
           </div>
-          <div class="border-r-2 border-border px-3 py-4">
-            <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-theme bg-secondary text-secondary-foreground">
-              <iconify-icon icon="lucide:scale" class="text-lg"></iconify-icon>
-            </div>
-            <p class="text-[11px] font-semibold leading-4 text-muted-foreground">Toplam ağırlık</p>
-            <p class="mt-1 font-heading text-2xl font-bold tabular-nums text-foreground">0 <span class="text-sm">kg</span></p>
-          </div>
-          <div class="px-3 py-4">
-            <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-theme bg-accent text-accent-foreground">
-              <iconify-icon icon="lucide:badge-turkish-lira" class="text-lg"></iconify-icon>
-            </div>
-            <p class="text-[11px] font-semibold leading-4 text-muted-foreground">Toplam maliyet</p>
-            <p class="mt-1 font-heading text-2xl font-bold tabular-nums text-foreground">0 <span class="text-sm">TL</span></p>
-          </div>
-        </section>
-
-        <section class="rounded-theme border border-border bg-card p-1.5 shadow-sm" aria-label="Stok filtresi">
-          <div class="grid grid-cols-2 gap-1">
-            <button class="flex h-11 items-center justify-center gap-2 rounded-theme bg-primary px-3 text-sm font-bold text-primary-foreground">
-              <iconify-icon icon="lucide:package-open" class="text-lg"></iconify-icon>
-              Stokta
-              <span class="rounded-full bg-white/15 px-2 py-0.5 text-xs tabular-nums">0</span>
-            </button>
-            <button class="flex h-11 items-center justify-center gap-2 rounded-theme px-3 text-sm font-bold text-muted-foreground">
-              <iconify-icon icon="lucide:truck" class="text-lg"></iconify-icon>
-              Sevk Edildi
-              <span class="rounded-full bg-muted px-2 py-0.5 text-xs tabular-nums text-muted-foreground">0</span>
-            </button>
-          </div>
-        </section>
-
-        <section class="rounded-theme border border-border bg-card shadow-sm">
-          <div class="flex items-center justify-between border-b-2 border-border px-4 py-3.5">
-            <div>
-              <h2 class="font-heading text-base font-bold text-foreground">Stok kayıtları</h2>
-              <p class="mt-0.5 text-xs font-medium text-muted-foreground">Onaylanan kesimler burada görünür</p>
-            </div>
-            <button class="flex h-10 w-10 items-center justify-center rounded-theme bg-muted text-muted-foreground" aria-label="Stok kayıtlarını yenile">
-              <iconify-icon icon="lucide:refresh-cw" class="text-lg"></iconify-icon>
-            </button>
-          </div>
-
-          <div class="px-5 py-10 text-center">
-            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-              <iconify-icon icon="lucide:package-check" class="text-3xl"></iconify-icon>
-            </div>
-            <h3 class="mt-4 font-heading text-lg font-bold text-foreground">Stokta kayıt yok</h3>
-            <p class="mx-auto mt-2 max-w-[260px] text-sm leading-5 text-muted-foreground">Onaylanmış bir kesim kaydı tamamlandığında hayvan bilgileri, ağırlık ve maliyet otomatik olarak stoğa eklenir.</p>
-          </div>
-        </section>
-
-        <section class="rounded-theme border border-secondary bg-secondary/60 px-4 py-4">
-          <div class="flex items-start gap-3">
-            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <iconify-icon icon="lucide:lock-keyhole" class="text-lg"></iconify-icon>
-            </div>
-            <div>
-              <p class="text-sm font-bold text-secondary-foreground">Sevkiyat sonrası kayıtlar kilitlenir</p>
-              <p class="mt-1 text-xs leading-5 text-secondary-foreground/80">Stok bilgileri gerçek kesim ve sevkiyat kayıtlarından hesaplanır. Sevk onayından sonra düzenleme yapılamaz.</p>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <nav data-fv-tabbar class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-[0_-4px_16px_rgba(18,48,71,0.06)]" aria-label="Ana menü">
-        <div class="mx-auto flex max-w-md items-center justify-between">
-          <a data-fv-tab="Ana Sayfa" href="ana-sayfa.html" class="flex min-w-[68px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
-            <iconify-icon icon="lucide:house" class="text-xl"></iconify-icon>
-            <span class="text-[10px] font-bold leading-none">Ana Sayfa</span>
-          </a>
-          <a data-fv-tab="Kesim Listesi" href="kesim-listesi.html" class="flex min-w-[68px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
-            <iconify-icon icon="lucide:clipboard-list" class="text-xl"></iconify-icon>
-            <span class="text-[10px] font-bold leading-none">Kesim Listesi</span>
-          </a>
-          <a data-fv-tab="Stok" data-fv-tab-active="true" href="stok.html" class="flex min-w-[52px] flex-col items-center gap-1 rounded-theme bg-primary px-2 py-1.5 text-primary-foreground">
-            <iconify-icon icon="lucide:package" class="text-xl"></iconify-icon>
-            <span class="text-[10px] font-bold leading-none">Stok</span>
-          </a>
-          <a data-fv-tab="Sevkiyat" href="sevkiyat.html" class="flex min-w-[60px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
-            <iconify-icon icon="lucide:truck" class="text-xl"></iconify-icon>
-            <span class="text-[10px] font-bold leading-none">Sevkiyat</span>
-          </a>
-          <a data-fv-tab="Gün Sonu" href="g-n-sonu.html" class="flex min-w-[58px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
-            <iconify-icon icon="lucide:circle-check-big" class="text-xl"></iconify-icon>
-            <span class="text-[10px] font-bold leading-none">Gün Sonu</span>
-          </a><a data-fv-tab="Kasap Kesimleri" href="#" class="flex min-w-[68px] flex-col items-center gap-1 rounded-theme px-2 py-1.5 text-muted-foreground">
-            <iconify-icon icon="lucide:beef" class="text-xl"></iconify-icon>
-            <span class="text-[10px] font-bold leading-none">Kasap Kesimleri</span>
-          </a>
         </div>
-      </nav>
-    </div>
+
+        <div id="stok-container" class="divide-y divide-border">
+          <!-- Veriler Buraya Yüklenecek -->
+        </div>
+      </section>
+    </main>
+
+    <!-- ALT MENÜ -->
+    <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-[0_-4px_16px_rgba(18,48,71,0.06)]">
+      <div class="mx-auto flex max-w-md items-center justify-between">
+        <a href="ana-sayfa.html" class="flex min-w-[68px] flex-col items-center gap-1 text-muted-foreground">
+          <iconify-icon icon="lucide:house" class="text-xl"></iconify-icon>
+          <span class="text-[10px] font-bold">Ana Sayfa</span>
+        </a>
+        <a href="kesim-listesi.html" class="flex min-w-[68px] flex-col items-center gap-1 text-muted-foreground">
+          <iconify-icon icon="lucide:clipboard-list" class="text-xl"></iconify-icon>
+          <span class="text-[10px] font-bold">Kesim Listesi</span>
+        </a>
+        <a href="stok.html" class="flex min-w-[52px] flex-col items-center gap-1 rounded-theme bg-primary px-2 py-1.5 text-primary-foreground">
+          <iconify-icon icon="lucide:package" class="text-xl"></iconify-icon>
+          <span class="text-[10px] font-bold">Stok</span>
+        </a>
+        <a href="sevkiyat.html" class="flex min-w-[60px] flex-col items-center gap-1 text-muted-foreground">
+          <iconify-icon icon="lucide:truck" class="text-xl"></iconify-icon>
+          <span class="text-[10px] font-bold">Sevkiyat</span>
+        </a>
+        <a href="g-n-sonu.html" class="flex min-w-[58px] flex-col items-center gap-1 text-muted-foreground">
+          <iconify-icon icon="lucide:circle-check-big" class="text-xl"></iconify-icon>
+          <span class="text-[10px] font-bold">Gün Sonu</span>
+        </a>
+      </div>
+    </nav>
   </div>
+
   <script>
-    // Icon self-healing: a missing icon name renders as INVISIBLE empty space
-    // (iconify-icon fails silently). Its `status` property ('rendered' |
-    // 'loading' | 'failed') lets us swap failures to a neutral glyph.
-    (function() {
-      var els = document.querySelectorAll('iconify-icon');
-      for (var i = 0; i < els.length; i++) (function(el) {
-        var tries = 0;
-        (function check() {
-          var s = el.status;
-          if (s === 'failed') el.setAttribute('icon', 'lucide:circle');
-          else if (s !== 'rendered' && tries++ < 40) setTimeout(check, 250);
-        })();
-      })(els[i]);
-    })();
+    document.addEventListener("DOMContentLoaded", function () {
+      function yukleStokVerileri() {
+        const stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        const container = document.getElementById('stok-container');
+        
+        const stoktaOlanlar = stoklar.filter(item => item.durum === 'stokta' || item.status === 'stokta');
+        const sevkEdilenler = stoklar.filter(item => item.durum === 'sevk' || item.status === 'sevk');
+
+        // Sayaçları Güncelle
+        document.getElementById('stat-hayvan').textContent = stoktaOlanlar.length;
+        document.getElementById('badge-stokta').textContent = stoktaOlanlar.length;
+        document.getElementById('badge-sevk').textContent = sevkEdilenler.length;
+
+        let toplamKg = 0;
+        let toplamTL = 0;
+
+        stoktaOlanlar.forEach(item => {
+          toplamKg += parseFloat(item.agirlik || item.carcassWeight || 0);
+          toplamTL += parseFloat(item.maliyet || item.fiyat || item.price || 0);
+        });
+
+        document.getElementById('stat-agirlik').innerHTML = `${toplamKg.toLocaleString('tr-TR')} <span class="text-sm">kg</span>`;
+        document.getElementById('stat-maliyet').innerHTML = `${toplamTL.toLocaleString('tr-TR', {minimumFractionDigits: 2})} <span class="text-sm">TL</span>`;
+
+        // Liste Boşsa
+        if (stoktaOlanlar.length === 0) {
+          container.innerHTML = `
+            <div class="px-5 py-10 text-center">
+              <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+                <iconify-icon icon="lucide:package-check" class="text-3xl"></iconify-icon>
+              </div>
+              <h3 class="mt-4 font-heading text-lg font-bold text-foreground">Stokta kayıt yok</h3>
+              <p class="mx-auto mt-2 max-w-[260px] text-sm leading-5 text-muted-foreground">Onaylanmış bir kesim kaydı tamamlandığında hayvan bilgileri, ağırlık ve maliyet otomatik olarak stoğa eklenir.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Listeyi Doldur
+        container.innerHTML = stoktaOlanlar.map(item => `
+          <div class="p-4 flex items-center justify-between">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-primary text-sm">${item.kupeNo || item.animalId || 'Küpesiz'}</span>
+                <span class="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-secondary-foreground">${item.cins || item.breed || 'Büyükbaş'}</span>
+              </div>
+              <p class="text-xs text-muted-foreground">Müşteri: <strong class="text-foreground">${item.musteri || '-'}</strong></p>
+              <p class="text-[11px] text-muted-foreground">Tarih: ${item.tarih || '-'}</p>
+            </div>
+            <div class="text-right space-y-1">
+              <p class="font-bold text-foreground text-sm tabular-nums">${item.agirlik || item.carcassWeight || 0} kg</p>
+              <p class="text-xs font-semibold text-success tabular-nums">${(item.maliyet || item.fiyat || 0).toLocaleString('tr-TR')} TL</p>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('refresh-btn').addEventListener('click', yukleStokVerileri);
+      yukleStokVerileri();
+    });
   </script>
-<script src="app.js"></script></body>
+</body>
 </html>
+
