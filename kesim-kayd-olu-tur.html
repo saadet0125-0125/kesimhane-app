@@ -266,7 +266,6 @@
       
       let hesaplananToplamOdeme = 0;
 
-      // Ödeme Hesaplama
       function hesaplaOdeme() {
         const kgInputs = document.querySelectorAll('.hayvan-kg');
         const fiyatInputs = document.querySelectorAll('.hayvan-fiyat');
@@ -319,7 +318,6 @@
         if (hayvanBadge) hayvanBadge.textContent = `${satirlar.length} Hayvan`;
       }
 
-      // Yeni Hayvan Satırı Ekle
       hayvanEkleBtn.addEventListener('click', function () {
         const count = hayvanListesi.querySelectorAll('.hayvan-satiri').length + 1;
         const newRowHtml = `
@@ -390,7 +388,7 @@
 
       cutTypeInputs.forEach(input => input.addEventListener('change', hesaplaOdeme));
 
-      // --- ONAYLA VE BİTİR İŞLEMİ ---
+      // --- ONAYLA VE BİTİR İŞLEMİ (GÜNCELLENDİ) ---
       const form = document.getElementById("cut-record-form");
       form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -405,21 +403,32 @@
         const phone = document.querySelector('input[name="phone"]')?.value.trim() || "-";
         const iban = document.querySelector('input[name="iban"]')?.value.trim() || "-";
 
-        // Hayvanları Topla
+        // Stok Verilerini Topla
         let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
         const satirlar = hayvanListesi.querySelectorAll('.hayvan-satiri');
 
         satirlar.forEach(satir => {
           const kupeNo = satir.querySelector('input[name="animalId"]')?.value || "-";
-          const cins = satir.querySelector('.hayvan-cins')?.value || "Dana";
-          const fiyat = parseFloat(satir.querySelector('.hayvan-fiyat')?.value) || 0;
+          const agirlik = parseFloat(satir.querySelector('.hayvan-kg')?.value) || 0;
+          const cins = satir.querySelector('.hayvan-cins')?.value || "Büyükbaş";
+          const birimFiyat = parseFloat(satir.querySelector('.hayvan-fiyat')?.value) || 0;
+          const toplamMaliyet = agirlik * birimFiyat;
 
           stoklar.push({
             id: Date.now() + Math.random(),
             kupeNo: kupeNo,
+            animalId: kupeNo,
             cins: cins,
-            fiyat: fiyat,
+            breed: cins,
+            agirlik: agirlik,
+            carcassWeight: agirlik,
+            fiyat: birimFiyat,
+            price: birimFiyat,
+            maliyet: toplamMaliyet > 0 ? toplamMaliyet : birimFiyat,
+            musteri: fullName,
             kesimTuru: selectedCut,
+            durum: 'stokta',
+            status: 'stokta',
             tarih: new Date().toLocaleDateString('tr-TR')
           });
         });
@@ -437,8 +446,8 @@
         });
         localStorage.setItem('gunSonuRaporu', JSON.stringify(gunSonuRaporu));
 
-        alert("Kayıt Başarılı! Veriler Stoğa ve Gün Sonu Raporuna eklendi.");
-        window.location.href = "g-n-sonu.html";
+        alert("Kayıt Başarılı! Veriler hem Stoğa hem de Gün Sonu Raporuna eklendi.");
+        window.location.href = "stok.html";
       });
     });
   </script>
