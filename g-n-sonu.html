@@ -6,16 +6,22 @@
     <title>Gün Sonu Raporu - Kesimhane</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 pb-24 p-4 md:p-6">
+<body class="bg-gray-100 pb-28 p-4 md:p-6">
 
     <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md mb-8">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-3">Gün Sonu Raporu</h1>
+        <div class="flex justify-between items-center border-b pb-3 mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Gün Sonu Raporu</h1>
+            <!-- F12 TUŞU YERİNE GEÇEN TEMİZLEME BUTONU -->
+            <button id="btnTemizle" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-2 px-3 rounded shadow">
+                🗑️ Eski Verileri Sıfırla
+            </button>
+        </div>
 
         <!-- MÜŞTERİ LİSTESİ VE KESİM DETAYLARI TABLOSU -->
         <div class="overflow-x-auto mb-6">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-slate-800 text-white">
+                    <tr class="bg-slate-800 text-white text-sm">
                         <th class="p-3 border">Müşteri Adı</th>
                         <th class="p-3 border">Telefon</th>
                         <th class="p-3 border">IBAN</th>
@@ -23,7 +29,7 @@
                         <th class="p-3 border text-right">Tutar</th>
                     </tr>
                 </thead>
-                <tbody id="raporTablosu" class="bg-white divide-y">
+                <tbody id="raporTablosu" class="bg-white divide-y text-sm">
                     <!-- Javascript ile doldurulacak -->
                 </tbody>
             </table>
@@ -47,41 +53,43 @@
         </div>
     </div>
 
-    <!-- UYGULAMA ALT GEZİNTİ MENÜSÜ (BOTTOM NAVIGATION BAR) -->
+    <!-- UYGULAMA ALT GEZİNTİ MENÜSÜ -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
         <div class="max-w-md mx-auto flex justify-around items-center py-2 text-xs text-gray-600">
             <a href="ana-sayfa.html" class="flex flex-col items-center hover:text-blue-600">
-                <span>🏠</span>
-                <span>Anasayfa</span>
+                <span>🏠</span><span>Anasayfa</span>
             </a>
             <a href="kesim-listesi.html" class="flex flex-col items-center hover:text-blue-600">
-                <span>📋</span>
-                <span>Kesim Listesi</span>
+                <span>📋</span><span>Kesim Listesi</span>
             </a>
             <a href="stok.html" class="flex flex-col items-center hover:text-blue-600">
-                <span>📦</span>
-                <span>Stok</span>
+                <span>📦</span><span>Stok</span>
             </a>
             <a href="sevkiyat.html" class="flex flex-col items-center hover:text-blue-600">
-                <span>🚚</span>
-                <span>Sevkiyat</span>
+                <span>🚚</span><span>Sevkiyat</span>
             </a>
             <a href="g-n-sonu.html" class="flex flex-col items-center font-bold text-blue-600">
-                <span>📊</span>
-                <span>Gün Sonu</span>
+                <span>📊</span><span>Gün Sonu</span>
             </a>
             <a href="kasap-kesimleri.html" class="flex flex-col items-center hover:text-blue-600">
-                <span>🥩</span>
-                <span>Kasap Kesimleri</span>
+                <span>🥩</span><span>Kasap Kesimleri</span>
             </a>
         </div>
     </nav>
 
-    <!-- OTOMATİK VERİ ÇEKME VE HESAPLAMA SCRIPT -->
+    <!-- VERİ ÇEKME VE HESAPLAMA SCRIPT -->
     <script>
     document.addEventListener("DOMContentLoaded", function() {
-        let gunSonuRaporu = JSON.parse(localStorage.getItem('gunSonuRaporu')) || [];
+        // Eski Hafızayı Sıfırlama Butonu İşlevi
+        document.getElementById("btnTemizle").addEventListener("click", function() {
+            if(confirm("Tüm gün sonu verilerini sıfırlamak istediğinize emin misiniz?")) {
+                localStorage.removeItem('gunSonuRaporu');
+                localStorage.removeItem('stoklar');
+                location.reload();
+            }
+        });
 
+        let gunSonuRaporu = JSON.parse(localStorage.getItem('gunSonuRaporu')) || [];
         let standartToplam = 0;
         let faturaliToplam = 0;
 
@@ -101,10 +109,12 @@
 
                 return `
                     <tr class="hover:bg-gray-50">
-                        <td class="p-3 border">${item.musteriAdi || '-'}</td>
+                        <td class="p-3 border font-medium">${item.musteriAdi || '-'}</td>
                         <td class="p-3 border">${item.telefon || '-'}</td>
                         <td class="p-3 border font-mono text-xs">${item.iban || '-'}</td>
-                        <td class="p-3 border font-medium">${item.kesimTuru === 'faturali' ? 'Faturalı Kesim' : 'Standart Kesim'}</td>
+                        <td class="p-3 border font-semibold ${item.kesimTuru === 'faturali' ? 'text-amber-600' : 'text-blue-600'}">
+                            ${item.kesimTuru === 'faturali' ? 'Faturalı Kesim' : 'Standart Kesim'}
+                        </td>
                         <td class="p-3 border text-right font-bold">${tutar.toFixed(2)} TL</td>
                     </tr>
                 `;
@@ -118,83 +128,6 @@
         document.getElementById("genelToplam").innerText = genelToplam.toFixed(2) + " TL";
     });
     </script>
-    <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Sayfadaki "Onayla ve Bitir" butonunu yakala
-    const btnOnayla = document.querySelector('button[type="submit"]') || 
-                      document.querySelector('button:contains("Onayla")') || 
-                      document.querySelector('.btn-primary') || 
-                      document.querySelector('button');
-
-    if (btnOnayla) {
-        btnOnayla.addEventListener("click", function(e) {
-            e.preventDefault();
-
-            // Kesim türü seçimi (Radio butonları kontrol et)
-            let seciliKesimTuru = "standart";
-            const radioButtons = document.querySelectorAll('input[type="radio"]');
-            radioButtons.forEach(radio => {
-                if (radio.checked) {
-                    if (radio.value.includes("fatura") || radio.id.includes("fatura")) {
-                        seciliKesimTuru = "faturali";
-                    }
-                }
-            });
-
-            // Formdaki tüm girdi (input) alanlarını tara
-            const inputs = Array.from(document.querySelectorAll('input, select'));
-            
-            let musteri = "Ahmet Yılmaz";
-            let tel = "0532 000 00 00";
-            let ibanNo = "TR12 0000 0000 0000 0000 0000 00";
-            let tutar = 2500;
-
-            inputs.forEach(input => {
-                const val = input.value.trim();
-                if (!val) return;
-
-                // Girilen değerleri türüne göre otomatik eşle
-                if (input.placeholder?.toLowerCase().includes('ad') || input.name?.toLowerCase().includes('ad')) {
-                    musteri = val;
-                } else if (input.type === 'tel' || input.placeholder?.includes('53') || val.startsWith('05')) {
-                    tel = val;
-                } else if (val.toUpperCase().startsWith('TR') || input.placeholder?.toUpperCase().includes('TR')) {
-                    ibanNo = val;
-                } else if (input.type === 'number' || val.includes('TL')) {
-                    tutar = parseFloat(val.replace(/[^0-9.-]+/g, "")) || tutar;
-                }
-            });
-
-            // 1. STOK KISMINA KAYIT
-            let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-            stoklar.push({
-                id: Date.now(),
-                cins: "Dana / Büyükbaş",
-                fiyat: tutar,
-                kesimTuru: seciliKesimTuru,
-                tarih: new Date().toLocaleDateString('tr-TR')
-            });
-            localStorage.setItem('stoklar', JSON.stringify(stoklar));
-
-            // 2. GÜN SONU RAPORUNA KAYIT
-            let gunSonuRaporu = JSON.parse(localStorage.getItem('gunSonuRaporu')) || [];
-            gunSonuRaporu.push({
-                id: Date.now(),
-                musteriAdi: musteri,
-                telefon: tel,
-                iban: ibanNo,
-                kesimTuru: seciliKesimTuru,
-                tutar: tutar
-            });
-            localStorage.setItem('gunSonuRaporu', JSON.stringify(gunSonuRaporu));
-
-            alert("Kayıt başarılı! Gün Sonu Raporuna eklendi.");
-            window.location.href = "g-n-sonu.html";
-        });
-    }
-});
-</script>
-
 </body>
 </html>
 
