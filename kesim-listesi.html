@@ -185,29 +185,14 @@
       openBtn.addEventListener('click', () => kesimModal.classList.remove('hidden'));
       closeBtn.addEventListener('click', () => kesimModal.classList.add('hidden'));
 
-      // DÜNYADAKİ VE SİSTEMDEKİ TÜM KODLARI TARAYIP SIRADAKİ NUMARAYI BULMA
-      function getNextCodeForCins(cins) {
-        const kesimler = JSON.parse(localStorage.getItem('gunlukKesimler')) || [];
+      // STOKTAKİ AKTİF (SEVK EDİLMEMİŞ) HAYVANLARDAN SAYAÇ BULMA
+      function getNextCodeForCins(cins, currentRowIndex) {
         const stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-        const odenenler = JSON.parse(localStorage.getItem('odenenKesimler')) || [];
-
-        const tumKayitlar = [...kesimler, ...stoklar, ...odenenler];
-
-        // Mevcut modaldaki satırları da dikkate alalım ki aynı formda arka arkaya basılınca çakışmasın
-        const activeRows = animalContainer.querySelectorAll('.animal-row');
-        let currentFormMatchesCount = 0;
-
-        activeRows.forEach(r => {
-          const selectedCins = r.querySelector('.animal-cins')?.value;
-          if (selectedCins && selectedCins.toUpperCase() === cins.toUpperCase()) {
-            currentFormMatchesCount++;
-          }
-        });
-
         const upperCins = cins.toUpperCase().trim();
-        let maxNum = 0;
 
-        tumKayitlar.forEach(item => {
+        // 1. Sadece mevcut stokta bulunan ilgili cinsteki hayvanları incele
+        let maxNum = 0;
+        stoklar.forEach(item => {
           const itemCins = (item.cins || '').toUpperCase().trim();
           const itemCode = (item.kupeNo || item.animalId || '').toUpperCase().trim();
 
@@ -220,7 +205,22 @@
           }
         });
 
-        return `${upperCins}${maxNum + currentFormMatchesCount}`;
+        // 2. Açık olan modaldaki kendinden önceki aynı cinsteki satırları say
+        const activeRows = animalContainer.querySelectorAll('.animal-row');
+        let formCountBefore = 0;
+        
+        activeRows.forEach((r, idx) => {
+          if (idx < currentRowIndex) {
+            const selCins = r.querySelector('.animal-cins')?.value;
+            if (selCins && selCins.toUpperCase().trim() === upperCins) {
+              formCountBefore++;
+            }
+          }
+        });
+
+        // 3. Stokta ve formda hiç yoksa varsayılan olarak 1 versin
+        const calculatedNum = maxNum + formCountBefore + 1;
+        return `${upperCins}${calculatedNum}`;
       }
 
       let animalCount = 0;
@@ -247,7 +247,7 @@
             </div>
             <div>
               <label class="block text-[10px] font-semibold text-muted-foreground">Kod / Küpe No</label>
-              <input type="text" class="animal-code w-full rounded border border-border p-1.5 text-xs bg-card font-bold" placeholder="Otomatik Oluşacak">
+              <input type="text" class="animal-code w-full rounded border border-border p-1.5 text-xs bg-card font-bold" placeholder="Örn: İNEK1">
             </div>
             <div>
               <label class="block text-[10px] font-semibold text-muted-foreground">Ağırlık (Kg)</label>
@@ -263,13 +263,13 @@
         const cinsSelect = row.querySelector('.animal-cins');
         const codeInput = row.querySelector('.animal-code');
 
-        // İlk açılışta ve cins değiştiğinde otomatik kodu ata
-        function updateAutoCode() {
-          const nextCode = getNextCodeForCins(cinsSelect.value);
-          codeInput.value = nextCode;
+        function updateCodeIfDefault() {
+          const allRows = Array.from(animalContainer.querySelectorAll('.animal-row'));
+          const rowIndex = allRows.indexOf(row);
+          codeInput.value = getNextCodeForCins(cinsSelect.value, rowIndex >= 0 ? rowIndex : allRows.length);
         }
 
-        cinsSelect.addEventListener('change', updateAutoCode);
+        cinsSelect.addEventListener('change', updateCodeIfDefault);
 
         const rBtn = row.querySelector('.remove-animal-btn');
         if(rBtn) rBtn.addEventListener('click', () => {
@@ -282,7 +282,7 @@
         });
 
         animalContainer.appendChild(row);
-        updateAutoCode(); // Sayfaya basıldığı an otomatik kodu ver
+        updateCodeIfDefault();
         calculateTotals();
       }
 
@@ -418,7 +418,7 @@
         const tarihStr = new Date().toLocaleDateString('tr-TR');
         const saatStr = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
-        animalRows.forEach((row) => {
+        animalRows.forEach((row, idx) => {
           const cins = row.querySelector('.animal-cins').value;
           const codeInput = row.querySelector('.animal-code').value.trim();
           const kg = parseFloat(row.querySelector('.animal-kg').value || 0);
@@ -426,7 +426,7 @@
 
           const ham = kg * birimFiyat;
           const netMaliyet = tip === 'Standart' ? (ham * 0.985) : (ham * 1.01);
-          const finalEtiket = codeInput || getNextCodeForCins(cins);
+          const finalEtiket = codeInput || getNextCodeForCins(cins, idx);
 
           const yeniKayit = {
             id: Date.now() + Math.random(),
@@ -457,4 +457,3 @@
   </script>
 </body>
 </html>
-
