@@ -185,11 +185,50 @@
       openBtn.addEventListener('click', () => kesimModal.classList.remove('hidden'));
       closeBtn.addEventListener('click', () => kesimModal.classList.add('hidden'));
 
+      // DÜNYADAKİ VE SİSTEMDEKİ TÜM KODLARI TARAYIP SIRADAKİ NUMARAYI BULMA
+      function getNextCodeForCins(cins) {
+        const kesimler = JSON.parse(localStorage.getItem('gunlukKesimler')) || [];
+        const stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        const odenenler = JSON.parse(localStorage.getItem('odenenKesimler')) || [];
+
+        const tumKayitlar = [...kesimler, ...stoklar, ...odenenler];
+
+        // Mevcut modaldaki satırları da dikkate alalım ki aynı formda arka arkaya basılınca çakışmasın
+        const activeRows = animalContainer.querySelectorAll('.animal-row');
+        let currentFormMatchesCount = 0;
+
+        activeRows.forEach(r => {
+          const selectedCins = r.querySelector('.animal-cins')?.value;
+          if (selectedCins && selectedCins.toUpperCase() === cins.toUpperCase()) {
+            currentFormMatchesCount++;
+          }
+        });
+
+        const upperCins = cins.toUpperCase().trim();
+        let maxNum = 0;
+
+        tumKayitlar.forEach(item => {
+          const itemCins = (item.cins || '').toUpperCase().trim();
+          const itemCode = (item.kupeNo || item.animalId || '').toUpperCase().trim();
+
+          if (itemCins === upperCins || itemCode.startsWith(upperCins)) {
+            const numPart = itemCode.replace(upperCins, '').trim();
+            const parsedNum = parseInt(numPart, 10);
+            if (!isNaN(parsedNum) && parsedNum > maxNum) {
+              maxNum = parsedNum;
+            }
+          }
+        });
+
+        return `${upperCins}${maxNum + currentFormMatchesCount}`;
+      }
+
       let animalCount = 0;
       function addAnimalRow() {
         animalCount++;
         const row = document.createElement('div');
         row.className = 'animal-row rounded-lg border border-border bg-muted/20 p-3 space-y-2';
+        
         row.innerHTML = `
           <div class="flex items-center justify-between border-b border-border/50 pb-1">
             <span class="text-xs font-bold text-primary">Hayvan #${animalCount}</span>
@@ -208,7 +247,7 @@
             </div>
             <div>
               <label class="block text-[10px] font-semibold text-muted-foreground">Kod / Küpe No</label>
-              <input type="text" class="animal-code w-full rounded border border-border p-1.5 text-xs bg-card" placeholder="inek1, dana2">
+              <input type="text" class="animal-code w-full rounded border border-border p-1.5 text-xs bg-card font-bold" placeholder="Otomatik Oluşacak">
             </div>
             <div>
               <label class="block text-[10px] font-semibold text-muted-foreground">Ağırlık (Kg)</label>
@@ -220,6 +259,18 @@
             </div>
           </div>
         `;
+
+        const cinsSelect = row.querySelector('.animal-cins');
+        const codeInput = row.querySelector('.animal-code');
+
+        // İlk açılışta ve cins değiştiğinde otomatik kodu ata
+        function updateAutoCode() {
+          const nextCode = getNextCodeForCins(cinsSelect.value);
+          codeInput.value = nextCode;
+        }
+
+        cinsSelect.addEventListener('change', updateAutoCode);
+
         const rBtn = row.querySelector('.remove-animal-btn');
         if(rBtn) rBtn.addEventListener('click', () => {
           row.remove();
@@ -231,10 +282,10 @@
         });
 
         animalContainer.appendChild(row);
+        updateAutoCode(); // Sayfaya basıldığı an otomatik kodu ver
         calculateTotals();
       }
 
-      // STOPAJ VE KDV CANLI HESAPLAMA
       function calculateTotals() {
         const rows = animalContainer.querySelectorAll('.animal-row');
         let hamTutar = 0;
@@ -249,11 +300,11 @@
         let netTutar = hamTutar;
 
         if (tip === 'Standart') {
-          netTutar = hamTutar * 0.985; // %1.5 Stopaj Düşüşü
+          netTutar = hamTutar * 0.985;
           document.getElementById('summary-oran').textContent = "-%1.5 Stopaj";
           document.getElementById('summary-oran').className = "font-bold text-destructive";
         } else {
-          netTutar = hamTutar * 1.01; // %1 KDV Eklenmesi
+          netTutar = hamTutar * 1.01;
           document.getElementById('summary-oran').textContent = "+%1.0 KDV";
           document.getElementById('summary-oran').className = "font-bold text-success";
         }
@@ -269,7 +320,6 @@
       addAnimalRow();
       document.getElementById('add-animal-btn').addEventListener('click', addAnimalRow);
 
-      // YAZDIRMA İŞLEMİ
       function generatePrintReceipt() {
         const musteri = document.getElementById('form-musteri').value || '---';
         const tc = document.getElementById('form-tc').value || '---';
@@ -351,7 +401,6 @@
         `).join('');
       }
 
-      // FORM KAYDETME VE SİSTEME AKTARMA
       document.getElementById('kesim-form').addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -369,7 +418,7 @@
         const tarihStr = new Date().toLocaleDateString('tr-TR');
         const saatStr = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
-        animalRows.forEach((row, idx) => {
+        animalRows.forEach((row) => {
           const cins = row.querySelector('.animal-cins').value;
           const codeInput = row.querySelector('.animal-code').value.trim();
           const kg = parseFloat(row.querySelector('.animal-kg').value || 0);
@@ -377,7 +426,7 @@
 
           const ham = kg * birimFiyat;
           const netMaliyet = tip === 'Standart' ? (ham * 0.985) : (ham * 1.01);
-          const finalEtiket = codeInput || `${cins}-${idx + 1}`;
+          const finalEtiket = codeInput || getNextCodeForCins(cins);
 
           const yeniKayit = {
             id: Date.now() + Math.random(),
