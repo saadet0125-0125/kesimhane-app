@@ -118,6 +118,83 @@
         document.getElementById("genelToplam").innerText = genelToplam.toFixed(2) + " TL";
     });
     </script>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Sayfadaki "Onayla ve Bitir" butonunu yakala
+    const btnOnayla = document.querySelector('button[type="submit"]') || 
+                      document.querySelector('button:contains("Onayla")') || 
+                      document.querySelector('.btn-primary') || 
+                      document.querySelector('button');
+
+    if (btnOnayla) {
+        btnOnayla.addEventListener("click", function(e) {
+            e.preventDefault();
+
+            // Kesim türü seçimi (Radio butonları kontrol et)
+            let seciliKesimTuru = "standart";
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => {
+                if (radio.checked) {
+                    if (radio.value.includes("fatura") || radio.id.includes("fatura")) {
+                        seciliKesimTuru = "faturali";
+                    }
+                }
+            });
+
+            // Formdaki tüm girdi (input) alanlarını tara
+            const inputs = Array.from(document.querySelectorAll('input, select'));
+            
+            let musteri = "Ahmet Yılmaz";
+            let tel = "0532 000 00 00";
+            let ibanNo = "TR12 0000 0000 0000 0000 0000 00";
+            let tutar = 2500;
+
+            inputs.forEach(input => {
+                const val = input.value.trim();
+                if (!val) return;
+
+                // Girilen değerleri türüne göre otomatik eşle
+                if (input.placeholder?.toLowerCase().includes('ad') || input.name?.toLowerCase().includes('ad')) {
+                    musteri = val;
+                } else if (input.type === 'tel' || input.placeholder?.includes('53') || val.startsWith('05')) {
+                    tel = val;
+                } else if (val.toUpperCase().startsWith('TR') || input.placeholder?.toUpperCase().includes('TR')) {
+                    ibanNo = val;
+                } else if (input.type === 'number' || val.includes('TL')) {
+                    tutar = parseFloat(val.replace(/[^0-9.-]+/g, "")) || tutar;
+                }
+            });
+
+            // 1. STOK KISMINA KAYIT
+            let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+            stoklar.push({
+                id: Date.now(),
+                cins: "Dana / Büyükbaş",
+                fiyat: tutar,
+                kesimTuru: seciliKesimTuru,
+                tarih: new Date().toLocaleDateString('tr-TR')
+            });
+            localStorage.setItem('stoklar', JSON.stringify(stoklar));
+
+            // 2. GÜN SONU RAPORUNA KAYIT
+            let gunSonuRaporu = JSON.parse(localStorage.getItem('gunSonuRaporu')) || [];
+            gunSonuRaporu.push({
+                id: Date.now(),
+                musteriAdi: musteri,
+                telefon: tel,
+                iban: ibanNo,
+                kesimTuru: seciliKesimTuru,
+                tutar: tutar
+            });
+            localStorage.setItem('gunSonuRaporu', JSON.stringify(gunSonuRaporu));
+
+            alert("Kayıt başarılı! Gün Sonu Raporuna eklendi.");
+            window.location.href = "g-n-sonu.html";
+        });
+    }
+});
+</script>
+
 </body>
 </html>
 
