@@ -29,7 +29,7 @@
 </head>
 <body class="bg-background text-foreground min-h-screen font-body">
 
-  <!-- GİRİŞ EKRANI -->
+  <!-- GİRİŞ EKRANI (LOGIN MODAL) -->
   <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-primary/90 p-4 backdrop-blur-sm">
     <div class="w-full max-w-sm rounded-2xl bg-card p-6 shadow-2xl border border-border">
       <div class="text-center mb-6">
@@ -42,22 +42,23 @@
       <form id="login-form" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-foreground mb-1">Kullanıcı Adı</label>
-          <input type="text" id="username" required class="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="admin">
+          <input type="text" id="username" required class="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Kullanıcı adınız">
         </div>
         <div>
           <label class="block text-xs font-bold text-foreground mb-1">Şifre</label>
-          <input type="password" id="password" required class="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="1234">
+          <input type="password" id="password" required class="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="••••••••">
         </div>
+        <p id="login-error" class="text-xs text-destructive hidden font-semibold text-center">Hatalı kullanıcı adı veya şifre!</p>
         <button type="submit" class="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground hover:opacity-90 transition-all">Giriş Yap</button>
       </form>
     </div>
   </div>
 
   <!-- ANA PANEL -->
-  <div id="main-panel" class="hidden min-h-screen pb-32">
+  <div id="main-panel" class="hidden min-h-screen pb-28">
     <header class="px-5 pb-4 pt-8 flex justify-between items-center">
       <div>
-        <p class="text-xs font-semibold text-muted-foreground">Et Entegre Tesisi</p>
+        <p class="text-xs font-semibold text-muted-foreground" id="active-user-text">Et Entegre Tesisi</p>
         <h1 class="text-2xl font-bold text-foreground">Ana Sayfa</h1>
       </div>
       <button id="logout-btn" class="flex items-center gap-1 text-xs font-bold text-destructive bg-card border border-border px-3 py-1.5 rounded-lg shadow-sm">
@@ -65,9 +66,10 @@
       </button>
     </header>
 
-    <main class="px-5 space-y-5">
-      <!-- GÜNLÜK ÖZET -->
+    <main class="px-5 space-y-4">
+      <!-- ÖZET KARTLARI -->
       <section class="grid grid-cols-2 gap-3">
+        <!-- Standart Kesim -->
         <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
           <div class="flex items-center gap-2 mb-2">
             <div class="p-2 rounded-lg bg-secondary text-secondary-foreground">
@@ -76,9 +78,10 @@
             <span class="text-xs font-bold text-foreground">Standart Kesim</span>
           </div>
           <p class="text-xs text-muted-foreground">Adet: <strong id="stat-std-adet" class="text-foreground">0</strong></p>
-          <p class="text-sm font-bold text-success mt-1" id="stat-std-tutar">0 TL</p>
+          <p class="text-base font-bold text-success mt-1" id="stat-std-tutar">0 TL</p>
         </div>
 
+        <!-- Faturalı Kesim -->
         <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
           <div class="flex items-center gap-2 mb-2">
             <div class="p-2 rounded-lg bg-accent/10 text-accent">
@@ -87,76 +90,15 @@
             <span class="text-xs font-bold text-foreground">Faturalı Kesim</span>
           </div>
           <p class="text-xs text-muted-foreground">Adet: <strong id="stat-fat-adet" class="text-foreground">0</strong></p>
-          <p class="text-sm font-bold text-accent mt-1" id="stat-fat-tutar">0 TL</p>
+          <p class="text-base font-bold text-accent mt-1" id="stat-fat-tutar">0 TL</p>
         </div>
       </section>
 
-      <!-- KESİM KAYDI OLUŞTURMA FORMU -->
-      <section class="rounded-xl border border-border bg-card p-4 shadow-sm">
-        <h2 class="text-base font-bold text-foreground mb-3 flex items-center gap-2">
-          <iconify-icon icon="lucide:plus-circle" class="text-primary"></iconify-icon>
-          Yeni Kesim Kaydı Oluştur
-        </h2>
-        
-        <form id="kesim-form" class="space-y-4">
-          <!-- MÜŞTERİ VE BİLGİLERİ -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold mb-1 text-muted-foreground">Müşteri Adı Soyadı</label>
-              <input type="text" id="form-musteri" required class="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ad Soyad">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1 text-muted-foreground">TC Kimlik / Vergi No</label>
-              <input type="text" id="form-tc" maxlength="11" class="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary" placeholder="11 haneli TC No">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold mb-1 text-muted-foreground">IBAN Numarası</label>
-              <input type="text" id="form-iban" class="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary" placeholder="TR00 0000 0000 0000 0000 0000 00">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1 text-muted-foreground">Kısa Adres</label>
-              <input type="text" id="form-adres" class="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary" placeholder="İl, İlçe / Mahalle">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold mb-1 text-muted-foreground">Kesim Tipi</label>
-              <select id="form-tip" class="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
-                <option value="Standart">Standart Kesim</option>
-                <option value="Faturalı">Faturalı Kesim</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1 text-muted-foreground">Kesen Personel / Kasap</label>
-              <input type="text" id="form-kesen" required placeholder="Örn: Ahmet Usta" class="w-full rounded-lg border border-border p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
-            </div>
-          </div>
-
-          <!-- DİNAMİK HAYVAN EKLEME ALANI -->
-          <div class="pt-2 border-t border-border">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-bold text-foreground flex items-center gap-1.5">
-                <iconify-icon icon="lucide:beef" class="text-primary text-base"></iconify-icon>
-                Kesilecek Hayvanlar Listesi
-              </span>
-              <button type="button" id="add-animal-btn" class="flex items-center gap-1 text-xs font-bold text-primary bg-secondary px-3 py-1.5 rounded-lg hover:opacity-80">
-                <iconify-icon icon="lucide:plus"></iconify-icon> Yeni Hayvan Ekle
-              </button>
-            </div>
-
-            <div id="animal-list-container" class="space-y-3">
-              <!-- Dinamik Hayvan Satırları Buraya Eklenecek -->
-            </div>
-          </div>
-
-          <button type="submit" class="w-full rounded-lg bg-primary py-3.5 text-sm font-bold text-primary-foreground shadow-md hover:opacity-90 transition-all">
-            Kesim Kaydını Tamamla ve Stoğa Aktar
-          </button>
-        </form>
+      <!-- TOPLAM MALİYET KARTI -->
+      <section class="rounded-xl border border-border bg-card p-5 shadow-sm text-center">
+        <p class="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Günlük Toplam Kesim Maliyeti</p>
+        <p class="text-3xl font-extrabold text-primary" id="stat-toplam-tutar">0 TL</p>
+        <p class="text-xs text-muted-foreground mt-1">Toplam Kesilen Hayvan: <strong id="stat-toplam-adet" class="text-foreground">0</strong> baş</p>
       </section>
     </main>
 
@@ -188,89 +130,58 @@
   </div>
 
   <script>
+    // ÖZEL KULLANICI TANIMLARI
+    // İstediğiniz kadar kullanıcı ekleyebilirsiniz: 'kullanıcı_adı': 'şifre'
+    const validUsers = {
+      'admin': '1234',
+      'ahmet': 'ahmet2026',
+      'mehmet': 'mehmet123',
+      'kasap1': '8888'
+    };
+
     document.addEventListener("DOMContentLoaded", function () {
       const loginModal = document.getElementById('login-modal');
       const mainPanel = document.getElementById('main-panel');
-      const animalContainer = document.getElementById('animal-list-container');
+      const loginError = document.getElementById('login-error');
 
-      // 1. OTURUM KONTROLÜ
-      if (sessionStorage.getItem('isLoggedIn') === 'true') {
+      // OTURUM KONTROLÜ
+      const loggedUser = sessionStorage.getItem('currentUser');
+      if (loggedUser) {
         loginModal.classList.add('hidden');
         mainPanel.classList.remove('hidden');
+        document.getElementById('active-user-text').textContent = `Hoş geldiniz, ${loggedUser}`;
         guncelleOzet();
       }
 
+      // GİRİŞ FORMU
       document.getElementById('login-form').addEventListener('submit', function (e) {
         e.preventDefault();
-        const u = document.getElementById('username').value;
-        const p = document.getElementById('password').value;
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value.trim();
 
-        if (u && p) {
+        if (validUsers[u] && validUsers[u] === p) {
           sessionStorage.setItem('isLoggedIn', 'true');
+          sessionStorage.setItem('currentUser', u);
           loginModal.classList.add('hidden');
           mainPanel.classList.remove('hidden');
+          document.getElementById('active-user-text').textContent = `Hoş geldiniz, ${u}`;
+          loginError.classList.add('hidden');
           guncelleOzet();
+        } else {
+          loginError.classList.remove('hidden');
         }
       });
 
+      // ÇIKIŞ
       document.getElementById('logout-btn').addEventListener('click', function () {
-        sessionStorage.removeItem('isLoggedIn');
+        sessionStorage.clear();
         location.reload();
       });
 
-      // 2. DİNAMİK HAYVAN SATIRI EKLEME
-      let animalCount = 0;
-      function addAnimalRow() {
-        animalCount++;
-        const row = document.createElement('div');
-        row.className = 'animal-row rounded-lg border border-border bg-muted/20 p-3 relative space-y-2';
-        row.innerHTML = `
-          <div class="flex items-center justify-between border-b border-border/50 pb-1.5">
-            <span class="text-xs font-bold text-primary">Hayvan #${animalCount}</span>
-            ${animalCount > 1 ? `<button type="button" class="remove-animal-btn text-destructive text-xs font-bold flex items-center gap-1 hover:underline"><iconify-icon icon="lucide:trash-2"></iconify-icon> Sil</button>` : ''}
-          </div>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div>
-              <label class="block text-[11px] font-semibold text-muted-foreground mb-0.5">Cinsi</label>
-              <select class="animal-cins w-full rounded-md border border-border p-1.5 text-xs bg-card focus:ring-1 focus:ring-primary">
-                <option value="İnek">İnek</option>
-                <option value="Düve">Düve</option>
-                <option value="Tosun">Tosun</option>
-                <option value="Dana">Dana</option>
-                <option value="Koyun">Koyun</option>
-                <option value="Diğer">Diğer</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-semibold text-muted-foreground mb-0.5">Hayvan Kodu / Küpe No</label>
-              <input type="text" class="animal-code w-full rounded-md border border-border p-1.5 text-xs bg-card focus:ring-1 focus:ring-primary" placeholder="Örn: inek1, dana2">
-            </div>
-            <div>
-              <label class="block text-[11px] font-semibold text-muted-foreground mb-0.5">Ağırlık (Kg)</label>
-              <input type="number" required min="1" class="animal-kg w-full rounded-md border border-border p-1.5 text-xs bg-card focus:ring-1 focus:ring-primary" placeholder="0">
-            </div>
-            <div>
-              <label class="block text-[11px] font-semibold text-muted-foreground mb-0.5">Maliyet (TL)</label>
-              <input type="number" required min="0" class="animal-tl w-full rounded-md border border-border p-1.5 text-xs bg-card focus:ring-1 focus:ring-primary" placeholder="0">
-            </div>
-          </div>
-        `;
-
-        const removeBtn = row.querySelector('.remove-animal-btn');
-        if (removeBtn) {
-          removeBtn.addEventListener('click', () => row.remove());
-        }
-
-        animalContainer.appendChild(row);
-      }
-
-      // Varsayılan 1 tane ekle
-      addAnimalRow();
-      document.getElementById('add-animal-btn').addEventListener('click', addAnimalRow);
-
-      // 3. ÖZET HESAPLAMA
+      // ÖZET DOLDURMA
       function guncelleOzet() {
         const kesimler = JSON.parse(localStorage.getItem('gunlukKesimler')) || [];
+        
         let stdAdet = 0, stdTutar = 0;
         let fatAdet = 0, fatTutar = 0;
 
@@ -286,79 +197,16 @@
 
         document.getElementById('stat-std-adet').textContent = stdAdet;
         document.getElementById('stat-std-tutar').textContent = `${stdTutar.toLocaleString('tr-TR')} TL`;
+
         document.getElementById('stat-fat-adet').textContent = fatAdet;
         document.getElementById('stat-fat-tutar').textContent = `${fatTutar.toLocaleString('tr-TR')} TL`;
+
+        // Toplam Maliyet Hesaplama
+        const toplamTutar = stdTutar + fatTutar;
+        const toplamAdet = stdAdet + fatAdet;
+        document.getElementById('stat-toplam-tutar').textContent = `${toplamTutar.toLocaleString('tr-TR')} TL`;
+        document.getElementById('stat-toplam-adet').textContent = toplamAdet;
       }
-
-      // 4. FORMU KAYDETME
-      document.getElementById('kesim-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const musteri = document.getElementById('form-musteri').value;
-        const tc = document.getElementById('form-tc').value;
-        const iban = document.getElementById('form-iban').value;
-        const adres = document.getElementById('form-adres').value;
-        const tip = document.getElementById('form-tip').value;
-        const kesen = document.getElementById('form-kesen').value;
-
-        const animalRows = animalContainer.querySelectorAll('.animal-row');
-        if (animalRows.length === 0) {
-          alert('Lütfen en az 1 hayvan ekleyiniz.');
-          return;
-        }
-
-        const gunlukKesimler = JSON.parse(localStorage.getItem('gunlukKesimler')) || [];
-        const stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-
-        const tarihStr = new Date().toLocaleDateString('tr-TR');
-        const saatStr = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-
-        let eklenenAdet = 0;
-
-        animalRows.forEach((row, idx) => {
-          const cins = row.querySelector('.animal-cins').value;
-          const codeInput = row.querySelector('.animal-code').value.trim();
-          const kg = parseFloat(row.querySelector('.animal-kg').value || 0);
-          const tl = parseFloat(row.querySelector('.animal-tl').value || 0);
-
-          // Kod verilmediyse otomatik isim atama (inek-1, dana-2 vb.)
-          const finalEtiket = codeInput || `${cins}-${idx + 1}`;
-
-          const yeniKayit = {
-            id: Date.now() + Math.random(),
-            musteri,
-            tc,
-            iban,
-            adres,
-            cins,
-            kupeNo: finalEtiket,
-            animalId: finalEtiket,
-            tip,
-            agirlik: kg,
-            maliyet: tl,
-            kesen,
-            tarih: tarihStr,
-            saat: saatStr,
-            durum: 'stokta'
-          };
-
-          gunlukKesimler.push(yeniKayit);
-          stoklar.push(yeniKayit);
-          eklenenAdet++;
-        });
-
-        localStorage.setItem('gunlukKesimler', JSON.stringify(gunlukKesimler));
-        localStorage.setItem('stoklar', JSON.stringify(stoklar));
-
-        alert(`${eklenenAdet} adet hayvan kaydı başarıyla oluşturuldu ve stoğa aktarıldı!`);
-
-        // Formu temizle ve resetle
-        document.getElementById('kesim-form').reset();
-        animalContainer.innerHTML = '';
-        animalCount = 0;
-        addAnimalRow();
-        guncelleOzet();
-      });
     });
   </script>
 </body>
