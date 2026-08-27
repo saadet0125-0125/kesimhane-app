@@ -26,6 +26,13 @@
     };
   </script>
   <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #print-area, #print-area * { visibility: visible; }
+      #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
 </head>
 <body class="bg-background text-foreground min-h-screen font-body pb-28">
 
@@ -49,7 +56,7 @@
 
   <!-- KESİM KAYIT MODALİ -->
   <div id="kesim-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-primary/80 p-4 backdrop-blur-sm overflow-y-auto">
-    <div class="w-full max-w-lg rounded-2xl bg-card p-5 shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
+    <div class="w-full max-w-lg rounded-2xl bg-card p-5 shadow-2xl border border-border max-h-[92vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4 border-b border-border pb-2">
         <h2 class="text-base font-bold text-foreground flex items-center gap-2">
           <iconify-icon icon="lucide:plus-circle" class="text-primary"></iconify-icon>
@@ -111,12 +118,37 @@
           <div id="animal-list-container" class="space-y-3"></div>
         </div>
 
-        <button type="submit" class="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground shadow hover:opacity-90">
-          Kaydet ve Stoğa Aktar
-        </button>
+        <!-- HESAPLANAN ÖDENECEK TUTAR ÖZETİ -->
+        <div class="rounded-xl border border-border bg-secondary/30 p-3.5 space-y-1">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-muted-foreground">Seçili Kesim Tipi:</span>
+            <span id="summary-tip" class="font-bold text-primary">Standart Kesim</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-muted-foreground">Toplam Hayvan Adedi:</span>
+            <span id="summary-adet" class="font-bold text-foreground">1 baş</span>
+          </div>
+          <div class="flex justify-between items-center text-sm pt-1 border-t border-border/50">
+            <span class="font-bold text-foreground">Ödenecek Toplam Tutar:</span>
+            <span id="summary-tutar" class="text-base font-extrabold text-success">0 TL</span>
+          </div>
+        </div>
+
+        <!-- BUTONLAR (KAYDET & YAZDIR) -->
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button type="button" id="print-form-btn" class="rounded-lg border border-primary text-primary py-3 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-primary/5">
+            <iconify-icon icon="lucide:printer" class="text-base"></iconify-icon> Fiş Yazdır
+          </button>
+          <button type="submit" class="rounded-lg bg-primary py-3 text-xs font-bold text-primary-foreground shadow hover:opacity-90">
+            Kaydet ve Stoğa Aktar
+          </button>
+        </div>
       </form>
     </div>
   </div>
+
+  <!-- GİZLİ YAZDIRMA ALANI -->
+  <div id="print-area" class="hidden p-6 font-mono text-black"></div>
 
   <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-lg">
     <div class="mx-auto flex max-w-md items-center justify-between">
@@ -189,12 +221,92 @@
           </div>
         `;
         const rBtn = row.querySelector('.remove-animal-btn');
-        if(rBtn) rBtn.addEventListener('click', () => row.remove());
+        if(rBtn) rBtn.addEventListener('click', () => {
+          row.remove();
+          calculateTotals();
+        });
+
+        row.querySelectorAll('input, select').forEach(el => {
+          el.addEventListener('input', calculateTotals);
+        });
+
         animalContainer.appendChild(row);
+        calculateTotals();
       }
+
+      // TUTAR VE CANLI HESAPLAMA
+      function calculateTotals() {
+        const rows = animalContainer.querySelectorAll('.animal-row');
+        let totalTl = 0;
+        rows.forEach(r => {
+          const val = parseFloat(r.querySelector('.animal-tl').value || 0);
+          totalTl += val;
+        });
+
+        const tipVal = document.getElementById('form-tip').value;
+        document.getElementById('summary-tip').textContent = `${tipVal} Kesim`;
+        document.getElementById('summary-adet').textContent = `${rows.length} baş`;
+        document.getElementById('summary-tutar').textContent = `${totalTl.toLocaleString('tr-TR')} TL`;
+      }
+
+      document.getElementById('form-tip').addEventListener('change', calculateTotals);
 
       addAnimalRow();
       document.getElementById('add-animal-btn').addEventListener('click', addAnimalRow);
+
+      // YAZDIRMA FİŞİ HAZIRLAMA
+      function generatePrintReceipt() {
+        const musteri = document.getElementById('form-musteri').value || '---';
+        const tc = document.getElementById('form-tc').value || '---';
+        const iban = document.getElementById('form-iban').value || '---';
+        const tip = document.getElementById('form-tip').value;
+        const kesen = document.getElementById('form-kesen').value || '---';
+        const rows = animalContainer.querySelectorAll('.animal-row');
+
+        let animalDetailsHtml = '';
+        let totalTl = 0;
+
+        rows.forEach((r, idx) => {
+          const cins = r.querySelector('.animal-cins').value;
+          const code = r.querySelector('.animal-code').value || `${cins}-${idx+1}`;
+          const kg = r.querySelector('.animal-kg').value || 0;
+          const tl = parseFloat(r.querySelector('.animal-tl').value || 0);
+          totalTl += tl;
+
+          animalDetailsHtml += `
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span>#${idx+1} ${code} (${cins} - ${kg} kg)</span>
+              <span>${tl.toLocaleString('tr-TR')} TL</span>
+            </div>
+          `;
+        });
+
+        const printArea = document.getElementById('print-area');
+        printArea.innerHTML = `
+          <div style="max-width:350px; border:1px solid #000; padding:15px; font-size:12px;">
+            <h2 style="text-align:center; margin-bottom:5px; font-weight:bold;">ET ENTEGRE TESİSİ</h2>
+            <p style="text-align:center; margin-bottom:15px;">KESİM MAKBUZU / FİŞİ</p>
+            <hr style="border-top:1px dashed #000; margin-bottom:10px;">
+            <p><strong>Tarih:</strong> ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')}</p>
+            <p><strong>Müşteri:</strong> ${musteri}</p>
+            <p><strong>TC/Vergi No:</strong> ${tc}</p>
+            <p><strong>IBAN:</strong> ${iban}</p>
+            <p><strong>Kesim Tipi:</strong> ${tip} Kesim</p>
+            <p><strong>Kasap/Personel:</strong> ${kesen}</p>
+            <hr style="border-top:1px dashed #000; margin:10px 0;">
+            <p style="font-weight:bold; margin-bottom:5px;">KESİLEN HAYVANLAR:</p>
+            ${animalDetailsHtml}
+            <hr style="border-top:1px dashed #000; margin:10px 0;">
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold;">
+              <span>ÖDENECEK TUTAR:</span>
+              <span>${totalTl.toLocaleString('tr-TR')} TL</span>
+            </div>
+          </div>
+        `;
+        window.print();
+      }
+
+      document.getElementById('print-form-btn').addEventListener('click', generatePrintReceipt);
 
       function listeyiYukle() {
         const kesimler = JSON.parse(localStorage.getItem('gunlukKesimler')) || [];
@@ -277,3 +389,4 @@
   </script>
 </body>
 </html>
+
