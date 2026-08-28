@@ -26,7 +26,7 @@
   </script>
   <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
 </head>
-<body class="bg-background text-foreground min-h-screen font-body pb-28">
+<body class="bg-background text-foreground min-h-screen font-body pb-32">
 
   <!-- GİRİŞ EKRANI (ÇOKLU KULLANICI DESTEKLİ) -->
   <div id="login-overlay" class="fixed inset-0 z-50 bg-background flex items-center justify-center p-4">
@@ -65,44 +65,44 @@
     </header>
 
     <main class="px-5 space-y-4">
-      <!-- KARELİ GÖRÜNÜM (Standart ve Faturalı Kesimler) -->
+      <!-- 3 BLOK YAPISI: Standart Kesim, Faturalı Kesim, Genel Toplam -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <!-- Standart Kesim Kutusu -->
+        <!-- 1. Standart Kesim Kutusu -->
         <div class="bg-card border border-border p-4 rounded-2xl shadow-sm space-y-2">
           <div class="flex items-center gap-2 text-primary font-bold text-xs border-b border-border pb-2">
             <iconify-icon icon="lucide:file-text" class="text-lg"></iconify-icon> Standart Kesim
           </div>
           <div class="space-y-1 pt-1">
             <div class="flex justify-between items-center text-xs">
-              <span class="text-muted-foreground">Kesilen Hayvan Sayısı:</span>
+              <span class="text-muted-foreground">Kesilen Hayvan Adedi:</span>
               <span id="std-adet" class="font-bold text-foreground">0 Adet</span>
             </div>
             <div class="flex justify-between items-center text-xs">
-              <span class="text-muted-foreground">Toplam Tutar:</span>
+              <span class="text-muted-foreground">Ödenecek Tutar:</span>
               <span id="std-tutar" class="font-extrabold text-primary">0,00 TL</span>
             </div>
           </div>
         </div>
 
-        <!-- Faturalı Kesim Kutusu -->
+        <!-- 2. Faturalı Kesim Kutusu -->
         <div class="bg-card border border-border p-4 rounded-2xl shadow-sm space-y-2">
           <div class="flex items-center gap-2 text-accent font-bold text-xs border-b border-border pb-2">
             <iconify-icon icon="lucide:receipt" class="text-lg"></iconify-icon> Faturalı Kesim (+%1 KDV)
           </div>
           <div class="space-y-1 pt-1">
             <div class="flex justify-between items-center text-xs">
-              <span class="text-muted-foreground">Kesilen Hayvan Sayısı:</span>
+              <span class="text-muted-foreground">Kesilen Hayvan Adedi:</span>
               <span id="fat-adet" class="font-bold text-foreground">0 Adet</span>
             </div>
             <div class="flex justify-between items-center text-xs">
-              <span class="text-muted-foreground">Toplam Tutar:</span>
+              <span class="text-muted-foreground">Ödenecek Tutar:</span>
               <span id="fat-tutar" class="font-extrabold text-accent">0,00 TL</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ALT KISIM: Toplam Ödenecek Tutar ve Toplam Hayvan Sayısı -->
+      <!-- 3. Genel Toplam Özeti Kutusu -->
       <div class="bg-card border border-border p-4 rounded-2xl shadow-sm space-y-2">
         <h3 class="text-xs font-bold text-foreground border-b border-border pb-2 flex items-center gap-1.5">
           <iconify-icon icon="lucide:wallet" class="text-success text-base"></iconify-icon>
@@ -110,11 +110,11 @@
         </h3>
         <div class="space-y-1.5 pt-1">
           <div class="flex justify-between items-center text-xs">
-            <span class="text-muted-foreground font-semibold">Toplam Hayvan Sayısı:</span>
+            <span class="text-muted-foreground font-semibold">Toplam Hayvan Adedi:</span>
             <span id="genel-hayvan-adet" class="font-bold text-foreground">0 Adet</span>
           </div>
           <div class="flex justify-between items-center text-sm pt-1 border-t border-border/50">
-            <span class="font-bold text-foreground">Toplam Ödenecek Tutar:</span>
+            <span class="font-bold text-foreground">Genel Toplam Ödenecek Tutar:</span>
             <span id="genel-toplam-tutar" class="font-extrabold text-success text-base">0,00 TL</span>
           </div>
         </div>
@@ -122,28 +122,32 @@
     </main>
   </div>
 
-  <!-- ALT NAVİGASYON -->
-  <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-lg">
-    <div class="mx-auto flex max-w-md items-center justify-between">
-      <a href="ana-sayfa.html" class="flex flex-col items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-primary-foreground">
-        <iconify-icon icon="lucide:house" class="text-xl"></iconify-icon>
-        <span class="text-[10px] font-bold">Ana Sayfa</span>
+  <!-- ALT NAVİGASYON (6 Sekmeli Tam Liste) -->
+  <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-1.5 pb-3 pt-2 shadow-lg overflow-x-auto">
+    <div class="mx-auto flex max-w-lg items-center justify-between gap-1">
+      <a href="ana-sayfa.html" class="flex flex-col items-center gap-0.5 rounded-lg bg-primary px-2.5 py-1 text-primary-foreground min-w-[55px]">
+        <iconify-icon icon="lucide:house" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Ana Sayfa</span>
       </a>
-      <a href="kesim-listesi.html" class="flex flex-col items-center gap-1 text-muted-foreground">
-        <iconify-icon icon="lucide:clipboard-list" class="text-xl"></iconify-icon>
-        <span class="text-[10px] font-bold">Kesim Listesi</span>
+      <a href="kesim-listesi.html" class="flex flex-col items-center gap-0.5 text-muted-foreground px-2 py-1 min-w-[55px] hover:text-foreground">
+        <iconify-icon icon="lucide:clipboard-list" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Kesim Liste</span>
       </a>
-      <a href="stok.html" class="flex flex-col items-center gap-1 text-muted-foreground">
-        <iconify-icon icon="lucide:package" class="text-xl"></iconify-icon>
-        <span class="text-[10px] font-bold">Stok</span>
+      <a href="stok.html" class="flex flex-col items-center gap-0.5 text-muted-foreground px-2 py-1 min-w-[50px] hover:text-foreground">
+        <iconify-icon icon="lucide:package" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Stok</span>
       </a>
-      <a href="sevkiyat.html" class="flex flex-col items-center gap-1 text-muted-foreground">
-        <iconify-icon icon="lucide:truck" class="text-xl"></iconify-icon>
-        <span class="text-[10px] font-bold">Sevkiyat</span>
+      <a href="sevkiyat.html" class="flex flex-col items-center gap-0.5 text-muted-foreground px-2 py-1 min-w-[50px] hover:text-foreground">
+        <iconify-icon icon="lucide:truck" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Sevkiyat</span>
       </a>
-      <a href="g-n-sonu.html" class="flex flex-col items-center gap-1 text-muted-foreground">
-        <iconify-icon icon="lucide:circle-check-big" class="text-xl"></iconify-icon>
-        <span class="text-[10px] font-bold">Gün Sonu</span>
+      <a href="g-n-sonu.html" class="flex flex-col items-center gap-0.5 text-muted-foreground px-2 py-1 min-w-[50px] hover:text-foreground">
+        <iconify-icon icon="lucide:circle-check-big" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Gün Sonu</span>
+      </a>
+      <a href="kasap-kesimleri.html" class="flex flex-col items-center gap-0.5 text-muted-foreground px-2 py-1 min-w-[55px] hover:text-foreground">
+        <iconify-icon icon="lucide:user-check" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Kasap Kesim</span>
       </a>
     </div>
   </nav>
@@ -155,11 +159,11 @@
       const loginForm = document.getElementById('login-form');
       const logoutBtn = document.getElementById('logout-btn');
 
-      // Yetkili Kullanıcılar Listesi
+      // Yetkili Kullanıcılar Listesi (Değiştirilmedi)
       const tanimliKullanicilar = [
         { k: 'admin', s: '1234' },
         { k: 'kesimhane1', s: 'password2026' },
-        { k: 'kasiyer', s: 'kasiyer34' },
+        { k: 'etentegre', s: 'etentegre25' },
         { k: 'yonetim', s: 'admin789' }
       ];
 
@@ -175,7 +179,6 @@
         const kullaniciAdi = document.getElementById('login-user').value.trim();
         const sifre = document.getElementById('login-pass').value.trim();
 
-        // Kullanıcı eşleşmesini kontrol et
         const kullaniciDogrula = tanimliKullanicilar.find(u => u.k === kullaniciAdi && u.s === sifre);
 
         if (kullaniciDogrula) {
@@ -198,13 +201,18 @@
 
       function verileriHesapla() {
         const stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        // Gün sonu sayfasından ödenen kayıtları düşebilmek için ödenen ID veya küpe listesini alıyoruz
+        const odenenler = JSON.parse(localStorage.getItem('odenenKesimler')) || [];
 
         let stdAdet = 0;
         let stdTutar = 0;
         let fatAdet = 0;
         let fatTutar = 0;
 
-        stoklar.forEach(item => {
+        stoklar.forEach((item, index) => {
+          // Eğer bu kayıt gün sonunda ödendi olarak işaretlendiyse ana sayfadaki bakiyeden ve adetten düşer
+          if (odenenler.includes(index)) return;
+
           const tutar = parseFloat(item.maliyet || 0);
           const isFaturali = item.kesimTipi && item.kesimTipi.includes('Faturalı');
 
@@ -233,4 +241,3 @@
   </script>
 </body>
 </html>
-
