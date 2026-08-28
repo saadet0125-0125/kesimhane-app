@@ -173,12 +173,11 @@
         }
       });
 
-      // Kesim listesi, stok ve sevkiyat verilerine dokunmadan sadece oturum/giriş verisini temizleyen çıkış
       sistemdenCikisBtn.addEventListener('click', function() {
         if (confirm("Sistemden çıkış yapmak istediğinize emin misiniz? (Kesim, stok ve sevkiyat verileriniz güvende kalacaktır)")) {
-          localStorage.removeItem('aktifKullaniciOturumu'); // Varsa oturum anahtarı
+          localStorage.removeItem('aktifKullaniciOturumu');
           alert("Başarıyla çıkış yapıldı.");
-          window.location.href = 'index.html'; // Giriş sayfasına yönlendirme (yoksa ana sayfaya yönlendirilebilir)
+          window.location.href = 'index.html';
         }
       });
 
@@ -211,7 +210,13 @@
 
         tableBody.innerHTML = filtrelenmis.map(item => {
           const tutar = parseFloat(item.maliyet || 0);
-          const isFaturali = item.kesimTipi && item.kesimTipi.includes('Faturalı');
+          const isFaturali = (item.kesimTipi && item.kesimTipi.includes('Faturalı')) || (item.cins && item.cins.includes('Faturalı'));
+          
+          // Telefon ve IBAN verilerini farklı olası property adlarından esnek çekme
+          const musteriAdi = item.musteri || item.musteriAdi || '-';
+          const telefonNumarasi = item.telefon || item.tel || item.gsm || '-';
+          const ibanNumarasi = item.iban || item.ibanNo || '-';
+          const kesimTuruStr = item.kesimTipi || item.cins || 'Standart Kesim';
 
           if (isFaturali) {
             faturaliToplam += tutar;
@@ -221,12 +226,12 @@
 
           return `
             <tr class="hover:bg-muted/30 transition-colors">
-              <td class="p-3.5 font-bold text-foreground">${item.musteri || item.musteriAdi || '-'}</td>
-              <td class="p-3.5 text-muted-foreground">${item.telefon || '-'}</td>
-              <td class="p-3.5 text-muted-foreground font-mono text-[11px]">${item.iban || '-'}</td>
+              <td class="p-3.5 font-bold text-foreground">${musteriAdi}</td>
+              <td class="p-3.5 text-muted-foreground">${telefonNumarasi}</td>
+              <td class="p-3.5 text-muted-foreground font-mono text-[11px]">${ibanNumarasi}</td>
               <td class="p-3.5">
                 <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isFaturali ? 'bg-accent/10 text-accent' : 'bg-primary/10 text-primary'}">
-                  ${item.kesimTipi || 'Standart Kesim'}
+                  ${kesimTuruStr}
                 </span>
               </td>
               <td class="p-3.5 text-right font-extrabold text-foreground">${tutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</td>
@@ -253,5 +258,6 @@
   </script>
 </body>
 </html>
+
 
 
