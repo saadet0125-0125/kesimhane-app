@@ -54,7 +54,7 @@
               <th class="p-3.5">Telefon</th>
               <th class="p-3.5">IBAN</th>
               <th class="p-3.5">Kesim Türü</th>
-              <th class="p-3.5 text-right">Tutar</th>
+              <th class="p-3.5 text-right">Toplam Tutar</th>
               <th class="p-3.5 text-center">İşlem</th>
             </tr>
           </thead>
@@ -98,7 +98,7 @@
       <h3 class="font-bold text-sm text-foreground flex items-center gap-2">
         <iconify-icon icon="lucide:user-pen" class="text-primary text-lg"></iconify-icon> Müşteri Bilgilerini Düzenle
       </h3>
-      <input type="hidden" id="modal-item-id">
+      <input type="hidden" id="modal-musteri-adi">
       <div class="space-y-1">
         <label class="text-[11px] font-semibold text-muted-foreground">Telefon</label>
         <input type="text" id="modal-telefon" class="w-full text-xs bg-background border border-border rounded-xl px-3 py-2 outline-none font-bold text-foreground">
@@ -155,7 +155,7 @@
       const sistemdenCikisBtn = document.getElementById('sistemden-cikis-btn');
 
       const modal = document.getElementById('bilgi-modal');
-      const modalItemId = document.getElementById('modal-item-id');
+      const modalMusteriAdi = document.getElementById('modal-musteri-adi');
       const modalTelefon = document.getElementById('modal-telefon');
       const modalIban = document.getElementById('modal-iban');
       const modalIptal = document.getElementById('modal-iptal');
@@ -183,21 +183,28 @@
 
       tarihSecici.addEventListener('change', raporuGuncelle);
 
-      window.odemeyiIsaretle = function(id) {
+      // Toplu Ödemeyi İşaretle (Müşterinin o günkü tüm kesimlerini ödendi yapar)
+      window.topluOdemeyiIsaretle = function(musteriAdi, kesimTuru) {
         let tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        const secilenTarih = tarihSecici.value;
+
         tumStoklar = tumStoklar.map(item => {
-          // ID karşılaştırmasını string/number esnek yapıyoruz
-          if (String(item.id) === String(id)) {
+          const itemTarih = item.tarih || bugunStr;
+          const mAdi = item.musteri || item.musteriAdi || '-';
+          const kTipi = item.kesimTipi || item.cins || 'Standart Kesim';
+
+          if (itemTarih === secilenTarih && mAdi === musteriAdi && kTipi === kesimTuru) {
             item.odendi = true;
           }
           return item;
         });
+
         localStorage.setItem('stoklar', JSON.stringify(tumStoklar));
         raporuGuncelle();
       };
 
-      window.bilgiDuzenleAc = function(id, mevcutTel, mevcutIban) {
-        modalItemId.value = id;
+      window.bilgiDuzenleAc = function(musteriAdi, mevcutTel, mevcutIban) {
+        modalMusteriAdi.value = musteriAdi;
         modalTelefon.value = mevcutTel !== '-' ? mevcutTel : '';
         modalIban.value = mevcutIban !== '-' ? mevcutIban : '';
         modal.classList.remove('hidden');
@@ -205,14 +212,16 @@
 
       modalIptal.addEventListener('click', () => modal.classList.add('hidden'));
 
+      // Müşteri bilgilerini güncellerken o müşterinin TÜM kayıtlarındaki telefon ve IBAN'ı günceller
       modalKaydet.addEventListener('click', () => {
-        const id = modalItemId.value;
+        const hedefMusteri = modalMusteriAdi.value;
         const yeniTel = modalTelefon.value.trim();
         const yeniIban = modalIban.value.trim();
 
         let tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
         tumStoklar = tumStoklar.map(item => {
-          if (String(item.id) === String(id)) {
+          const mAdi = item.musteri || item.musteriAdi || '-';
+          if (mAdi === hedefMusteri) {
             item.telefon = yeniTel;
             item.iban = yeniIban;
           }
@@ -245,7 +254,7 @@
 
         let veriDegisti = false;
 
-        // Eksik ID'lere benzersiz ID atama ve telefon/iban bilgilerini kalıcı eşleştirme
+        // Eksik ID ve telefon/iban tamamlama
         tumStoklar = tumStoklar.map((item, index) => {
           if (!item.id) {
             item.id = 'stok_' + Date.now() + '_' + index;
@@ -254,7 +263,6 @@
 
           const musteriAdi = item.musteri || item.musteriAdi || '';
 
-          // Eğer kayıtta telefon/iban yoksa kesimListesi veya musteriler'den bulup kalıcı yazalım
           if ((!item.telefon || item.telefon === '-') && musteriAdi) {
             const kBul = kesimListesi.find(k => (k.musteri === musteriAdi || k.musteriAdi === musteriAdi) && (k.telefon || k.tel || k.gsm));
             const mBul = musteriler.find(m => (m.ad === musteriAdi || m.musteriAdi === musteriAdi) && (m.telefon || m.tel || m.gsm));
@@ -284,6 +292,7 @@
 
         const secilenTarih = tarihSecici.value;
 
+        // 1. Önce seçilen tarihe ve ödeme durumuna göre filtrele
         const filtrelenmis = tumStoklar.filter(item => {
           const itemTarih = item.tarih || bugunStr;
           const odemeDurumu = gosterilenArsiv ? (item.odendi === true) : (!item.odendi);
@@ -304,41 +313,66 @@
           return;
         }
 
+        // 2. MÜŞTERİLERİ VE KESİM TÜRLERİNİ KENDİ ARALARINDA GRUPLAYIP TOPLAYALIM (1 satır yapma mantığı)
+        const gruplanmisMap = {};
+
+        filtrelenmis.forEach(item => {
+          const musteriAdi = item.musteri || item.musteriAdi || 'Bilinmeyen Müşteri';
+          const kesimTuruStr = item.kesimTipi || item.cins || 'Standart Kesim';
+          const grupAnahtari = musteriAdi + "___" + kesimTuruStr;
+
+          const tutar = parseFloat(item.maliyet || 0);
+          const telefon = item.telefon && item.telefon !== '-' ? item.telefon : '';
+          const iban = item.iban && item.iban !== '-' ? item.iban : '';
+
+          if (!gruplanmisMap[grupAnahtari]) {
+            gruplanmisMap[grupAnahtari] = {
+              musteriAdi: musteriAdi,
+              telefon: telefon,
+              iban: iban,
+              kesimTuru: kesimTuruStr,
+              toplamTutar: 0
+            };
+          } else {
+            // Eğer diğer kayıtta telefon/iban varsa boş olanı doldur
+            if (!gruplanmisMap[grupAnahtari].telefon && telefon) gruplanmisMap[grupAnahtari].telefon = telefon;
+            if (!gruplanmisMap[grupAnahtari].iban && iban) gruplanmisMap[grupAnahtari].iban = iban;
+          }
+
+          gruplanmisMap[grupAnahtari].toplamTutar += tutar;
+        });
+
         let standartToplam = 0;
         let faturaliToplam = 0;
 
-        tableBody.innerHTML = filtrelenmis.map(item => {
-          const tutar = parseFloat(item.maliyet || 0);
-          const isFaturali = (item.kesimTipi && item.kesimTipi.includes('Faturalı')) || (item.cins && item.cins.includes('Faturalı'));
-          
-          const musteriAdi = item.musteri || item.musteriAdi || '-';
-          const telefonNumarasi = item.telefon || '-';
-          const ibanNumarasi = item.iban || '-';
-          const kesimTuruStr = item.kesimTipi || item.cins || 'Standart Kesim';
+        tableBody.innerHTML = Object.values(gruplanmisMap).map(grup => {
+          const isFaturali = grup.kesimTuru.includes('Faturalı');
+          const telefonNumarasi = grup.telefon ? grup.telefon : '-';
+          const ibanNumarasi = grup.iban ? grup.iban : '-';
 
           if (isFaturali) {
-            faturaliToplam += tutar;
+            faturaliToplam += grup.toplamTutar;
           } else {
-            standartToplam += tutar;
+            standartToplam += grup.toplamTutar;
           }
 
           return `
             <tr class="hover:bg-muted/35 transition-colors">
-              <td class="p-3.5 font-bold text-foreground">${musteriAdi}</td>
+              <td class="p-3.5 font-bold text-foreground">${grup.musteriAdi}</td>
               <td class="p-3.5 text-muted-foreground">${telefonNumarasi}</td>
               <td class="p-3.5 text-muted-foreground font-mono text-[11px]">${ibanNumarasi}</td>
               <td class="p-3.5">
                 <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isFaturali ? 'bg-accent/10 text-accent' : 'bg-primary/10 text-primary'}">
-                  ${kesimTuruStr}
+                  ${grup.kesimTuru}
                 </span>
               </td>
-              <td class="p-3.5 text-right font-extrabold text-foreground">${tutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</td>
+              <td class="p-3.5 text-right font-extrabold text-foreground">${grup.toplamTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</td>
               <td class="p-3.5 text-center flex items-center justify-center gap-1.5">
-                <button onclick="bilgiDuzenleAc('${item.id}', '${telefonNumarasi}', '${ibanNumarasi}')" class="bg-secondary text-secondary-foreground p-1.5 rounded-lg hover:opacity-90 shadow-sm" title="Telefon / IBAN Düzenle">
+                <button onclick="bilgiDuzenleAc('${grup.musteriAdi}', '${telefonNumarasi}', '${ibanNumarasi}')" class="bg-secondary text-secondary-foreground p-1.5 rounded-lg hover:opacity-90 shadow-sm" title="Telefon / IBAN Düzenle">
                   <iconify-icon icon="lucide:pencil" class="text-sm"></iconify-icon>
                 </button>
                 ${!gosterilenArsiv ? `
-                  <button onclick="odemeyiIsaretle('${item.id}')" class="bg-success text-success-foreground text-[10px] font-bold px-2.5 py-1.5 rounded-lg hover:opacity-90 shadow-sm">
+                  <button onclick="topluOdemeyiIsaretle('${grup.musteriAdi}', '${grup.kesimTuru}')" class="bg-success text-success-foreground text-[10px] font-bold px-2.5 py-1.5 rounded-lg hover:opacity-90 shadow-sm">
                     Ödeme Yapıldı
                   </button>
                 ` : `
@@ -359,7 +393,5 @@
   </script>
 </body>
 </html>
-
-
 
 
