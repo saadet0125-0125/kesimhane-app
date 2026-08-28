@@ -59,9 +59,15 @@
         <p class="text-xs font-semibold text-muted-foreground">Et Entegre Tesisi</p>
         <h1 class="text-2xl font-bold text-foreground">Ana Sayfa Özeti</h1>
       </div>
-      <button id="logout-btn" class="text-xs font-bold bg-destructive/15 text-red-600 px-3 py-1.5 rounded-xl hover:bg-red-600 hover:text-white transition-all">
-        Çıkış Yap
-      </button>
+      <div class="flex items-center gap-2">
+        <!-- Verileri Sıfırlama Butonu -->
+        <button id="sifirla-btn" class="text-xs font-bold bg-amber-500/15 text-amber-700 px-3 py-1.5 rounded-xl hover:bg-amber-600 hover:text-white transition-all flex items-center gap-1" title="Tüm verileri sıfırlar">
+          <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon> Sıfırla
+        </button>
+        <button id="logout-btn" class="text-xs font-bold bg-destructive/15 text-red-600 px-3 py-1.5 rounded-xl hover:bg-red-600 hover:text-white transition-all">
+          Çıkış Yap
+        </button>
+      </div>
     </header>
 
     <main class="px-5 space-y-4">
@@ -158,6 +164,7 @@
       const mainContent = document.getElementById('main-content');
       const loginForm = document.getElementById('login-form');
       const logoutBtn = document.getElementById('logout-btn');
+      const sifirlaBtn = document.getElementById('sifirla-btn');
 
       // Yetkili Kullanıcılar Listesi (Değiştirilmedi)
       const tanimliKullanicilar = [
@@ -199,9 +206,19 @@
         document.getElementById('login-pass').value = '';
       });
 
+      // Verileri Sıfırlama Tuşu Fonksiyonu
+      sifirlaBtn.addEventListener('click', function () {
+        if (confirm('Tüm eski kesim kayıtlarını ve ana sayfa verilerini sıfırlamak istediğinize emin misiniz?')) {
+          localStorage.removeItem('stoklar');
+          localStorage.removeItem('kesimKayitlari');
+          localStorage.removeItem('odenenKesimler');
+          verileriHesapla();
+          alert('Tüm veriler başarıyla sıfırlandı.');
+        }
+      });
+
       function verileriHesapla() {
         const stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-        // Gün sonu sayfasından ödenen kayıtları düşebilmek için ödenen ID veya küpe listesini alıyoruz
         const odenenler = JSON.parse(localStorage.getItem('odenenKesimler')) || [];
 
         let stdAdet = 0;
@@ -210,7 +227,6 @@
         let fatTutar = 0;
 
         stoklar.forEach((item, index) => {
-          // Eğer bu kayıt gün sonunda ödendi olarak işaretlendiyse ana sayfadaki bakiyeden ve adetten düşer
           if (odenenler.includes(index)) return;
 
           const tutar = parseFloat(item.maliyet || 0);
@@ -241,3 +257,4 @@
   </script>
 </body>
 </html>
+
