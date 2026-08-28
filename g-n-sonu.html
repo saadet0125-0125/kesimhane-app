@@ -186,7 +186,10 @@
       window.odemeyiIsaretle = function(id) {
         let tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
         tumStoklar = tumStoklar.map(item => {
-          if (item.id === id) item.odendi = true;
+          // ID karşılaştırmasını string/number esnek yapıyoruz
+          if (String(item.id) === String(id)) {
+            item.odendi = true;
+          }
           return item;
         });
         localStorage.setItem('stoklar', JSON.stringify(tumStoklar));
@@ -203,13 +206,13 @@
       modalIptal.addEventListener('click', () => modal.classList.add('hidden'));
 
       modalKaydet.addEventListener('click', () => {
-        const id = Number(modalItemId.value);
+        const id = modalItemId.value;
         const yeniTel = modalTelefon.value.trim();
         const yeniIban = modalIban.value.trim();
 
         let tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
         tumStoklar = tumStoklar.map(item => {
-          if (item.id === id) {
+          if (String(item.id) === String(id)) {
             item.telefon = yeniTel;
             item.iban = yeniIban;
           }
@@ -236,12 +239,50 @@
       });
 
       function raporuGuncelle() {
-        const secilenTarih = tarihSecici.value;
-        const tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-        
-        // Kesim listesi olası veri kaynaklarını topluca çekiyoruz
+        let tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
         const kesimListesi = JSON.parse(localStorage.getItem('kesimListesi')) || [];
         const musteriler = JSON.parse(localStorage.getItem('musteriler')) || [];
+
+        let veriDegisti = false;
+
+        // Eksik ID'lere benzersiz ID atama ve telefon/iban bilgilerini kalıcı eşleştirme
+        tumStoklar = tumStoklar.map((item, index) => {
+          if (!item.id) {
+            item.id = 'stok_' + Date.now() + '_' + index;
+            veriDegisti = true;
+          }
+
+          const musteriAdi = item.musteri || item.musteriAdi || '';
+
+          // Eğer kayıtta telefon/iban yoksa kesimListesi veya musteriler'den bulup kalıcı yazalım
+          if ((!item.telefon || item.telefon === '-') && musteriAdi) {
+            const kBul = kesimListesi.find(k => (k.musteri === musteriAdi || k.musteriAdi === musteriAdi) && (k.telefon || k.tel || k.gsm));
+            const mBul = musteriler.find(m => (m.ad === musteriAdi || m.musteriAdi === musteriAdi) && (m.telefon || m.tel || m.gsm));
+            const bulunanTel = (kBul ? (kBul.telefon || kBul.tel || kBul.gsm) : null) || (mBul ? (mBul.telefon || mBul.tel || mBul.gsm) : null);
+            if (bulunanTel) {
+              item.telefon = bulunanTel;
+              veriDegisti = true;
+            }
+          }
+
+          if ((!item.iban || item.iban === '-') && musteriAdi) {
+            const kBul = kesimListesi.find(k => (k.musteri === musteriAdi || k.musteriAdi === musteriAdi) && k.iban);
+            const mBul = musteriler.find(m => (m.ad === musteriAdi || m.musteriAdi === musteriAdi) && m.iban);
+            const bulunanIban = (kBul ? kBul.iban : null) || (mBul ? mBul.iban : null);
+            if (bulunanIban) {
+              item.iban = bulunanIban;
+              veriDegisti = true;
+            }
+          }
+
+          return item;
+        });
+
+        if (veriDegisti) {
+          localStorage.setItem('stoklar', JSON.stringify(tumStoklar));
+        }
+
+        const secilenTarih = tarihSecici.value;
 
         const filtrelenmis = tumStoklar.filter(item => {
           const itemTarih = item.tarih || bugunStr;
@@ -271,31 +312,8 @@
           const isFaturali = (item.kesimTipi && item.kesimTipi.includes('Faturalı')) || (item.cins && item.cins.includes('Faturalı'));
           
           const musteriAdi = item.musteri || item.musteriAdi || '-';
-
-          // 1. Önce doğrudan stok kaydındaki telefon/iban alanlarına bak
-          let telefonNumarasi = item.telefon || item.tel || item.gsm || item.telefonNumarasi || '';
-          let ibanNumarasi = item.iban || item.ibanNo || '';
-
-          // 2. Yoksa kesim listesindeki kayıttan eşleştirmeye çalış
-          if (!telefonNumarasi || !ibanNumarasi) {
-            const kesimEslesme = kesimListesi.find(k => (k.musteri === musteriAdi || k.musteriAdi === musteriAdi));
-            if (kesimEslesme) {
-              if (!telefonNumarasi) telefonNumarasi = kesimEslesme.telefon || kesimEslesme.tel || kesimEslesme.gsm || '';
-              if (!ibanNumarasi) ibanNumarasi = kesimEslesme.iban || kesimEslesme.ibanNo || '';
-            }
-          }
-
-          // 3. Hala yoksa genel müşteri listesinden bulmaya çalış
-          if (!telefonNumarasi || !ibanNumarasi) {
-            const musteriEslesme = musteriler.find(m => (m.ad === musteriAdi || m.musteriAdi === musteriAdi));
-            if (musteriEslesme) {
-              if (!telefonNumarasi) telefonNumarasi = musteriEslesme.telefon || musteriEslesme.tel || musteriEslesme.gsm || '';
-              if (!ibanNumarasi) ibanNumarasi = musteriEslesme.iban || musteriEslesme.ibanNo || '';
-            }
-          }
-
-          if (!telefonNumarasi) telefonNumarasi = '-';
-          if (!ibanNumarasi) ibanNumarasi = '-';
+          const telefonNumarasi = item.telefon || '-';
+          const ibanNumarasi = item.iban || '-';
           const kesimTuruStr = item.kesimTipi || item.cins || 'Standart Kesim';
 
           if (isFaturali) {
@@ -305,7 +323,7 @@
           }
 
           return `
-            <tr class="hover:bg-muted/30 transition-colors">
+            <tr class="hover:bg-muted/35 transition-colors">
               <td class="p-3.5 font-bold text-foreground">${musteriAdi}</td>
               <td class="p-3.5 text-muted-foreground">${telefonNumarasi}</td>
               <td class="p-3.5 text-muted-foreground font-mono text-[11px]">${ibanNumarasi}</td>
@@ -316,11 +334,11 @@
               </td>
               <td class="p-3.5 text-right font-extrabold text-foreground">${tutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</td>
               <td class="p-3.5 text-center flex items-center justify-center gap-1.5">
-                <button onclick="bilgiDuzenleAc(${item.id}, '${telefonNumarasi}', '${ibanNumarasi}')" class="bg-secondary text-secondary-foreground p-1.5 rounded-lg hover:opacity-90 shadow-sm" title="Telefon / IBAN Düzenle">
+                <button onclick="bilgiDuzenleAc('${item.id}', '${telefonNumarasi}', '${ibanNumarasi}')" class="bg-secondary text-secondary-foreground p-1.5 rounded-lg hover:opacity-90 shadow-sm" title="Telefon / IBAN Düzenle">
                   <iconify-icon icon="lucide:pencil" class="text-sm"></iconify-icon>
                 </button>
                 ${!gosterilenArsiv ? `
-                  <button onclick="odemeyiIsaretle(${item.id})" class="bg-success text-success-foreground text-[10px] font-bold px-2.5 py-1.5 rounded-lg hover:opacity-90 shadow-sm">
+                  <button onclick="odemeyiIsaretle('${item.id}')" class="bg-success text-success-foreground text-[10px] font-bold px-2.5 py-1.5 rounded-lg hover:opacity-90 shadow-sm">
                     Ödeme Yapıldı
                   </button>
                 ` : `
@@ -341,6 +359,7 @@
   </script>
 </body>
 </html>
+
 
 
 
