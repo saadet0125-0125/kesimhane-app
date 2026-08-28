@@ -376,7 +376,6 @@
         alert('Kesim başarıyla kaydedildi!');
       });
 
-      // Hayvan Bazlı Liste Gösterim Fonksiyonu
       function kesimListesiniGoster() {
         const kayitlar = JSON.parse(localStorage.getItem('kesimKayitlari')) || [];
         let html = '';
@@ -386,7 +385,6 @@
           return;
         }
 
-        // Tüm kayıtlar içindeki hayvanları tek bir düz listede toplayıp en son eklenen en üste gelecek şekilde ters çeviriyoruz
         let tumHayvanlar = [];
         kayitlar.forEach(kayit => {
           if (kayit.hayvanlar && Array.isArray(kayit.hayvanlar)) {
@@ -405,12 +403,19 @@
           }
         });
 
-        tumHayvanlar.slice().reverse().forEach((h, index) => {
+        const tersListe = tumHayvanlar.slice().reverse();
+
+        tersListe.forEach((h, index) => {
+          const siraNo = index + 1;
+
           html += `
             <div class="bg-card border border-border p-4 rounded-2xl shadow-sm space-y-2">
               <div class="flex justify-between items-start">
                 <div>
-                  <span class="text-xs font-bold px-2 py-0.5 rounded bg-primary/10 text-primary">${h.cinsi}</span>
+                  <div class="flex items-center gap-1.5 mb-1">
+                    <span class="text-xs font-black bg-primary text-primary-foreground px-2 py-0.5 rounded-lg shadow-sm">#${siraNo}</span>
+                    <span class="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary">${h.cinsi}</span>
+                  </div>
                   <h3 class="font-bold text-sm text-foreground mt-1">Küpe/Kod: ${h.kupeNo || 'Yok'} (${h.agirlik || 0} kg)</h3>
                   <p class="text-[11px] text-muted-foreground mt-0.5">Kesen: ${h.kesenPersonel || 'Belirtilmemiş'} | Tip: ${h.kesimTipi}</p>
                 </div>
