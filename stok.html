@@ -40,8 +40,8 @@
   </header>
 
   <main class="px-5 space-y-5">
-    <!-- ÖZET KARTLARI -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+    <!-- ÖZET KARTLARI (6 Tür + 1 Toplam = 7 Blok) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
       <div class="bg-card border border-border rounded-xl p-3 shadow-sm">
         <span class="text-xs font-bold text-muted-foreground flex items-center gap-1">
           <iconify-icon icon="lucide:beef"></iconify-icon> İnek
@@ -97,7 +97,18 @@
         </div>
       </div>
 
-      <div class="bg-card border-2 border-primary rounded-xl p-3 shadow-sm">
+      <div class="bg-card border border-border rounded-xl p-3 shadow-sm">
+        <span class="text-xs font-bold text-muted-foreground flex items-center gap-1">
+          <iconify-icon icon="lucide:beef"></iconify-icon> Diğer
+        </span>
+        <div class="mt-2 text-xs">
+          <p class="text-muted-foreground">Adet: <strong id="cnt-diger" class="text-foreground">0</strong></p>
+          <p class="text-muted-foreground">Kilo: <strong id="kg-diger" class="text-foreground">0 kg</strong></p>
+          <p class="text-muted-foreground">Maliyet: <strong id="cost-diger" class="text-foreground">0 TL</strong></p>
+        </div>
+      </div>
+
+      <div class="bg-card border-2 border-primary rounded-xl p-3 shadow-sm col-span-2 sm:col-span-1">
         <span class="text-xs font-bold text-primary flex items-center gap-1">
           <iconify-icon icon="lucide:package"></iconify-icon> Toplam
         </span>
@@ -123,7 +134,7 @@
       </div>
 
       <div id="stok-listesi-container" class="space-y-2">
-        <!-- Stok Kalemleri -->
+        <!-- Stok Kalemleri Türlerine Göre Sıralı Gelecek -->
       </div>
     </section>
   </main>
@@ -159,15 +170,14 @@
       const selectAllCb = document.getElementById('select-all');
       const sevkBtn = document.getElementById('sevk-et-btn');
 
-      // Türkçe Karakter Normalleştirici
       function normalizeCins(str) {
         if (!str) return 'diger';
-        const s = str.trim().toUpperCase('tr-TR');
-        if (s.startsWith('İNEK') || s.startsWith('INEK')) return 'inek';
-        if (s.startsWith('DÜVE') || s.startsWith('DUVE')) return 'duve';
-        if (s.startsWith('KOYUN')) return 'koyun';
-        if (s.startsWith('TOSUN')) return 'tosun';
-        if (s.startsWith('DANA')) return 'dana';
+        const s = str.trim().toUpperCase();
+        if (s.includes('İNEK') || s.includes('INEK')) return 'inek';
+        if (s.includes('DÜVE') || s.includes('DUVE')) return 'duve';
+        if (s.includes('KOYUN')) return 'koyun';
+        if (s.includes('TOSUN')) return 'tosun';
+        if (s.includes('DANA')) return 'dana';
         return 'diger';
       }
 
@@ -181,38 +191,60 @@
           koyun: { count: 0, kg: 0, cost: 0 },
           tosun: { count: 0, kg: 0, cost: 0 },
           dana: { count: 0, kg: 0, cost: 0 },
+          diger: { count: 0, kg: 0, cost: 0 },
           toplam: { count: 0, kg: 0, cost: 0 }
         };
 
-        if (stoktakiler.length === 0) {
-          container.innerHTML = `<div class="p-8 text-center text-xs text-muted-foreground">Stokta hayvan bulunmamaktadır.</div>`;
-        } else {
-          container.innerHTML = stoktakiler.map(item => {
-            const key = normalizeCins(item.cins || item.kupeNo);
-            const kg = parseFloat(item.agirlik || 0);
-            const cost = parseFloat(item.maliyet || 0);
+        stoktakiler.forEach(item => {
+          const key = normalizeCins(item.cinsi || item.cins);
+          const kg = parseFloat(item.agirlik || 0);
+          const cost = parseFloat(item.maliyet || 0);
 
-            if (stats[key]) {
-              stats[key].count++; 
-              stats[key].kg += kg; 
-              stats[key].cost += cost;
-            }
-            stats.toplam.count++; 
-            stats.toplam.kg += kg; 
-            stats.toplam.cost += cost;
+          if (stats[key]) {
+            stats[key].count++;
+            stats[key].kg += kg;
+            stats[key].cost += cost;
+          } else {
+            stats.diger.count++;
+            stats.diger.kg += kg;
+            stats.diger.cost += cost;
+          }
+          stats.toplam.count++;
+          stats.toplam.kg += kg;
+          stats.toplam.cost += cost;
+        });
+
+        if (stoktakiler.length === 0) {
+          container.innerHTML = `<div class="p-8 text-center text-xs text-muted-foreground font-semibold">Stokta hayvan bulunmamaktadır.</div>`;
+        } else {
+          // Türlere göre gruplayıp sıralı gösterelim (İnek, Düve, Koyun, Tosun, Dana, Diğer sırasıyla)
+          const sira = ['inek', 'duve', 'koyun', 'tosun', 'dana', 'diger'];
+          let siraliListe = [];
+
+          sira.forEach(turKey => {
+            const filtrelenmis = stoktakiler.filter(item => normalizeCins(item.cinsi || item.cins) === turKey);
+            siraliListe.push(...filtrelenmis);
+          });
+
+          container.innerHTML = siraliListe.map((item, index) => {
+            const cost = parseFloat(item.maliyet || 0);
+            const musteriAdi = item.musteriAdi || item.musteri || 'Bilinmiyor';
+            const tcBilgi = item.tcNo ? `(${item.tcNo})` : '';
 
             return `
               <div class="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-background hover:bg-muted/20 transition-all">
                 <div class="flex items-center gap-3">
-                  <input type="checkbox" data-id="${String(item.id)}" class="stok-item-cb w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer">
+                  <input type="checkbox" data-id="${index}" class="stok-item-cb w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer">
                   <div>
-                    <span class="text-xs font-bold text-primary bg-secondary/60 px-2 py-0.5 rounded">${item.kupeNo || item.animalId}</span>
-                    <p class="text-xs font-bold text-foreground mt-1">Müşteri: ${item.musteri}</p>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-xs font-bold text-primary bg-secondary/60 px-2 py-0.5 rounded">${item.cinsi || 'Hayvan'} - ${item.kupeNo || 'Kodsuz'}</span>
+                    </div>
+                    <p class="text-xs font-bold text-foreground mt-1">Müşteri: ${musteriAdi} ${tcBilgi}</p>
                     <p class="text-[10px] text-muted-foreground">Tarih: ${item.tarih || '-'}</p>
                   </div>
                 </div>
                 <div class="text-right">
-                  <span class="text-xs font-bold text-foreground block">${item.agirlik} kg</span>
+                  <span class="text-xs font-bold text-foreground block">${item.agirlik || 0} kg</span>
                   <span class="text-xs font-extrabold text-success">${cost.toLocaleString('tr-TR', {minimumFractionDigits:2})} TL</span>
                 </div>
               </div>
