@@ -29,7 +29,7 @@
 </head>
 <body class="bg-background text-foreground min-h-screen font-body pb-28">
 
-  <!-- ANA İÇERİK (Giriş kontrolü ana sayfada yapıldığı için doğrudan görünür) -->
+  <!-- ANA İÇERİK -->
   <div id="main-content">
     <header class="px-5 pb-4 pt-8 flex justify-between items-center">
       <div>
@@ -51,7 +51,7 @@
     </main>
   </div>
 
-  <!-- YENİ DETAYLI KESİM KAYDI MODALI (Pencere Yapısı Korundu) -->
+  <!-- YENİ DETAYLI KESİM KAYDI MODALI -->
   <div id="modal-overlay" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-card w-full max-w-xl rounded-2xl border border-border shadow-2xl p-6 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-border pb-3">
@@ -134,14 +134,26 @@
               <div class="grid grid-cols-2 gap-2">
                 <div>
                   <label class="block text-[10px] text-muted-foreground mb-0.5">Ağırlık (Kg)</label>
-                  <input type="number" class="h-agirlik w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none" value="400">
+                  <input type="number" class="h-agirlik w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" value="400">
                 </div>
                 <div>
                   <label class="block text-[10px] text-muted-foreground mb-0.5">Birim Fiyat (TL/Kg)</label>
-                  <input type="number" class="h-fiyat w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none" value="280">
+                  <input type="number" class="h-fiyat w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" value="280">
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- ÖDENECEK TUTAR ÖZET ALANI -->
+        <div class="bg-muted/50 border border-border p-3 rounded-xl space-y-1.5 text-xs">
+          <div class="flex justify-between items-center text-muted-foreground">
+            <span>Ham Tutar (Kg × Birim Fiyat):</span>
+            <span id="ham-tutar" class="font-bold text-foreground">0,00 TL</span>
+          </div>
+          <div class="flex justify-between items-center text-muted-foreground border-t border-border/60 pt-1">
+            <span class="font-bold text-foreground">Net Ödenecek Tutar:</span>
+            <span id="net-odenecek-tutar" class="font-extrabold text-success text-sm">0,00 TL</span>
           </div>
         </div>
 
@@ -189,17 +201,43 @@
       const kesimListesiContainer = document.getElementById('kesim-listesi-container');
       const cikisLink = document.getElementById('cikis-link');
 
-      // Çıkış yapıldığında oturumu temizle ve ana sayfaya yönlendir
+      const hamTutarSpan = document.getElementById('ham-tutar');
+      const netOdenecekTutarSpan = document.getElementById('net-odenecek-tutar');
+
       cikisLink.addEventListener('click', function () {
         sessionStorage.removeItem('girisYapildi');
       });
 
-      // Sayfa açıldığında doğrudan listeyi göster
       kesimListesiniGoster();
 
-      // Modal Aç / Kapat
-      yeniKesimBtn.addEventListener('click', () => modalOverlay.classList.remove('hidden'));
+      yeniKesimBtn.addEventListener('click', () => {
+        modalOverlay.classList.remove('hidden');
+        toplamlariHesapla();
+      });
       modalKapat.addEventListener('click', () => modalOverlay.classList.add('hidden'));
+
+      // Anlık Tutar Hesaplama Fonksiyonu
+      function toplamlariHesapla() {
+        const satirlar = hayvanlarContainer.querySelectorAll('.hayvan-satir');
+        let toplam = 0;
+
+        satirlar.forEach(s => {
+          const agirlik = parseFloat(s.querySelector('.h-agirlik').value) || 0;
+          const fiyat = parseFloat(s.querySelector('.h-fiyat').value) || 0;
+          toplam += (agirlik * fiyat);
+        });
+
+        const formatliTutar = toplam.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' TL';
+        hamTutarSpan.textContent = formatliTutar;
+        netOdenecekTutarSpan.textContent = formatliTutar;
+      }
+
+      // Input değişikliklerini dinle
+      document.addEventListener('input', function(e) {
+        if(e.target.classList.contains('hesapla-input') || e.target.closest('#hayvanlar-container')) {
+          toplamlariHesapla();
+        }
+      });
 
       // Yeni Hayvan Satırı Ekleme
       hayvanEkleBtn.addEventListener('click', () => {
@@ -230,19 +268,23 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[10px] text-muted-foreground mb-0.5">Ağırlık (Kg)</label>
-              <input type="number" class="h-agirlik w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none" value="400">
+              <input type="number" class="h-agirlik w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" value="400">
             </div>
             <div>
               <label class="block text-[10px] text-muted-foreground mb-0.5">Birim Fiyat (TL/Kg)</label>
-              <input type="number" class="h-fiyat w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none" value="280">
+              <input type="number" class="h-fiyat w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" value="280">
             </div>
           </div>
         `;
-        div.querySelector('.satir-sil').addEventListener('click', () => div.remove());
+        div.querySelector('.satir-sil').addEventListener('click', () => {
+          div.remove();
+          toplamlariHesapla();
+        });
         hayvanlarContainer.appendChild(div);
+        toplamlariHesapla();
       });
 
-      // Kesim Kaydetme ve Stoğa/Ana Sayfaya Aktarma
+      // Kesim Kaydetme
       kesimForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -370,4 +412,3 @@
   </script>
 </body>
 </html>
-
