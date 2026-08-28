@@ -92,6 +92,28 @@
     </div>
   </main>
 
+  <!-- BİLGİ DÜZENLEME MODALI -->
+  <div id="bilgi-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-card border border-border rounded-2xl p-5 max-w-sm w-full space-y-4 shadow-xl">
+      <h3 class="font-bold text-sm text-foreground flex items-center gap-2">
+        <iconify-icon icon="lucide:user-pen" class="text-primary text-lg"></iconify-icon> Müşteri Bilgilerini Düzenle
+      </h3>
+      <input type="hidden" id="modal-item-id">
+      <div class="space-y-1">
+        <label class="text-[11px] font-semibold text-muted-foreground">Telefon</label>
+        <input type="text" id="modal-telefon" class="w-full text-xs bg-background border border-border rounded-xl px-3 py-2 outline-none font-bold text-foreground">
+      </div>
+      <div class="space-y-1">
+        <label class="text-[11px] font-semibold text-muted-foreground">IBAN</label>
+        <input type="text" id="modal-iban" class="w-full text-xs bg-background border border-border rounded-xl px-3 py-2 outline-none font-bold text-foreground font-mono">
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button id="modal-iptal" class="w-1/2 bg-muted text-muted-foreground font-bold py-2 rounded-xl text-xs hover:opacity-90">İptal</button>
+        <button id="modal-kaydet" class="w-1/2 bg-primary text-primary-foreground font-bold py-2 rounded-xl text-xs hover:opacity-90">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ALT NAVİGASYON -->
   <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-lg">
     <div class="mx-auto flex max-w-md items-center justify-between">
@@ -132,6 +154,13 @@
       const gunuKapatBtn = document.getElementById('gunu-kapat-btn');
       const sistemdenCikisBtn = document.getElementById('sistemden-cikis-btn');
 
+      const modal = document.getElementById('bilgi-modal');
+      const modalItemId = document.getElementById('modal-item-id');
+      const modalTelefon = document.getElementById('modal-telefon');
+      const modalIban = document.getElementById('modal-iban');
+      const modalIptal = document.getElementById('modal-iptal');
+      const modalKaydet = document.getElementById('modal-kaydet');
+
       const simdi = new Date();
       const bugunStr = `${simdi.getFullYear()}-${String(simdi.getMonth() + 1).padStart(2, '0')}-${String(simdi.getDate()).padStart(2, '0')}`;
       tarihSecici.value = bugunStr;
@@ -157,14 +186,40 @@
       window.odemeyiIsaretle = function(id) {
         let tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
         tumStoklar = tumStoklar.map(item => {
-          if (item.id === id) {
-            item.odendi = true;
-          }
+          if (item.id === id) item.odendi = true;
           return item;
         });
         localStorage.setItem('stoklar', JSON.stringify(tumStoklar));
         raporuGuncelle();
       };
+
+      // Bilgi Düzenleme Penceresini Aç
+      window.bilgiDuzenleAc = function(id, mevcutTel, mevcutIban) {
+        modalItemId.value = id;
+        modalTelefon.value = mevcutTel !== '-' ? mevcutTel : '';
+        modalIban.value = mevcutIban !== '-' ? mevcutIban : '';
+        modal.classList.remove('hidden');
+      };
+
+      modalIptal.addEventListener('click', () => modal.classList.add('hidden'));
+
+      modalKaydet.addEventListener('click', () => {
+        const id = Number(modalItemId.value);
+        const yeniTel = modalTelefon.value.trim();
+        const yeniIban = modalIban.value.trim();
+
+        let tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        tumStoklar = tumStoklar.map(item => {
+          if (item.id === id) {
+            item.telefon = yeniTel;
+            item.iban = yeniIban;
+          }
+          return item;
+        });
+        localStorage.setItem('stoklar', JSON.stringify(tumStoklar));
+        modal.classList.add('hidden');
+        raporuGuncelle();
+      });
 
       gunuKapatBtn.addEventListener('click', function() {
         const secilenTarih = tarihSecici.value;
@@ -184,6 +239,7 @@
       function raporuGuncelle() {
         const secilenTarih = tarihSecici.value;
         const tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        const musteriler = JSON.parse(localStorage.getItem('musteriler')) || [];
 
         const filtrelenmis = tumStoklar.filter(item => {
           const itemTarih = item.tarih || bugunStr;
@@ -212,10 +268,22 @@
           const tutar = parseFloat(item.maliyet || 0);
           const isFaturali = (item.kesimTipi && item.kesimTipi.includes('Faturalı')) || (item.cins && item.cins.includes('Faturalı'));
           
-          // Telefon ve IBAN verilerini farklı olası property adlarından esnek çekme
           const musteriAdi = item.musteri || item.musteriAdi || '-';
-          const telefonNumarasi = item.telefon || item.tel || item.gsm || '-';
-          const ibanNumarasi = item.iban || item.ibanNo || '-';
+
+          // Kayıtta yoksa müşteri rehberinden otomatik bulmaya çalış
+          let telefonNumarasi = item.telefon || item.tel || item.gsm || '';
+          let ibanNumarasi = item.iban || item.ibanNo || '';
+
+          if (!telefonNumarasi || !ibanNumarasi) {
+            const kayitliMusteri = musteriler.find(m => m.ad === musteriAdi || m.musteriAdi === musteriAdi);
+            if (kayitliMusteri) {
+              if (!telefonNumarasi) telefonNumarasi = kayitliMusteri.telefon || kayitliMusteri.tel || '-';
+              if (!ibanNumarasi) ibanNumarasi = kayitliMusteri.iban || '-';
+            }
+          }
+
+          if (!telefonNumarasi) telefonNumarasi = '-';
+          if (!ibanNumarasi) ibanNumarasi = '-';
           const kesimTuruStr = item.kesimTipi || item.cins || 'Standart Kesim';
 
           if (isFaturali) {
@@ -235,13 +303,16 @@
                 </span>
               </td>
               <td class="p-3.5 text-right font-extrabold text-foreground">${tutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</td>
-              <td class="p-3.5 text-center">
+              <td class="p-3.5 text-center flex items-center justify-center gap-1.5">
+                <button onclick="bilgiDuzenleAc(${item.id}, '${telefonNumarasi}', '${ibanNumarasi}')" class="bg-secondary text-secondary-foreground p-1.5 rounded-lg hover:opacity-90 shadow-sm" title="Telefon / IBAN Düzenle">
+                  <iconify-icon icon="lucide:pencil" class="text-sm"></iconify-icon>
+                </button>
                 ${!gosterilenArsiv ? `
-                  <button onclick="odemeyiIsaretle(${item.id})" class="bg-success text-success-foreground text-[10px] font-bold px-2.5 py-1 rounded-lg hover:opacity-90 shadow-sm">
+                  <button onclick="odemeyiIsaretle(${item.id})" class="bg-success text-success-foreground text-[10px] font-bold px-2.5 py-1.5 rounded-lg hover:opacity-90 shadow-sm">
                     Ödeme Yapıldı
                   </button>
                 ` : `
-                  <span class="text-success font-bold text-[10px] bg-success/10 px-2 py-1 rounded">Arşivlendi (Ödendi)</span>
+                  <span class="text-success font-bold text-[10px] bg-success/10 px-2 py-1.5 rounded">Arşivlendi</span>
                 `}
               </td>
             </tr>
@@ -258,6 +329,5 @@
   </script>
 </body>
 </html>
-
 
 
