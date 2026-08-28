@@ -70,23 +70,27 @@
             <input type="text" id="musteri-adi" required placeholder="Ad Soyad" class="w-full bg-background border border-border px-3 py-2 rounded-xl text-xs outline-none font-semibold">
           </div>
           <div>
-            <label class="block text-[11px] font-bold text-muted-foreground mb-1">Telefon</label>
-            <input type="text" id="telefon" placeholder="05XX XXX XX XX" class="w-full bg-background border border-border px-3 py-2 rounded-xl text-xs outline-none font-semibold">
+            <label class="block text-[11px] font-bold text-muted-foreground mb-1">TC Kimlik Numarası</label>
+            <input type="text" id="tc-no" maxlength="11" placeholder="11 Haneli TC No" class="w-full bg-background border border-border px-3 py-2 rounded-xl text-xs outline-none font-semibold">
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-muted-foreground mb-1">Telefon</label>
+            <input type="text" id="telefon" placeholder="05XX XXX XX XX" class="w-full bg-background border border-border px-3 py-2 rounded-xl text-xs outline-none font-semibold">
+          </div>
           <div>
             <label class="block text-[11px] font-bold text-muted-foreground mb-1">IBAN Numarası</label>
             <input type="text" id="iban" placeholder="TR..." class="w-full bg-background border border-border px-3 py-2 rounded-xl text-xs outline-none font-semibold">
           </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-[11px] font-bold text-muted-foreground mb-1">Kısa Adres / Şehir</label>
             <input type="text" id="adres" placeholder="DENİZLİ" class="w-full bg-background border border-border px-3 py-2 rounded-xl text-xs outline-none font-semibold">
           </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-[11px] font-bold text-muted-foreground mb-1">Kesim Tipi</label>
             <select id="kesim-tipi" class="w-full bg-background border border-border px-3 py-2 rounded-xl text-xs outline-none font-semibold">
@@ -94,10 +98,11 @@
               <option value="Faturalı Kesim (+%1 KDV)">Faturalı Kesim (+%1 KDV)</option>
             </select>
           </div>
-          <div>
-            <label class="block text-[11px] font-bold text-muted-foreground mb-1">Kesen Personel / Kasap</label>
-            <input type="text" id="kesen-personel" required placeholder="Örn: Ahmet Usta" class="w-full bg-background border border-border px-3 py-2 rounded-xl text-xs outline-none font-semibold">
-          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-muted-foreground mb-1">Kesen Personel / Kasap</label>
+          <input type="text" id="kesen-personel" required placeholder="Örn: Ahmet Usta" class="w-full bg-background border border-border px-3 py-2 rounded-xl text-xs outline-none font-semibold">
         </div>
 
         <!-- Hayvanlar Listesi Alanı -->
@@ -303,6 +308,7 @@
         e.preventDefault();
 
         const musteriAdi = document.getElementById('musteri-adi').value.trim();
+        const tcNo = document.getElementById('tc-no').value.trim();
         const telefon = document.getElementById('telefon').value.trim();
         const iban = document.getElementById('iban').value.trim();
         const adres = document.getElementById('adres').value.trim();
@@ -341,6 +347,7 @@
 
         const yeniKayit = {
           musteriAdi,
+          tcNo,
           telefon,
           iban,
           adres,
@@ -365,7 +372,8 @@
             kesimTipi: kesimTipi,
             tarih: tarihStr,
             kesenPersonel: kesenPersonel,
-            musteriAdi: musteriAdi
+            musteriAdi: musteriAdi,
+            tcNo: tcNo
           });
         });
         localStorage.setItem('stoklar', JSON.stringify(stoklar));
@@ -395,6 +403,7 @@
                 agirlik: h.agirlik,
                 tutar: h.tutar,
                 musteriAdi: kayit.musteriAdi,
+                tcNo: kayit.tcNo,
                 kesimTarihi: kayit.kayitTarihi,
                 kesenPersonel: kayit.kesenPersonel,
                 kesimTipi: kayit.kesimTipi
@@ -425,7 +434,7 @@
               </div>
 
               <div class="flex justify-between items-center pt-2 border-t border-border/60 text-[11px] text-muted-foreground font-semibold">
-                <span>Müşteri: <strong class="text-foreground">${h.musteriAdi}</strong></span>
+                <span>Müşteri: <strong class="text-foreground">${h.musteriAdi}</strong> ${h.tcNo ? '(' + h.tcNo + ')' : ''}</span>
                 <span>Tarih: ${h.kesimTarihi || '-'}</span>
               </div>
             </div>
@@ -438,3 +447,4 @@
   </script>
 </body>
 </html>
+
