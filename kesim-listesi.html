@@ -27,7 +27,7 @@
   </script>
   <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
 </head>
-<body class="bg-background text-foreground min-h-screen font-body pb-28">
+<body class="bg-background text-foreground min-h-screen font-body pb-32">
 
   <!-- ANA İÇERİK -->
   <div id="main-content">
@@ -110,7 +110,7 @@
           </div>
 
           <div id="hayvanlar-container" class="space-y-3">
-            <!-- Hayvan Satırı Örneği -->
+            <!-- Hayvan Satırı (Değerler boş bırakıldı) -->
             <div class="hayvan-satir bg-background border border-border p-3 rounded-xl space-y-2 relative">
               <div class="flex justify-between items-center text-xs font-bold text-muted-foreground">
                 <span class="hayvan-baslik">Hayvan #1</span>
@@ -121,9 +121,10 @@
                   <select class="h-cinsi w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none">
                     <option value="İnek">İnek</option>
                     <option value="Dana">Dana</option>
+                    <option value="Tosun">Tosun</option>
                     <option value="Düve">Düve</option>
                     <option value="Koyun">Koyun</option>
-                    <option value="Kuzu">Kuzu</option>
+                    <option value="Diğer">Diğer</option>
                   </select>
                 </div>
                 <div>
@@ -134,11 +135,11 @@
               <div class="grid grid-cols-2 gap-2">
                 <div>
                   <label class="block text-[10px] text-muted-foreground mb-0.5">Ağırlık (Kg)</label>
-                  <input type="number" class="h-agirlik w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" value="400">
+                  <input type="number" class="h-agirlik w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" placeholder="0">
                 </div>
                 <div>
                   <label class="block text-[10px] text-muted-foreground mb-0.5">Birim Fiyat (TL/Kg)</label>
-                  <input type="number" class="h-fiyat w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" value="280">
+                  <input type="number" class="h-fiyat w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" placeholder="0">
                 </div>
               </div>
             </div>
@@ -164,28 +165,32 @@
     </div>
   </div>
 
-  <!-- ALT NAVİGASYON -->
-  <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-2 pb-4 pt-2 shadow-lg">
-    <div class="mx-auto flex max-w-md items-center justify-between">
-      <a href="ana-sayfa.html" class="flex flex-col items-center gap-1 text-muted-foreground">
-        <iconify-icon icon="lucide:house" class="text-xl"></iconify-icon>
-        <span class="text-[10px] font-bold">Ana Sayfa</span>
+  <!-- ALT NAVİGASYON (6 Sekmeli Tam Liste) -->
+  <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-1.5 pb-3 pt-2 shadow-lg overflow-x-auto">
+    <div class="mx-auto flex max-w-lg items-center justify-between gap-1">
+      <a href="ana-sayfa.html" class="flex flex-col items-center gap-0.5 text-muted-foreground px-2.5 py-1 min-w-[55px] hover:text-foreground">
+        <iconify-icon icon="lucide:house" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Ana Sayfa</span>
       </a>
-      <a href="kesim-listesi.html" class="flex flex-col items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-primary-foreground">
-        <iconify-icon icon="lucide:clipboard-list" class="text-xl"></iconify-icon>
-        <span class="text-[10px] font-bold">Kesim Listesi</span>
+      <a href="kesim-listesi.html" class="flex flex-col items-center gap-0.5 rounded-lg bg-primary px-2.5 py-1 text-primary-foreground min-w-[55px]">
+        <iconify-icon icon="lucide:clipboard-list" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Kesim Liste</span>
       </a>
-      <a href="stok.html" class="flex flex-col items-center gap-1 text-muted-foreground">
-        <iconify-icon icon="lucide:package" class="text-xl"></iconify-icon>
-        <span class="text-[10px] font-bold">Stok</span>
+      <a href="stok.html" class="flex flex-col items-center gap-0.5 text-muted-foreground px-2 py-1 min-w-[50px] hover:text-foreground">
+        <iconify-icon icon="lucide:package" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Stok</span>
       </a>
-      <a href="sevkiyat.html" class="flex flex-col items-center gap-1 text-muted-foreground">
-        <iconify-icon icon="lucide:truck" class="text-xl"></iconify-icon>
-        <span class="text-[10px] font-bold">Sevkiyat</span>
+      <a href="sevkiyat.html" class="flex flex-col items-center gap-0.5 text-muted-foreground px-2 py-1 min-w-[50px] hover:text-foreground">
+        <iconify-icon icon="lucide:truck" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Sevkiyat</span>
       </a>
-      <a href="g-n-sonu.html" class="flex flex-col items-center gap-1 text-muted-foreground">
-        <iconify-icon icon="lucide:circle-check-big" class="text-xl"></iconify-icon>
-        <span class="text-[10px] font-bold">Gün Sonu</span>
+      <a href="g-n-sonu.html" class="flex flex-col items-center gap-0.5 text-muted-foreground px-2 py-1 min-w-[50px] hover:text-foreground">
+        <iconify-icon icon="lucide:circle-check-big" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Gün Sonu</span>
+      </a>
+      <a href="kasap-kesimleri.html" class="flex flex-col items-center gap-0.5 text-muted-foreground px-2 py-1 min-w-[55px] hover:text-foreground">
+        <iconify-icon icon="lucide:user-check" class="text-lg"></iconify-icon>
+        <span class="text-[9px] font-bold">Kasap Kesim</span>
       </a>
     </div>
   </nav>
@@ -204,9 +209,11 @@
       const hamTutarSpan = document.getElementById('ham-tutar');
       const netOdenecekTutarSpan = document.getElementById('net-odenecek-tutar');
 
-      cikisLink.addEventListener('click', function () {
-        sessionStorage.removeItem('girisYapildi');
-      });
+      if(cikisLink) {
+        cikisLink.addEventListener('click', function () {
+          sessionStorage.removeItem('girisYapildi');
+        });
+      }
 
       kesimListesiniGoster();
 
@@ -239,7 +246,7 @@
         }
       });
 
-      // Yeni Hayvan Satırı Ekleme
+      // Yeni Hayvan Satırı Ekleme (Boş inputlarla)
       hayvanEkleBtn.addEventListener('click', () => {
         const sayi = hayvanlarContainer.querySelectorAll('.hayvan-satir').length + 1;
         const div = document.createElement('div');
@@ -255,9 +262,10 @@
               <select class="h-cinsi w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none">
                 <option value="İnek">İnek</option>
                 <option value="Dana">Dana</option>
+                <option value="Tosun">Tosun</option>
                 <option value="Düve">Düve</option>
                 <option value="Koyun">Koyun</option>
-                <option value="Kuzu">Kuzu</option>
+                <option value="Diğer">Diğer</option>
               </select>
             </div>
             <div>
@@ -268,11 +276,11 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[10px] text-muted-foreground mb-0.5">Ağırlık (Kg)</label>
-              <input type="number" class="h-agirlik w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" value="400">
+              <input type="number" class="h-agirlik w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" placeholder="0">
             </div>
             <div>
               <label class="block text-[10px] text-muted-foreground mb-0.5">Birim Fiyat (TL/Kg)</label>
-              <input type="number" class="h-fiyat w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" value="280">
+              <input type="number" class="h-fiyat w-full bg-card border border-border px-2 py-1.5 rounded-lg text-xs font-semibold outline-none hesapla-input" placeholder="0">
             </div>
           </div>
         `;
@@ -284,7 +292,7 @@
         toplamlariHesapla();
       });
 
-      // Kesim Kaydetme
+      // Kesim Kaydetme ve Stoğa Aktarma
       kesimForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -343,7 +351,8 @@
             maliyet: h.tutar,
             kesimTipi: kesimTipi,
             tarih: tarihStr,
-            kesenPersonel: kesenPersonel
+            kesenPersonel: kesenPersonel,
+            musteriAdi: musteriAdi
           });
         });
         localStorage.setItem('stoklar', JSON.stringify(stoklar));
@@ -351,10 +360,10 @@
         modalOverlay.classList.add('hidden');
         kesimForm.reset();
         kesimListesiniGoster();
-        alert('Kesim başarıyla kaydedildi!');
+        alert('Kesim başarıyla kaydedildi ve stoğa aktarıldı!');
       });
 
-      // Listeyi Ekrana Basan Fonksiyon
+      // Listeyi Ekrana Basan Fonksiyon (İstediğin küçük detaylarla)
       function kesimListesiniGoster() {
         const kayitlar = JSON.parse(localStorage.getItem('kesimKayitlari')) || [];
         let html = '';
@@ -364,7 +373,7 @@
           return;
         }
 
-        kayitlar.forEach((kayit, index) => {
+        kayitlar.slice().reverse().forEach((kayit) => {
           let hayvanlarHtml = '';
           if (kayit.hayvanlar && Array.isArray(kayit.hayvanlar)) {
             kayit.hayvanlar.forEach((h, hIdx) => {
@@ -412,3 +421,4 @@
   </script>
 </body>
 </html>
+
