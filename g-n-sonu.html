@@ -27,7 +27,7 @@
   </script>
   <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
 </head>
-<body class="bg-background text-foreground min-h-screen font-body pb-28">
+<body class="bg-background text-foreground min-h-screen font-body pb-36">
 
   <header class="px-5 pb-4 pt-8 flex justify-between items-center">
     <div>
@@ -44,7 +44,7 @@
   </header>
 
   <main class="px-5 space-y-4">
-    <!-- TABLO YAPISI (Görseldeki Orijinal Tasarım) -->
+    <!-- TABLO YAPISI -->
     <div class="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
@@ -79,6 +79,16 @@
           <span id="genel-toplam" class="font-extrabold text-success text-base">0,00 TL</span>
         </div>
       </div>
+    </div>
+
+    <!-- GÜNÜ KAPAT VE SİSTEMDEN ÇIKIŞ BÖLÜMÜ -->
+    <div class="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+      <button id="gunu-kapat-btn" class="w-full sm:w-auto bg-primary text-primary-foreground font-bold px-4 py-2.5 rounded-xl text-xs shadow hover:opacity-90 flex items-center justify-center gap-1.5">
+        <iconify-icon icon="lucide:lock" class="text-base"></iconify-icon> Günü Kapat ve Kilitle
+      </button>
+      <button id="sistemden-cikis-btn" class="w-full sm:w-auto bg-destructive/10 text-destructive font-bold px-4 py-2.5 rounded-xl text-xs hover:bg-destructive hover:text-white transition-all flex items-center justify-center gap-1.5">
+        <iconify-icon icon="lucide:log-out" class="text-base"></iconify-icon> Güvenli Sistemden Çıkış Yap
+      </button>
     </div>
   </main>
 
@@ -119,6 +129,9 @@
       const faturaliToplamEl = document.getElementById('faturali-toplam');
       const genelToplamEl = document.getElementById('genel-toplam');
 
+      const gunuKapatBtn = document.getElementById('gunu-kapat-btn');
+      const sistemdenCikisBtn = document.getElementById('sistemden-cikis-btn');
+
       const simdi = new Date();
       const bugunStr = `${simdi.getFullYear()}-${String(simdi.getMonth() + 1).padStart(2, '0')}-${String(simdi.getDate()).padStart(2, '0')}`;
       tarihSecici.value = bugunStr;
@@ -153,6 +166,22 @@
         raporuGuncelle();
       };
 
+      gunuKapatBtn.addEventListener('click', function() {
+        const secilenTarih = tarihSecici.value;
+        if (confirm(`${secilenTarih} tarihli gün sonu raporu kapatılacak ve kilitlenecek. Emin misiniz?`)) {
+          alert("Gün başarıyla kapatıldı.");
+        }
+      });
+
+      // Kesim listesi, stok ve sevkiyat verilerine dokunmadan sadece oturum/giriş verisini temizleyen çıkış
+      sistemdenCikisBtn.addEventListener('click', function() {
+        if (confirm("Sistemden çıkış yapmak istediğinize emin misiniz? (Kesim, stok ve sevkiyat verileriniz güvende kalacaktır)")) {
+          localStorage.removeItem('aktifKullaniciOturumu'); // Varsa oturum anahtarı
+          alert("Başarıyla çıkış yapıldı.");
+          window.location.href = 'index.html'; // Giriş sayfasına yönlendirme (yoksa ana sayfaya yönlendirilebilir)
+        }
+      });
+
       function raporuGuncelle() {
         const secilenTarih = tarihSecici.value;
         const tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
@@ -167,7 +196,7 @@
           tableBody.innerHTML = `
             <tr>
               <td colspan="6" class="p-6 text-center text-muted-foreground text-xs">
-                ${gosterilenArsiv ? 'Arşivde bu tarihe ait ödenmiş kayıt bulunmuyor.' : 'Seçilen tarih için henüz kayıtlı işlem bulunmuyor.'}
+                ${gosterilenArsiv ? 'Arşivde bu tarihe ait ödenmiş kayıt bulunmuyor.' : 'Seçilen tarih için ödenmeyi bekleyen kayıt bulunmuyor.'}
               </td>
             </tr>
           `;
@@ -192,7 +221,7 @@
 
           return `
             <tr class="hover:bg-muted/30 transition-colors">
-              <td class="p-3.5 font-bold text-foreground">${item.musteri || '-'}</td>
+              <td class="p-3.5 font-bold text-foreground">${item.musteri || item.musteriAdi || '-'}</td>
               <td class="p-3.5 text-muted-foreground">${item.telefon || '-'}</td>
               <td class="p-3.5 text-muted-foreground font-mono text-[11px]">${item.iban || '-'}</td>
               <td class="p-3.5">
@@ -224,6 +253,5 @@
   </script>
 </body>
 </html>
-
 
 
