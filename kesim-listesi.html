@@ -47,7 +47,7 @@
     </header>
 
     <main class="px-5 space-y-3" id="kesim-listesi-container">
-      <!-- Kesim Kartları Dinamik Olarak Buraya Gelecek -->
+      <!-- Hayvan Bazlı Liste Dinamik Olarak Buraya Gelecek -->
     </main>
   </div>
 
@@ -239,9 +239,9 @@
         let netTutar = hamToplam;
 
         if (kesimTipi.includes('Faturalı')) {
-          netTutar = hamToplam * 1.01; // %1 KDV eklenir
+          netTutar = hamToplam * 1.01;
         } else {
-          netTutar = hamToplam * 0.985; // %1,5 kesinti düşülür (%100 - %1,5 = %98,5)
+          netTutar = hamToplam * 0.985;
         }
 
         hamTutarSpan.textContent = hamToplam.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' TL';
@@ -373,9 +373,10 @@
         modalOverlay.classList.add('hidden');
         kesimForm.reset();
         kesimListesiniGoster();
-        alert('Kesim başarıyla kaydedildi ve doğru oranla stoğa aktarıldı!');
+        alert('Kesim başarıyla kaydedildi!');
       });
 
+      // Hayvan Bazlı Liste Gösterim Fonksiyonu
       function kesimListesiniGoster() {
         const kayitlar = JSON.parse(localStorage.getItem('kesimKayitlari')) || [];
         let html = '';
@@ -385,43 +386,42 @@
           return;
         }
 
-        kayitlar.slice().reverse().forEach((kayit) => {
-          let hayvanlarHtml = '';
+        // Tüm kayıtlar içindeki hayvanları tek bir düz listede toplayıp en son eklenen en üste gelecek şekilde ters çeviriyoruz
+        let tumHayvanlar = [];
+        kayitlar.forEach(kayit => {
           if (kayit.hayvanlar && Array.isArray(kayit.hayvanlar)) {
-            kayit.hayvanlar.forEach((h, hIdx) => {
-              hayvanlarHtml += `
-                <div class="bg-muted/40 border border-border/60 p-2.5 rounded-xl space-y-1 my-1">
-                  <div class="flex justify-between items-center text-xs font-bold text-foreground">
-                    <span>#${hIdx + 1} - ${h.cinsi} (${h.kupeNo || 'Küpe Yok'} - ${h.agirlik || 0} kg)</span>
-                    <span class="text-primary font-extrabold">${Number(h.tutar || 0).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
-                  </div>
-                  <div class="text-[11px] text-muted-foreground flex justify-between">
-                    <span>Kesen: ${kayit.kesenPersonel || 'Belirtilmemiş'}</span>
-                    <span>Tarih: ${kayit.kayitTarihi || '-'}</span>
-                  </div>
-                </div>
-              `;
+            kayit.hayvanlar.forEach(h => {
+              tumHayvanlar.push({
+                cinsi: h.cinsi,
+                kupeNo: h.kupeNo,
+                agirlik: h.agirlik,
+                tutar: h.tutar,
+                musteriAdi: kayit.musteriAdi,
+                kesimTarihi: kayit.kayitTarihi,
+                kesenPersonel: kayit.kesenPersonel,
+                kesimTipi: kayit.kesimTipi
+              });
             });
           }
+        });
 
+        tumHayvanlar.slice().reverse().forEach((h, index) => {
           html += `
-            <div class="bg-card border border-border p-4 rounded-2xl shadow-sm space-y-3">
-              <div class="flex justify-between items-start border-b border-border pb-2">
+            <div class="bg-card border border-border p-4 rounded-2xl shadow-sm space-y-2">
+              <div class="flex justify-between items-start">
                 <div>
-                  <h3 class="font-bold text-sm text-foreground">${kayit.musteriAdi}</h3>
-                  <p class="text-[11px] text-muted-foreground">Tel: ${kayit.telefon} | İBAN: ${kayit.iban}</p>
+                  <span class="text-xs font-bold px-2 py-0.5 rounded bg-primary/10 text-primary">${h.cinsi}</span>
+                  <h3 class="font-bold text-sm text-foreground mt-1">Küpe/Kod: ${h.kupeNo || 'Yok'} (${h.agirlik || 0} kg)</h3>
+                  <p class="text-[11px] text-muted-foreground mt-0.5">Kesen: ${h.kesenPersonel || 'Belirtilmemiş'} | Tip: ${h.kesimTipi}</p>
                 </div>
-                <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-primary/10 text-primary">${kayit.kesimTipi}</span>
-              </div>
-              
-              <div class="space-y-1">
-                <p class="text-[11px] font-bold text-muted-foreground">Kesilen Hayvanlar:</p>
-                ${hayvanlarHtml}
+                <div class="text-right">
+                  <span class="font-extrabold text-success text-base">${Number(h.tutar || 0).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
+                </div>
               </div>
 
-              <div class="flex justify-between items-center pt-2 border-t border-border/60 text-xs">
-                <span class="font-semibold text-muted-foreground">Toplam Tutar:</span>
-                <span class="font-extrabold text-success text-base">${Number(kayit.toplamTutar || 0).toLocaleString('tr-TR', {minimumFractionDigits: 2})} TL</span>
+              <div class="flex justify-between items-center pt-2 border-t border-border/60 text-[11px] text-muted-foreground font-semibold">
+                <span>Müşteri: <strong class="text-foreground">${h.musteriAdi}</strong></span>
+                <span>Tarih: ${h.kesimTarihi || '-'}</span>
               </div>
             </div>
           `;
