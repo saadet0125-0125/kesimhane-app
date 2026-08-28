@@ -362,9 +362,11 @@
         kesimKayitlari.push(yeniKayit);
         localStorage.setItem('kesimKayitlari', JSON.stringify(kesimKayitlari));
 
+        // Gün sonu raporuna telefon ve iban bilgilerini aktaran kısım
         let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
-        hayvanlarDizisi.forEach(h => {
+        hayvanlarDizisi.forEach((h, idx) => {
           stoklar.push({
+            id: 'stok_' + Date.now() + '_' + idx,
             cinsi: h.cinsi,
             kupeNo: h.kupeNo,
             agirlik: h.agirlik,
@@ -373,7 +375,10 @@
             tarih: tarihStr,
             kesenPersonel: kesenPersonel,
             musteriAdi: musteriAdi,
-            tcNo: tcNo
+            tcNo: tcNo,
+            telefon: telefon, // Eklendi
+            iban: iban,       // Eklendi
+            odendi: false
           });
         });
         localStorage.setItem('stoklar', JSON.stringify(stoklar));
@@ -404,6 +409,8 @@
                 tutar: h.tutar,
                 musteriAdi: kayit.musteriAdi,
                 tcNo: kayit.tcNo,
+                telefon: kayit.telefon,
+                iban: kayit.iban,
                 kesimTarihi: kayit.kayitTarihi,
                 kesenPersonel: kayit.kesenPersonel,
                 kesimTipi: kayit.kesimTipi
@@ -447,4 +454,5 @@
   </script>
 </body>
 </html>
+
 
