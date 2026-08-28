@@ -29,32 +29,8 @@
 </head>
 <body class="bg-background text-foreground min-h-screen font-body pb-28">
 
-  <!-- GİRİŞ EKRANI (ÇOKLU KULLANICI DESTEKLİ) -->
-  <div id="login-overlay" class="fixed inset-0 z-50 bg-background flex items-center justify-center p-4">
-    <div class="bg-card w-full max-w-sm rounded-2xl border border-border shadow-xl p-6 space-y-4">
-      <div class="text-center space-y-1">
-        <iconify-icon icon="lucide:user-lock" class="text-3xl text-primary"></iconify-icon>
-        <h2 class="text-lg font-bold text-foreground">Kesimhane Giriş</h2>
-        <p class="text-xs text-muted-foreground">Devam etmek için bilgilerinizi girin</p>
-      </div>
-      <form id="login-form" class="space-y-3">
-        <div>
-          <label class="block text-[11px] font-bold text-muted-foreground mb-1">Kullanıcı Adı</label>
-          <input type="text" id="login-user" placeholder="admin" required class="w-full bg-background border border-border px-3 py-2.5 rounded-xl text-xs outline-none font-semibold">
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold text-muted-foreground mb-1">Şifre</label>
-          <input type="password" id="login-pass" placeholder="1234" required class="w-full bg-background border border-border px-3 py-2.5 rounded-xl text-xs outline-none font-semibold">
-        </div>
-        <button type="submit" class="w-full bg-primary text-primary-foreground font-bold py-2.5 rounded-xl shadow hover:opacity-95 transition-all text-xs mt-2">
-          Giriş Yap
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- ANA İÇERİK -->
-  <div id="main-content" class="hidden">
+  <!-- ANA İÇERİK (Giriş kontrolü ana sayfada yapıldığı için doğrudan görünür) -->
+  <div id="main-content">
     <header class="px-5 pb-4 pt-8 flex justify-between items-center">
       <div>
         <p class="text-xs font-semibold text-muted-foreground">Operasyon Yönetimi</p>
@@ -64,9 +40,9 @@
         <button id="yeni-kesim-btn" class="bg-primary text-primary-foreground px-3.5 py-2 rounded-xl text-xs font-bold shadow hover:opacity-95 flex items-center gap-1.5">
           <iconify-icon icon="lucide:plus" class="text-base"></iconify-icon> Yeni Kesim Kaydı
         </button>
-        <button id="logout-btn" class="text-xs font-bold bg-destructive/15 text-red-600 px-3 py-2 rounded-xl hover:bg-red-600 hover:text-white transition-all">
+        <a href="ana-sayfa.html" id="cikis-link" class="text-xs font-bold bg-destructive/15 text-red-600 px-3 py-2 rounded-xl hover:bg-red-600 hover:text-white transition-all flex items-center">
           Çıkış
-        </button>
+        </a>
       </div>
     </header>
 
@@ -204,11 +180,6 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const loginOverlay = document.getElementById('login-overlay');
-      const mainContent = document.getElementById('main-content');
-      const loginForm = document.getElementById('login-form');
-      const logoutBtn = document.getElementById('logout-btn');
-
       const modalOverlay = document.getElementById('modal-overlay');
       const yeniKesimBtn = document.getElementById('yeni-kesim-btn');
       const modalKapat = document.getElementById('modal-kapat');
@@ -216,44 +187,15 @@
       const hayvanEkleBtn = document.getElementById('hayvan-ekle-btn');
       const hayvanlarContainer = document.getElementById('hayvanlar-container');
       const kesimListesiContainer = document.getElementById('kesim-listesi-container');
+      const cikisLink = document.getElementById('cikis-link');
 
-      // Yetkili Kullanıcılar Listesi
-      const tanimliKullanicilar = [
-        { k: 'admin', s: '1234' },
-        { k: 'kesimhane1', s: 'password2026' },
-        { k: 'kasiyer', s: 'kasiyer34' },
-        { k: 'yonetim', s: 'admin789' }
-      ];
-
-      // Oturum Kontrolü
-      if (sessionStorage.getItem('girisYapildi') === 'true') {
-        loginOverlay.classList.add('hidden');
-        mainContent.classList.remove('hidden');
-        kesim ListesiniGoster();
-      }
-
-      loginForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const kullaniciAdi = document.getElementById('login-user').value.trim();
-        const sifre = document.getElementById('login-pass').value.trim();
-
-        const kullaniciDogrula = tanimliKullanicilar.find(u => u.k === kullaniciAdi && u.s === sifre);
-
-        if (kullaniciDogrula) {
-          sessionStorage.setItem('girisYapildi', 'true');
-          loginOverlay.classList.add('hidden');
-          mainContent.classList.remove('hidden');
-          kesimListesiniGoster();
-        } else {
-          alert('Hatalı kullanıcı adı veya şifre!');
-        }
-      });
-
-      logoutBtn.addEventListener('click', function () {
+      // Çıkış yapıldığında oturumu temizle ve ana sayfaya yönlendir
+      cikisLink.addEventListener('click', function () {
         sessionStorage.removeItem('girisYapildi');
-        loginOverlay.classList.remove('hidden');
-        mainContent.classList.add('hidden');
       });
+
+      // Sayfa açıldığında doğrudan listeyi göster
+      kesimListesiniGoster();
 
       // Modal Aç / Kapat
       yeniKesimBtn.addEventListener('click', () => modalOverlay.classList.remove('hidden'));
@@ -346,12 +288,10 @@
           toplamTutar: toplamKayitTutari
         };
 
-        // Kayıtları localStorage'a kaydet
         let kesimKayitlari = JSON.parse(localStorage.getItem('kesimKayitlari')) || [];
         kesimKayitlari.push(yeniKayit);
         localStorage.setItem('kesimKayitlari', JSON.stringify(kesimKayitlari));
 
-        // Stoklara da ekle ki ana sayfa özetine doğrudan yansısın
         let stoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
         hayvanlarDizisi.forEach(h => {
           stoklar.push({
@@ -372,7 +312,7 @@
         alert('Kesim başarıyla kaydedildi!');
       });
 
-      // Listeyi Ekrana Basan Fonksiyon (İstediğin Sıralı ve Detaylı Görünüm)
+      // Listeyi Ekrana Basan Fonksiyon
       function kesimListesiniGoster() {
         const kayitlar = JSON.parse(localStorage.getItem('kesimKayitlari')) || [];
         let html = '';
