@@ -90,7 +90,7 @@
           <div>
             <label class="block text-[11px] font-bold text-muted-foreground mb-1">Kesim Tipi</label>
             <select id="kesim-tipi" class="w-full bg-background border border-border px-3 py-2 rounded-xl text-xs outline-none font-semibold">
-              <option value="Standart Kesim">Standart Kesim</option>
+              <option value="Standart Kesim">Standart Kesim (-%1,5)</option>
               <option value="Faturalı Kesim (+%1 KDV)">Faturalı Kesim (+%1 KDV)</option>
             </select>
           </div>
@@ -110,7 +110,6 @@
           </div>
 
           <div id="hayvanlar-container" class="space-y-3">
-            <!-- Hayvan Satırı (Değerler boş bırakıldı) -->
             <div class="hayvan-satir bg-background border border-border p-3 rounded-xl space-y-2 relative">
               <div class="flex justify-between items-center text-xs font-bold text-muted-foreground">
                 <span class="hayvan-baslik">Hayvan #1</span>
@@ -153,7 +152,7 @@
             <span id="ham-tutar" class="font-bold text-foreground">0,00 TL</span>
           </div>
           <div class="flex justify-between items-center text-muted-foreground border-t border-border/60 pt-1">
-            <span class="font-bold text-foreground">Net Ödenecek Tutar:</span>
+            <span class="font-bold text-foreground" id="net-etiket">Net Ödenecek Tutar:</span>
             <span id="net-odenecek-tutar" class="font-extrabold text-success text-sm">0,00 TL</span>
           </div>
         </div>
@@ -165,7 +164,7 @@
     </div>
   </div>
 
-  <!-- ALT NAVİGASYON (6 Sekmeli Tam Liste) -->
+  <!-- ALT NAVİGASYON -->
   <nav class="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-1.5 pb-3 pt-2 shadow-lg overflow-x-auto">
     <div class="mx-auto flex max-w-lg items-center justify-between gap-1">
       <a href="ana-sayfa.html" class="flex flex-col items-center gap-0.5 text-muted-foreground px-2.5 py-1 min-w-[55px] hover:text-foreground">
@@ -204,6 +203,7 @@
       const hayvanEkleBtn = document.getElementById('hayvan-ekle-btn');
       const hayvanlarContainer = document.getElementById('hayvanlar-container');
       const kesimListesiContainer = document.getElementById('kesim-listesi-container');
+      const kesimTipiSelect = document.getElementById('kesim-tipi');
       const cikisLink = document.getElementById('cikis-link');
 
       const hamTutarSpan = document.getElementById('ham-tutar');
@@ -223,30 +223,37 @@
       });
       modalKapat.addEventListener('click', () => modalOverlay.classList.add('hidden'));
 
-      // Anlık Tutar Hesaplama Fonksiyonu
+      kesimTipiSelect.addEventListener('change', toplamlariHesapla);
+
       function toplamlariHesapla() {
         const satirlar = hayvanlarContainer.querySelectorAll('.hayvan-satir');
-        let toplam = 0;
+        let hamToplam = 0;
 
         satirlar.forEach(s => {
           const agirlik = parseFloat(s.querySelector('.h-agirlik').value) || 0;
           const fiyat = parseFloat(s.querySelector('.h-fiyat').value) || 0;
-          toplam += (agirlik * fiyat);
+          hamToplam += (agirlik * fiyat);
         });
 
-        const formatliTutar = toplam.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' TL';
-        hamTutarSpan.textContent = formatliTutar;
-        netOdenecekTutarSpan.textContent = formatliTutar;
+        const kesimTipi = kesimTipiSelect.value;
+        let netTutar = hamToplam;
+
+        if (kesimTipi.includes('Faturalı')) {
+          netTutar = hamToplam * 1.01; // %1 KDV eklenir
+        } else {
+          netTutar = hamToplam * 0.985; // %1,5 kesinti düşülür (%100 - %1,5 = %98,5)
+        }
+
+        hamTutarSpan.textContent = hamToplam.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' TL';
+        netOdenecekTutarSpan.textContent = netTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' TL';
       }
 
-      // Input değişikliklerini dinle
       document.addEventListener('input', function(e) {
         if(e.target.classList.contains('hesapla-input') || e.target.closest('#hayvanlar-container')) {
           toplamlariHesapla();
         }
       });
 
-      // Yeni Hayvan Satırı Ekleme (Boş inputlarla)
       hayvanEkleBtn.addEventListener('click', () => {
         const sayi = hayvanlarContainer.querySelectorAll('.hayvan-satir').length + 1;
         const div = document.createElement('div');
@@ -292,7 +299,6 @@
         toplamlariHesapla();
       });
 
-      // Kesim Kaydetme ve Stoğa Aktarma
       kesimForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -300,29 +306,36 @@
         const telefon = document.getElementById('telefon').value.trim();
         const iban = document.getElementById('iban').value.trim();
         const adres = document.getElementById('adres').value.trim();
-        const kesimTipi = document.getElementById('kesim-tipi').value;
+        const kesimTipi = kesimTipiSelect.value;
         const kesenPersonel = document.getElementById('kesen-personel').value.trim();
         const tarihStr = new Date().toISOString().split('T')[0];
 
         const satirlar = hayvanlarContainer.querySelectorAll('.hayvan-satir');
         let hayvanlarDizisi = [];
-        let toplamKayitTutari = 0;
+        let toplamKayitNetTutari = 0;
 
         satirlar.forEach(s => {
           const cinsi = s.querySelector('.h-cinsi').value;
           const kupeNo = s.querySelector('.h-kupe').value.trim();
           const agirlik = parseFloat(s.querySelector('.h-agirlik').value) || 0;
           const fiyat = parseFloat(s.querySelector('.h-fiyat').value) || 0;
-          const hayvanTutari = agirlik * fiyat;
+          const hamHayvanTutari = agirlik * fiyat;
 
-          toplamKayitTutari += hayvanTutari;
+          let netHayvanTutari = hamHayvanTutari;
+          if (kesimTipi.includes('Faturalı')) {
+            netHayvanTutari = hamHayvanTutari * 1.01;
+          } else {
+            netHayvanTutari = hamHayvanTutari * 0.985;
+          }
+
+          toplamKayitNetTutari += netHayvanTutari;
 
           hayvanlarDizisi.push({
             cinsi,
             kupeNo,
             agirlik,
             fiyat,
-            tutar: hayvanTutari
+            tutar: netHayvanTutari
           });
         });
 
@@ -335,7 +348,7 @@
           kesenPersonel,
           kayitTarihi: tarihStr,
           hayvanlar: hayvanlarDizisi,
-          toplamTutar: toplamKayitTutari
+          toplamTutar: toplamKayitNetTutari
         };
 
         let kesimKayitlari = JSON.parse(localStorage.getItem('kesimKayitlari')) || [];
@@ -360,10 +373,9 @@
         modalOverlay.classList.add('hidden');
         kesimForm.reset();
         kesimListesiniGoster();
-        alert('Kesim başarıyla kaydedildi ve stoğa aktarıldı!');
+        alert('Kesim başarıyla kaydedildi ve doğru oranla stoğa aktarıldı!');
       });
 
-      // Listeyi Ekrana Basan Fonksiyon (İstediğin küçük detaylarla)
       function kesimListesiniGoster() {
         const kayitlar = JSON.parse(localStorage.getItem('kesimKayitlari')) || [];
         let html = '';
