@@ -193,7 +193,6 @@
         raporuGuncelle();
       };
 
-      // Bilgi Düzenleme Penceresini Aç
       window.bilgiDuzenleAc = function(id, mevcutTel, mevcutIban) {
         modalItemId.value = id;
         modalTelefon.value = mevcutTel !== '-' ? mevcutTel : '';
@@ -239,6 +238,9 @@
       function raporuGuncelle() {
         const secilenTarih = tarihSecici.value;
         const tumStoklar = JSON.parse(localStorage.getItem('stoklar')) || [];
+        
+        // Kesim listesi olası veri kaynaklarını topluca çekiyoruz
+        const kesimListesi = JSON.parse(localStorage.getItem('kesimListesi')) || [];
         const musteriler = JSON.parse(localStorage.getItem('musteriler')) || [];
 
         const filtrelenmis = tumStoklar.filter(item => {
@@ -270,15 +272,25 @@
           
           const musteriAdi = item.musteri || item.musteriAdi || '-';
 
-          // Kayıtta yoksa müşteri rehberinden otomatik bulmaya çalış
-          let telefonNumarasi = item.telefon || item.tel || item.gsm || '';
+          // 1. Önce doğrudan stok kaydındaki telefon/iban alanlarına bak
+          let telefonNumarasi = item.telefon || item.tel || item.gsm || item.telefonNumarasi || '';
           let ibanNumarasi = item.iban || item.ibanNo || '';
 
+          // 2. Yoksa kesim listesindeki kayıttan eşleştirmeye çalış
           if (!telefonNumarasi || !ibanNumarasi) {
-            const kayitliMusteri = musteriler.find(m => m.ad === musteriAdi || m.musteriAdi === musteriAdi);
-            if (kayitliMusteri) {
-              if (!telefonNumarasi) telefonNumarasi = kayitliMusteri.telefon || kayitliMusteri.tel || '-';
-              if (!ibanNumarasi) ibanNumarasi = kayitliMusteri.iban || '-';
+            const kesimEslesme = kesimListesi.find(k => (k.musteri === musteriAdi || k.musteriAdi === musteriAdi));
+            if (kesimEslesme) {
+              if (!telefonNumarasi) telefonNumarasi = kesimEslesme.telefon || kesimEslesme.tel || kesimEslesme.gsm || '';
+              if (!ibanNumarasi) ibanNumarasi = kesimEslesme.iban || kesimEslesme.ibanNo || '';
+            }
+          }
+
+          // 3. Hala yoksa genel müşteri listesinden bulmaya çalış
+          if (!telefonNumarasi || !ibanNumarasi) {
+            const musteriEslesme = musteriler.find(m => (m.ad === musteriAdi || m.musteriAdi === musteriAdi));
+            if (musteriEslesme) {
+              if (!telefonNumarasi) telefonNumarasi = musteriEslesme.telefon || musteriEslesme.tel || musteriEslesme.gsm || '';
+              if (!ibanNumarasi) ibanNumarasi = musteriEslesme.iban || musteriEslesme.ibanNo || '';
             }
           }
 
@@ -329,5 +341,6 @@
   </script>
 </body>
 </html>
+
 
 
